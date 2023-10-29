@@ -29,7 +29,7 @@
     "email": "nikola@nikolahristov.tech",
     "url": "https://nikolahristov.tech"
   },
-  "publisher": "rbuckton",
+  "publisher": "playform",
   "type": "module",
   "imports": {
     "#core/*.js": {

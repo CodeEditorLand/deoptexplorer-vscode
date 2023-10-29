@@ -23,6 +23,7 @@
     "email": "nikola@nikolahristov.tech",
     "url": "https://nikolahristov.tech"
   },
+  "publisher": "playform",
   "type": "module",
   "bin": {
     "dexnode": "./bin/dexnode.js"
