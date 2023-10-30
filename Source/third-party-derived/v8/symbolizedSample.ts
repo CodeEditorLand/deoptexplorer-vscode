@@ -12,9 +12,8 @@
 import { ProfileStackTrace } from "./profileStackTrace";
 
 export class SymbolizedSample {
-    constructor(
-        public stack_trace: ProfileStackTrace,
-        public src_line: number,
-    ) {
-    }
+	constructor(
+		public stack_trace: ProfileStackTrace,
+		public src_line: number
+	) {}
 }

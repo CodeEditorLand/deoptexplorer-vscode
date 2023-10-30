@@ -8,8 +8,8 @@ import { createHash, randomBytes } from "crypto";
  * @returns A base-64 encoded MD5 hash of 16 random bytes.
  */
 export function createNonce() {
-    return createHash("MD5")
-        .update(randomBytes(16))
-        .digest()
-        .toString("base64");
+	return createHash("MD5")
+		.update(randomBytes(16))
+		.digest()
+		.toString("base64");
 }

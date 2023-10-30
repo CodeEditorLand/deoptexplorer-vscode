@@ -12,23 +12,26 @@ import { FilesTreeDataProvider } from "./filesTreeDataProvider";
  * Controls how files from the log appear in the tree.
  */
 export class FilesTree implements Disposable {
-    private provider: FilesTreeDataProvider;
-    private treeView: TreeView<BaseNode>;
+	private provider: FilesTreeDataProvider;
+	private treeView: TreeView<BaseNode>;
 
-    constructor() {
-        this.provider = new FilesTreeDataProvider();
-        this.treeView = window.createTreeView(constants.treeviews.files, { treeDataProvider: this.provider, showCollapseAll: true });
-    }
+	constructor() {
+		this.provider = new FilesTreeDataProvider();
+		this.treeView = window.createTreeView(constants.treeviews.files, {
+			treeDataProvider: this.provider,
+			showCollapseAll: true,
+		});
+	}
 
-    openLog(uri: Uri, log: LogFile) {
-        this.provider.openLog(uri, log);
-    }
+	openLog(uri: Uri, log: LogFile) {
+		this.provider.openLog(uri, log);
+	}
 
-    closeLog() {
-        this.provider.closeLog();
-    }
+	closeLog() {
+		this.provider.closeLog();
+	}
 
-    [Disposable.dispose]() {
-        this.treeView.dispose();
-    }
+	[Disposable.dispose]() {
+		this.treeView.dispose();
+	}
 }

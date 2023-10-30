@@ -9,7 +9,7 @@ import { IcEntry } from "#deoptigate/icEntry.js";
  * Contains everything we know about a file (except for profile events)
  */
 export interface FileEntry {
-    functions: FunctionEntry[];
-    ics: IcEntry[];
-    deopts: DeoptEntry[];
+	functions: FunctionEntry[];
+	ics: IcEntry[];
+	deopts: DeoptEntry[];
 }

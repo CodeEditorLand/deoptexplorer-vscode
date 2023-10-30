@@ -17,31 +17,33 @@ import { CodeKind } from "../enums/codeKind";
  * Represents an code event in a V8 execution timeline.
  */
 export class CodeKindEvent {
-    constructor(
-        readonly timestamp: TimeTicks,
-        readonly func?: FunctionEntry
-    ) { }
+	constructor(
+		readonly timestamp: TimeTicks,
+		readonly func?: FunctionEntry
+	) {}
 
-    get title() {
-        return this.func ? `${this.func.functionName} ${this.func.filePosition}` : "";
-    }
+	get title() {
+		return this.func
+			? `${this.func.functionName} ${this.func.filePosition}`
+			: "";
+	}
 }
 
 /**
  * Represents a code kind displayed in a V8 execution timeline.
  */
 export class CodeKindEntry {
-    static readonly STACK_FRAMES = 8;
+	static readonly STACK_FRAMES = 8;
 
-    readonly inExecution: CodeKindEvent[] = [];
-    readonly stackFrames: CodeKindEvent[][] = [];
+	readonly inExecution: CodeKindEvent[] = [];
+	readonly stackFrames: CodeKindEvent[][] = [];
 
-    constructor(
-        readonly color: string,
-        readonly kinds: CodeKind[]
-    ) {
-        for (let i = 0; i < CodeKindEntry.STACK_FRAMES; i++) {
-            this.stackFrames[i] = [];
-        }
-    }
+	constructor(
+		readonly color: string,
+		readonly kinds: CodeKind[]
+	) {
+		for (let i = 0; i < CodeKindEntry.STACK_FRAMES; i++) {
+			this.stackFrames[i] = [];
+		}
+	}
 }
