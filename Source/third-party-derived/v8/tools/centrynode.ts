@@ -33,8 +33,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 export class CEntryNode {
-	constructor(
-		public name: string,
-		public ticks: number
-	) {}
+    constructor(
+        public name: string,
+        public ticks: number
+    ) { }
 }

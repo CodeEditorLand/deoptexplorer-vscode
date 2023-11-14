@@ -14,38 +14,30 @@ import { assert } from "#core/assert.js";
 import { CodeEntry } from "./tools/codeentry.js";
 
 export class CodeEntryAndLineNumber {
-	constructor(
-		public code_entry: CodeEntry,
-		public line_number: number
-	) {
-		assert(line_number >= 0);
-	}
+    constructor(
+        public code_entry: CodeEntry,
+        public line_number: number
+    ) {
+        assert(line_number >= 0);
+    }
 
-	equals(other: CodeEntryAndLineNumber) {
-		return (
-			Equaler.defaultEqualer.equals(this.code_entry, other.code_entry) &&
-			this.line_number === other.line_number
-		);
-	}
+    equals(other: CodeEntryAndLineNumber) {
+        return Equaler.defaultEqualer.equals(this.code_entry, other.code_entry)
+            && this.line_number === other.line_number;
+    }
 
-	hash() {
-		let hash = 0;
-		hash = Equaler.combineHashes(
-			hash,
-			Equaler.defaultEqualer.hash(this.code_entry)
-		);
-		hash = Equaler.combineHashes(
-			hash,
-			Equaler.defaultEqualer.hash(this.line_number)
-		);
-		return hash;
-	}
+    hash() {
+        let hash = 0;
+        hash = Equaler.combineHashes(hash, Equaler.defaultEqualer.hash(this.code_entry));
+        hash = Equaler.combineHashes(hash, Equaler.defaultEqualer.hash(this.line_number));
+        return hash;
+    }
 
-	[Equatable.equals](other: unknown) {
-		return other instanceof CodeEntryAndLineNumber && this.equals(other);
-	}
+    [Equatable.equals](other: unknown) {
+        return other instanceof CodeEntryAndLineNumber && this.equals(other);
+    }
 
-	[Equatable.hash]() {
-		return this.hash();
-	}
+    [Equatable.hash]() {
+        return this.hash();
+    }
 }

@@ -7,9 +7,9 @@ import { activateFunctionHistoryWebview } from "./functionHistory";
 import { activateLogOverviewWebview } from "./logOverview";
 
 export function activateWebviews(context: ExtensionContext) {
-	return Disposable.from(
-		activateReportWebview(context),
-		activateFunctionHistoryWebview(context),
-		activateLogOverviewWebview(context)
-	);
+    return Disposable.from(
+        activateReportWebview(context),
+        activateFunctionHistoryWebview(context),
+        activateLogOverviewWebview(context)
+    );
 }

@@ -14,10 +14,10 @@ import { kNotInlined } from "./constants";
 import { SourcePosition } from "./sourcePosition";
 
 export class InliningPosition {
-	constructor(
-		public position: SourcePosition,
-		public inlinedFunctionId: number
-	) {
-		assert(inlinedFunctionId >= kNotInlined);
-	}
+    constructor(
+        public position: SourcePosition,
+        public inlinedFunctionId: number,
+    ) {
+        assert(inlinedFunctionId >= kNotInlined);
+    }
 }

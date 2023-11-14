@@ -16,27 +16,22 @@ import { SourcePosition } from "./sourcePosition";
 import { SharedFunctionCodeEntry } from "./tools/codeentry";
 
 export class SourcePositionInfo {
-	readonly position: Position | undefined;
+    readonly position: Position | undefined;
 
-	constructor(
-		public sourcePosition: SourcePosition,
-		public shared: SharedFunctionCodeEntry,
-		public script: Script | null = null
-	) {
-		const name = shared.functionName;
-		if (
-			script &&
-			sourcePosition.isJavaScript &&
-			sourcePosition.scriptOffset !== kNoSourcePosition &&
-			name.filePosition?.uri
-		) {
-			this.position = script.lineMap.positionAt(
-				sourcePosition.scriptOffset
-			);
-		} else if (name.filePosition) {
-			this.position = name.filePosition.range.start;
-		} else {
-			this.position = undefined;
-		}
-	}
+    constructor(
+        public sourcePosition: SourcePosition,
+        public shared: SharedFunctionCodeEntry,
+        public script: Script | null = null
+    ) {
+        const name = shared.functionName;
+        if (script && sourcePosition.isJavaScript && sourcePosition.scriptOffset !== kNoSourcePosition && name.filePosition?.uri) {
+            this.position = script.lineMap.positionAt(sourcePosition.scriptOffset);
+        }
+        else if (name.filePosition) {
+            this.position = name.filePosition.range.start;
+        }
+        else {
+            this.position = undefined;
+        }
+    }
 }

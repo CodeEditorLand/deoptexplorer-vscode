@@ -20,75 +20,65 @@ import type { IcEntryNode } from "./ic/icEntryNode";
  * A conceptual tree node provider for a log file.
  */
 export class FilesTreeDataProvider extends BaseNodeProvider {
-	/**
-	 * The file nodes in the current log, keyed by canonical path.
-	 */
-	readonly fileNodes = new StringMap<Uri, FileNode>(uriToString);
+    /**
+     * The file nodes in the current log, keyed by canonical path.
+     */
+    readonly fileNodes = new StringMap<Uri, FileNode>(uriToString);
 
-	/**
-	 * The function entry nodes in the current log, keyed by function entry.
-	 */
-	readonly functionNodes = new Map<FunctionEntry, FunctionEntryNode>();
+    /**
+     * The function entry nodes in the current log, keyed by function entry.
+     */
+    readonly functionNodes = new Map<FunctionEntry, FunctionEntryNode>();
 
-	/**
-	 * The deopt entry nodes in the current log, keyed by deopt entry.
-	 */
-	readonly deoptNodes = new Map<DeoptEntry, DeoptEntryNode>();
+    /**
+     * The deopt entry nodes in the current log, keyed by deopt entry.
+     */
+    readonly deoptNodes = new Map<DeoptEntry, DeoptEntryNode>();
 
-	/**
-	 * The ic entry nodes in the current log, keyed by ic entry.
-	 */
-	readonly icNodes = new Map<IcEntry, IcEntryNode>();
+    /**
+     * The ic entry nodes in the current log, keyed by ic entry.
+     */
+    readonly icNodes = new Map<IcEntry, IcEntryNode>();
 
-	/**
-	 * Opens a `LogFile` for the provided `uri`.
-	 */
-	openLog(uri: Uri, log: LogFile) {
-		const commonBase = log.commonBaseDirectory;
-		this.setRoots(
-			from(log.files)
-				.map(
-					([file, entries]) =>
-						new FileNode(
-							this,
-							log,
-							getCanonicalUri(file),
-							entries,
-							commonBase
-						)
-				)
-				.orderBy(({ file }) => (file.path.endsWith(".js") ? 0 : 1))
-				.thenBy(({ file }) => file)
-				.toArray()
-		);
-	}
+    /**
+     * Opens a `LogFile` for the provided `uri`.
+     */
+    openLog(uri: Uri, log: LogFile) {
+        const commonBase = log.commonBaseDirectory;
+        this.setRoots(
+            from(log.files)
+            .map(([file, entries]) => new FileNode(this, log, getCanonicalUri(file), entries, commonBase))
+            .orderBy(({ file }) => file.path.endsWith(".js") ? 0 : 1)
+            .thenBy(({ file }) => file)
+            .toArray()
+        );
+    }
 
-	/**
-	 * Closes the current `LogFile`.
-	 */
-	closeLog() {
-		this.setRoots(undefined);
-	}
+    /**
+     * Closes the current `LogFile`.
+     */
+    closeLog() {
+        this.setRoots(undefined);
+    }
 
-	/**
-	 * Finds the conceptual tree node corresponding to the provided entry.
-	 */
-	async findNode(entry: Entry) {
-		const fileNode =
-			entry.filePosition && this.fileNodes.get(entry.filePosition.uri);
-		if (!fileNode) return;
-		return await fileNode.findNode(entry);
-	}
+    /**
+     * Finds the conceptual tree node corresponding to the provided entry.
+     */
+    async findNode(entry: Entry) {
+        const fileNode = entry.filePosition && this.fileNodes.get(entry.filePosition.uri);
+        if (!fileNode) return;
+        return await fileNode.findNode(entry);
+    }
 
-	protected invalidate() {
-		super.invalidate();
-		this.fileNodes.clear();
-		this.functionNodes.clear();
-		this.deoptNodes.clear();
-		this.icNodes.clear();
-	}
+    protected invalidate() {
+        super.invalidate();
+        this.fileNodes.clear();
+        this.functionNodes.clear();
+        this.deoptNodes.clear();
+        this.icNodes.clear();
+    }
 }
 
 function uriToString(x: Uri) {
-	return x.toString();
+    return x.toString();
 }

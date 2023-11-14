@@ -17,30 +17,30 @@ import { VmState } from "./enums/vmState";
 
 // https://github.com/v8/v8/blob/6bbf2dfa5b3bde9a40527268741b739f7d7e4bd0/src/profiler/tick-sample.h
 export class TickSample {
-	constructor(
-		/** Program counter (address of function execution) */
-		readonly pc: Address,
-		readonly timestamp: TimeTicks,
-		readonly has_external_callback: boolean,
-		private tosOrExternalCallbackEntry: Address,
-		readonly state: VmState,
-		readonly stack: readonly Address[]
-	) {
-		assert(pc >= kNullAddress);
-		assert(tosOrExternalCallbackEntry >= kNullAddress);
-	}
+    constructor(
+        /** Program counter (address of function execution) */
+        readonly pc: Address,
+        readonly timestamp: TimeTicks,
+        readonly has_external_callback: boolean,
+        private tosOrExternalCallbackEntry: Address,
+        readonly state: VmState,
+        readonly stack: readonly Address[],
+    ) {
+        assert(pc >= kNullAddress);
+        assert(tosOrExternalCallbackEntry >= kNullAddress);
+    }
 
-	get external_callback_entry() {
-		assert(this.has_external_callback);
-		return this.tosOrExternalCallbackEntry;
-	}
+    get external_callback_entry() {
+        assert(this.has_external_callback);
+        return this.tosOrExternalCallbackEntry;
+    }
 
-	get tos() {
-		assert(!this.has_external_callback);
-		return this.tosOrExternalCallbackEntry;
-	}
+    get tos() {
+        assert(!this.has_external_callback);
+        return this.tosOrExternalCallbackEntry;
+    }
 
-	get frame_count() {
-		return this.stack.length;
-	}
+    get frame_count() {
+        return this.stack.length;
+    }
 }
