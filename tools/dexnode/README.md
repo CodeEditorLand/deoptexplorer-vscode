@@ -1,8 +1,10 @@
 # `dexnode` - Commandline Utility for [Deopt Explorer][].
 
-`dexnode` is a commandline wrapper for the NodeJS executable (`node`) designed to simplify the process of launching Node
-with the necessary arguments required to produce a log that can be consumed by [Deopt Explorer][]. When launched,
-`dexnode` will attempt to determine the correct logging and tracing options based on the detected version of NodeJS.
+`dexnode` is a commandline wrapper for the NodeJS executable (`node`) designed
+to simplify the process of launching Node with the necessary arguments required
+to produce a log that can be consumed by [Deopt Explorer][]. When launched,
+`dexnode` will attempt to determine the correct logging and tracing options
+based on the detected version of NodeJS.
 
 # Installation
 

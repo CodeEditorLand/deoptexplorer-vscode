@@ -13,30 +13,35 @@ import { FunctionEntryNode } from "./functionEntryNode";
  * Represents a group of functions organized by function state.
  */
 export class FunctionGroupNode extends GroupNode<FunctionEntry> {
-    constructor(
-        parent: FunctionCategoryNode,
-        readonly state: FunctionState | -1,
-        entries: readonly FunctionEntry[]
-    ) {
-        super(parent, entries);
-    }
+	constructor(
+		parent: FunctionCategoryNode,
+		readonly state: FunctionState | -1,
+		entries: readonly FunctionEntry[]
+	) {
+		super(parent, entries);
+	}
 
-    /**
-     * Gets the conceptual parent of this node.
-     */
-    get parent(): FunctionCategoryNode { return super.parent as FunctionCategoryNode; }
+	/**
+	 * Gets the conceptual parent of this node.
+	 */
+	get parent(): FunctionCategoryNode {
+		return super.parent as FunctionCategoryNode;
+	}
 
-    /**
-     * Gets the name of the group.
-     */
-    get groupName() {
-        // Function groups are labeled by the string value of their function state.
-        // The magic number `-1` is used to indicate a function that was re-optimized more than once.
-        return this.state === -1 ? "Reoptimized" : formatFunctionState(this.state);
-    }
+	/**
+	 * Gets the name of the group.
+	 */
+	get groupName() {
+		// Function groups are labeled by the string value of their function state.
+		// The magic number `-1` is used to indicate a function that was re-optimized more than once.
+		return this.state === -1
+			? "Reoptimized"
+			: formatFunctionState(this.state);
+	}
 
-    protected getChildren(): Iterable<BaseNode> {
-        return from(this.entries)
-            .select(entry => new FunctionEntryNode(this, entry));
-    }
+	protected getChildren(): Iterable<BaseNode> {
+		return from(this.entries).select(
+			(entry) => new FunctionEntryNode(this, entry)
+		);
+	}
 }
