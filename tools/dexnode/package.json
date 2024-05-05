@@ -3,40 +3,44 @@
 	"version": "0.0.1",
 	"private": false,
 	"description": "Run NodeJS with logging options needed by Deopt Explorer",
-	"homepage": "https://github.com/CodeEditorLand/Foundation#readme",
+	"keywords": [
+		"land"
+	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/DeoptexplorerLand#readme",
 	"bugs": {
-		"url": "https://github.com/CodeEditorLand/Foundation/issues"
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/DeoptexplorerLand/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/CodeEditorLand/Foundation.git"
+		"url": "git+HTTPS://github.com/CodeEditorLand/DeoptexplorerLand.git"
 	},
 	"license": "SEE LICENSE IN LICENSE",
 	"author": {
-		"name": "Playform",
-		"email": "Hello@Playform.Cloud",
-		"url": "https://playform.cloud"
+		"name": "🌆 — Land —",
+		"email": "Land@PlayForm.Cloud",
+		"url": "HTTPS://Land.PlayForm.Cloud"
 	},
 	"type": "module",
 	"bin": {
 		"dexnode": "./bin/dexnode.js"
 	},
 	"scripts": {
+		"Document": "Document 'Source/**/*.ts'",
 		"clean": "tsc -b --clean",
 		"compile": "tsc -b",
-		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
+		"prepublishOnly": "Build 'Source/**/*.ts'",
 		"prestart": "npm run compile",
 		"start": "node bin/dexnode"
 	},
 	"dependencies": {
-		"semver": "^7.3.8",
-		"winreg": "^1.2.4"
+		"semver": "7.6.0",
+		"winreg": "1.2.5"
 	},
 	"devDependencies": {
-		"@types/semver": "^7.3.13",
-		"@types/winreg": "^1.2.32",
-		"typescript": "^4.9.5",
-		"typescript-esbuild": "0.4.5"
+		"@playform/build": "0.0.7",
+		"@playform/document": "0.0.6",
+		"@types/semver": "7.5.8",
+		"@types/winreg": "1.2.36"
 	},
 	"publishConfig": {
 		"access": "public"
