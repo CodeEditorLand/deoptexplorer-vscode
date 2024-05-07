@@ -124,7 +124,7 @@ function replacePatternVariables(pattern, replacers) {
 function replaceVariables(grammar) {
     const variables = grammar.variables;
     delete grammar.variables;
-    /** @type {VariableReplacer[]} */
+    
     const replacers = [];
     for (const variableName in variables) {
         const pattern = replacePatternVariables(variables[variableName], replacers);
@@ -133,7 +133,7 @@ function replaceVariables(grammar) {
     return updateGrammarVariables(grammar, pattern => replacePatternVariables(pattern, replacers));
 }
 
-const grammar = /** @type {TmGrammar} */(yaml.load(fs.readFileSync(path.join(__dirname, "../src/syntax/v8-map.yaml"), "utf8")));
+const grammar = (yaml.load(fs.readFileSync(path.join(__dirname, "../src/syntax/v8-map.yaml"), "utf8")));
 replaceVariables(grammar);
 try { fs.mkdirSync(path.join(__dirname, "../dist"), { recursive: true }) } catch { }
 fs.writeFileSync(path.join(__dirname, "../dist/v8-map.tmLanguage"), plist.build(grammar), { encoding: "utf8" });

@@ -4,7 +4,7 @@
 
 const path = require('path');
 
-/** @type {import('webpack').Configuration} */
+
 const config = {
   target: 'node',
   entry: './src/index.ts',
