@@ -30,39 +30,39 @@ export const enum CodeKind {
     TURBOFAN,
 
     // Older
-    /** @deprecated since 9.2.42 */
+    
     NATIVE_CONTEXT_INDEPENDENT,
-    /** @deprecated since 8.7.237 */
+    
     OPTIMIZED_FUNCTION,
-    /** @deprecated since 8.7.237 */
+    
     STUB,
-    /** @deprecated since 8.4.309 */
+    
     WASM_INTERPRETER_ENTRY,
-    /** @deprecated since 6.3.229 */
+    
     HANDLER,
-    /** @deprecated since 6.3.224 */
+    
     LOAD_IC,
-    /** @deprecated since 6.3.224 */
+    
     LOAD_GLOBAL_IC,
-    /** @deprecated since 6.3.224 */
+    
     KEYED_LOAD_IC,
-    /** @deprecated since 6.3.224 */
+    
     STORE_IC,
-    /** @deprecated since 6.3.224 */
+    
     STORE_GLOBAL_IC,
-    /** @deprecated since 6.3.224 */
+    
     KEYED_STORE_IC,
-    /** @deprecated since 6.3.104 */
+    
     FUNCTION,
-    /** @deprecated since 4.7.4 */
+    
     CALL_IC,
-    /** @deprecated since 4.7.4 */
+    
     BINARY_OP_IC,
-    /** @deprecated since 4.7.4 */
+    
     COMPARE_IC,
-    /** @deprecated since 4.7.4 */
+    
     COMPARE_NIL_IC,
-    /** @deprecated since 4.7.4 */
+    
     TO_BOOLEAN_IC,
 }
 
