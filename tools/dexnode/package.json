@@ -37,7 +37,7 @@
 		"winreg": "1.2.5"
 	},
 	"devDependencies": {
-		"@playform/build": "0.0.8",
+		"@playform/build": "0.0.7",
 		"@playform/document": "0.0.6",
 		"@types/semver": "7.5.8",
 		"@types/winreg": "1.2.36"
