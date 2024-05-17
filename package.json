@@ -1,27 +1,7 @@
 {
 	"name": "deoptexplorer-vscode",
 	"displayName": "deoptexplorer-vscode",
-	"version": "0.0.1",
-	"private": false,
 	"description": "V8 Deoptimization Explorer Extension for VS Code",
-	"keywords": [
-		"land"
-	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/DeoptexplorerLand#readme",
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/DeoptexplorerLand/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/DeoptexplorerLand.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
-	"author": {
-		"name": "🛬 Land —",
-		"email": "Land@PlayForm.Cloud",
-		"url": "HTTPS://Land.PlayForm.Cloud"
-	},
-	"type": "module",
 	"imports": {
 		"#chromium/*.js": {
 			"default": "./src/third-party-derived/chromium/*.ts"
@@ -1512,7 +1492,6 @@
 	"devDependencies": {
 		"@esfx/type-model": "1.0.0",
 		"@playform/build": "0.0.7",
-		"@playform/document": "0.0.6",
 		"@types/ffi-napi": "4.0.10",
 		"@types/glob": "8.1.0",
 		"@types/node": "20.12.11",
@@ -1526,9 +1505,6 @@
 		"plist": "3.1.0",
 		"rimraf": "5.0.5",
 		"ts-loader": "9.5.1"
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"icon": "resources/icon.png",
 	"capabilities": {
