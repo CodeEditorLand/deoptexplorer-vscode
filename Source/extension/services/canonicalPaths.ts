@@ -11,7 +11,7 @@ declare const canonicalPath: unique symbol;
 declare const canonicalUri: unique symbol;
 declare const canonicalUriString: unique symbol;
 
-
+/** @deprecated */
 export type CanonicalPath = string & { [canonicalPath]: never };
 export type CanonicalUri = Uri & { [canonicalUri]: never, fsPath: CanonicalPath, toString(): CanonicalUriString };
 export type CanonicalUriString = string & { [canonicalUriString]: never };
