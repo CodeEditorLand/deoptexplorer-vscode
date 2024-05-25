@@ -9,12 +9,11 @@
 //  Use of this source code is governed by a BSD-style license that can be
 //  found in the LICENSE.v8 file.
 
-import { ProfileStackTrace } from "./profileStackTrace";
+import type { ProfileStackTrace } from "./profileStackTrace";
 
 export class SymbolizedSample {
-    constructor(
-        public stack_trace: ProfileStackTrace,
-        public src_line: number,
-    ) {
-    }
+	constructor(
+		public stack_trace: ProfileStackTrace,
+		public src_line: number,
+	) {}
 }

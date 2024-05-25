@@ -41,58 +41,60 @@
  * of arrays to iterate through.
  */
 export class ConsArray<T> {
-    private tail_ = new Cell<T>(null!, null!);
-    private currCell_: Cell<T> = this.tail_;
-    private currCellPos_ = 0;
+	private tail_ = new Cell<T>(null!, null!);
+	private currCell_: Cell<T> = this.tail_;
+	private currCellPos_ = 0;
 
-    /**
-     * Concatenates another array for iterating. Empty arrays are ignored.
-     * This operation can be safely performed during ongoing ConsArray
-     * iteration.
-     *
-     * @param arr Array to concatenate.
-     */
-    concat(arr: readonly T[]) {
-        if (arr.length > 0) {
-            this.tail_.data = arr;
-            this.tail_ = this.tail_.next = new Cell(null!, null!);
-        }
-    }
+	/**
+	 * Concatenates another array for iterating. Empty arrays are ignored.
+	 * This operation can be safely performed during ongoing ConsArray
+	 * iteration.
+	 *
+	 * @param arr Array to concatenate.
+	 */
+	concat(arr: readonly T[]) {
+		if (arr.length > 0) {
+			this.tail_.data = arr;
+			this.tail_ = this.tail_.next = new Cell(null!, null!);
+		}
+	}
 
-    /**
-     * Whether the end of iteration is reached.
-     */
-    atEnd() {
-        return this.currCell_ === null ||
-            this.currCell_.data === null ||
-            this.currCellPos_ >= this.currCell_.data.length;
-    }
+	/**
+	 * Whether the end of iteration is reached.
+	 */
+	atEnd() {
+		return (
+			this.currCell_ === null ||
+			this.currCell_.data === null ||
+			this.currCellPos_ >= this.currCell_.data.length
+		);
+	}
 
-    /**
-     * Returns the current item, moves to the next one.
-     */
-    next() {
-        let result = this.currCell_.data[this.currCellPos_++];
-        if (this.currCellPos_ >= this.currCell_.data.length) {
-            this.currCell_ = this.currCell_.next;
-            this.currCellPos_ = 0;
-        }
-        return result;
-    }
+	/**
+	 * Returns the current item, moves to the next one.
+	 */
+	next() {
+		const result = this.currCell_.data[this.currCellPos_++];
+		if (this.currCellPos_ >= this.currCell_.data.length) {
+			this.currCell_ = this.currCell_.next;
+			this.currCellPos_ = 0;
+		}
+		return result;
+	}
 
-    * values() {
-        while (!this.atEnd()) {
-            yield this.next();
-        }
-    }
+	*values() {
+		while (!this.atEnd()) {
+			yield this.next();
+		}
+	}
 }
 
 /**
  * A cell object used for constructing a list in ConsArray.
  */
 class Cell<T> {
-    constructor(
-        public data: readonly T[],
-        public next: Cell<T>
-    ) { }
+	constructor(
+		public data: readonly T[],
+		public next: Cell<T>,
+	) {}
 }

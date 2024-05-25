@@ -15,41 +15,41 @@ import { VersionedEnum } from "#core/versionedEnum.js";
 // TODO(rbuckton): This may have been replaced by logEventsAndTags.ts
 
 // https://github.com/v8/v8/blob/0aacfb2a6ecbeda1d1d97ca113afd8253a1b9670/include/v8-profiler.h#L1027
-export const enum CodeEventType {
-    Unknown,
-    Builtin,
-    Callback,
-    Eval,
-    Function,
-    InterpretedFunction,
-    Handler,
-    BytecodeHandler,
-    LazyCompile,
-    RegExp,
-    Script,
-    Stub,
-    Relocation,
+export enum CodeEventType {
+	Unknown = 0,
+	Builtin = 1,
+	Callback = 2,
+	Eval = 3,
+	Function = 4,
+	InterpretedFunction = 5,
+	Handler = 6,
+	BytecodeHandler = 7,
+	LazyCompile = 8,
+	RegExp = 9,
+	Script = 10,
+	Stub = 11,
+	Relocation = 12,
 }
 
 // TODO: Check for version-related differences
 
 const enumVersions = new VersionedEnum<CodeEventType>("CodeEventType", {
-    "*": [
-        // https://github.com/v8/v8/blob/0aacfb2a6ecbeda1d1d97ca113afd8253a1b9670/include/v8-profiler.h#L1027
-        [CodeEventType.Unknown, "Unknown"],
-        [CodeEventType.Builtin, "Builtin"],
-        [CodeEventType.Callback, "Callback"],
-        [CodeEventType.Eval, "Eval"],
-        [CodeEventType.Function, "Function"],
-        [CodeEventType.InterpretedFunction, "InterpretedFunction"],
-        [CodeEventType.Handler, "Handler"],
-        [CodeEventType.BytecodeHandler, "BytecodeHandler"],
-        [CodeEventType.LazyCompile, "LazyCompile"],
-        [CodeEventType.RegExp, "RegExp"],
-        [CodeEventType.Script, "Script"],
-        [CodeEventType.Stub, "Stub"],
-        [CodeEventType.Relocation, "Relocation"],
-    ]
+	"*": [
+		// https://github.com/v8/v8/blob/0aacfb2a6ecbeda1d1d97ca113afd8253a1b9670/include/v8-profiler.h#L1027
+		[CodeEventType.Unknown, "Unknown"],
+		[CodeEventType.Builtin, "Builtin"],
+		[CodeEventType.Callback, "Callback"],
+		[CodeEventType.Eval, "Eval"],
+		[CodeEventType.Function, "Function"],
+		[CodeEventType.InterpretedFunction, "InterpretedFunction"],
+		[CodeEventType.Handler, "Handler"],
+		[CodeEventType.BytecodeHandler, "BytecodeHandler"],
+		[CodeEventType.LazyCompile, "LazyCompile"],
+		[CodeEventType.RegExp, "RegExp"],
+		[CodeEventType.Script, "Script"],
+		[CodeEventType.Stub, "Stub"],
+		[CodeEventType.Relocation, "Relocation"],
+	],
 });
 
 /**
@@ -59,7 +59,7 @@ const enumVersions = new VersionedEnum<CodeEventType>("CodeEventType", {
  * @returns A normalized {@link CodeEventType} value.
  */
 export function getCodeEventType(value: number, version = V8Version.MAX) {
-    return enumVersions.toEnum(value, version);
+	return enumVersions.toEnum(value, version);
 }
 
 /**
@@ -69,7 +69,7 @@ export function getCodeEventType(value: number, version = V8Version.MAX) {
  * @returns A normalized {@link CodeEventType} value.
  */
 export function parseCodeEventType(value: string, version = V8Version.MAX) {
-    return enumVersions.parseEnum(value, version);
+	return enumVersions.parseEnum(value, version);
 }
 
 /**
@@ -78,6 +78,9 @@ export function parseCodeEventType(value: string, version = V8Version.MAX) {
  * @param version The version of V8 to use to format the code event.
  * @returns A string value for the {@link CodeEventType}.
  */
-export function formatCodeEventType(value: CodeEventType, version = V8Version.MAX) {
-    return enumVersions.formatEnum(value, version);
+export function formatCodeEventType(
+	value: CodeEventType,
+	version = V8Version.MAX,
+) {
+	return enumVersions.formatEnum(value, version);
 }

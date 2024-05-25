@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import "source-map-support/register";
-import { ExtensionContext } from "vscode";
+import type { ExtensionContext } from "vscode";
 import { activateCommands } from "./commands";
 import { activateDecorations } from "./decorations";
 import { activateFileSystemProviders } from "./fileSystemProviders";
@@ -14,22 +14,21 @@ import { activateTreeViews } from "./treeViews";
 import { activateWebviews } from "./webviewViews";
 
 export async function activate(context: ExtensionContext) {
-    try {
-        context.subscriptions.push(
-            await activateCoreServices(context),
-            activateOutputChannel(context),
-            activateCommands(context),
-            activateDecorations(context),
-            activateHoverProviders(context),
-            await activateTreeViews(context),
-            activateTextDocumentContentProviders(context),
-            activateFileSystemProviders(context),
-            activateWebviews(context)
-        );
-    }
-    catch (e) {
-        console.error(e);
-        debugger;
-        throw e;
-    }
+	try {
+		context.subscriptions.push(
+			await activateCoreServices(context),
+			activateOutputChannel(context),
+			activateCommands(context),
+			activateDecorations(context),
+			activateHoverProviders(context),
+			await activateTreeViews(context),
+			activateTextDocumentContentProviders(context),
+			activateFileSystemProviders(context),
+			activateWebviews(context),
+		);
+	} catch (e) {
+		console.error(e);
+		debugger;
+		throw e;
+	}
 }
