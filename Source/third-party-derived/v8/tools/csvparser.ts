@@ -36,81 +36,79 @@
  * Creates a CSV lines parser.
  */
 export class CsvParser {
-	/**
-	 * Converts \x00 and \u0000 escape sequences in the given string.
-	 *
-	 * @param input field.
-	 */
-	escapeField(string: string) {
-		let nextPos = string.indexOf("\\");
-		if (nextPos === -1) return string;
+    /**
+     * Converts \x00 and \u0000 escape sequences in the given string.
+     *
+     * @param input field.
+     */
+    escapeField(string: string) {
+        let nextPos = string.indexOf("\\");
+        if (nextPos === -1) return string;
 
-		let result = string.substring(0, nextPos);
-		// Escape sequences of the form \x00 and \u0000;
-		let pos = 0;
-		while (nextPos !== -1) {
-			const escapeIdentifier = string.charAt(nextPos + 1);
-			pos = nextPos + 2;
-			if (escapeIdentifier === "n") {
-				result += "\n";
-				nextPos = pos;
-			} else if (escapeIdentifier === "\\") {
-				result += "\\";
-				nextPos = pos;
-			} else {
-				if (escapeIdentifier === "x") {
-					// \x00 ascii range escapes consume 2 chars.
-					nextPos = pos + 2;
-				} else {
-					// \u0000 unicode range escapes consume 4 chars.
-					nextPos = pos + 4;
-				}
-				// Convert the selected escape sequence to a single character.
-				const escapeChars = string.substring(pos, nextPos);
-				if (escapeChars === "2C") {
-					result += ",";
-				} else {
-					result += String.fromCharCode(
-						Number.parseInt(escapeChars, 16),
-					);
-				}
-			}
+        let result = string.substring(0, nextPos);
+        // Escape sequences of the form \x00 and \u0000;
+        let pos = 0;
+        while (nextPos !== -1) {
+            let escapeIdentifier = string.charAt(nextPos + 1);
+            pos = nextPos + 2;
+            if (escapeIdentifier === 'n') {
+                result += '\n';
+                nextPos = pos;
+            } else if (escapeIdentifier === '\\') {
+                result += '\\';
+                nextPos = pos;
+            } else {
+                if (escapeIdentifier === 'x') {
+                    // \x00 ascii range escapes consume 2 chars.
+                    nextPos = pos + 2;
+                } else {
+                    // \u0000 unicode range escapes consume 4 chars.
+                    nextPos = pos + 4;
+                }
+                // Convert the selected escape sequence to a single character.
+                let escapeChars = string.substring(pos, nextPos);
+                if (escapeChars === '2C') {
+                    result += ',';
+                } else {
+                    result += String.fromCharCode(parseInt(escapeChars, 16));
+                }
+            }
 
-			// Continue looking for the next escape sequence.
-			pos = nextPos;
-			nextPos = string.indexOf("\\", pos);
-			// If there are no more escape sequences consume the rest of the string.
-			if (nextPos === -1) {
-				result += string.substr(pos);
-			} else if (pos !== nextPos) {
-				result += string.substring(pos, nextPos);
-			}
-		}
-		return result;
-	}
+            // Continue looking for the next escape sequence.
+            pos = nextPos;
+            nextPos = string.indexOf("\\", pos);
+            // If there are no more escape sequences consume the rest of the string.
+            if (nextPos === -1) {
+                result += string.substr(pos);
+            } else if (pos !== nextPos) {
+                result += string.substring(pos, nextPos);
+            }
+        }
+        return result;
+    }
 
-	/**
-	 * Parses a line of CSV-encoded values. Returns an array of fields.
-	 *
-	 * @param line Input line.
-	 */
-	parseLine(line: string) {
-		var pos = 0;
-		var endPos = line.length;
-		var fields: string[] = [];
-		if (endPos == 0) return fields;
-		let nextPos = 0;
-		while (nextPos !== -1) {
-			nextPos = line.indexOf(",", pos);
-			let field;
-			if (nextPos === -1) {
-				field = line.substr(pos);
-			} else {
-				field = line.substring(pos, nextPos);
-			}
-			fields.push(this.escapeField(field));
-			pos = nextPos + 1;
-		}
-		return fields;
-	}
+    /**
+     * Parses a line of CSV-encoded values. Returns an array of fields.
+     *
+     * @param line Input line.
+     */
+    parseLine(line: string) {
+        var pos = 0;
+        var endPos = line.length;
+        var fields: string[] = [];
+        if (endPos == 0) return fields;
+        let nextPos = 0;
+        while (nextPos !== -1) {
+            nextPos = line.indexOf(',', pos);
+            let field;
+            if (nextPos === -1) {
+                field = line.substr(pos);
+            } else {
+                field = line.substring(pos, nextPos);
+            }
+            fields.push(this.escapeField(field));
+            pos = nextPos + 1;
+        };
+        return fields
+    }
 }

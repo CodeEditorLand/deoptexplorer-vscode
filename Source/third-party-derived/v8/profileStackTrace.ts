@@ -9,6 +9,6 @@
 //  Use of this source code is governed by a BSD-style license that can be
 //  found in the LICENSE.v8 file.
 
-import type { CodeEntryAndLineNumber } from "./codeEntryAndLineNumber";
+import { CodeEntryAndLineNumber } from "./codeEntryAndLineNumber";
 
 export type ProfileStackTrace = CodeEntryAndLineNumber[];

@@ -10,12 +10,12 @@
  * Represents a timer event in a V8 Execution timeline
  */
 export class TimerEvent {
-	readonly ranges: { start: number; end: number }[] = [];
+    readonly ranges: { start: number, end: number }[] = [];
 
-	constructor(
-		readonly color: string,
-		readonly pause: boolean,
-		readonly threadId: number,
-		readonly href?: string,
-	) {}
+    constructor(
+        readonly color: string,
+        readonly pause: boolean,
+        readonly threadId: number,
+        readonly href?: string
+    ) { }
 }

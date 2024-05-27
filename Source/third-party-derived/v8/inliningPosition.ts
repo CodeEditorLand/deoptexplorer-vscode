@@ -11,13 +11,13 @@
 
 import { assert } from "#core/assert.js";
 import { kNotInlined } from "./constants";
-import type { SourcePosition } from "./sourcePosition";
+import { SourcePosition } from "./sourcePosition";
 
 export class InliningPosition {
-	constructor(
-		public position: SourcePosition,
-		public inlinedFunctionId: number,
-	) {
-		assert(inlinedFunctionId >= kNotInlined);
-	}
+    constructor(
+        public position: SourcePosition,
+        public inlinedFunctionId: number,
+    ) {
+        assert(inlinedFunctionId >= kNotInlined);
+    }
 }
