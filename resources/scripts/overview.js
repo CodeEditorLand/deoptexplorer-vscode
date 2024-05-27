@@ -1,6 +1,7 @@
 // @ts-check
 /// <reference path="vscode-webview.d.ts" />
 
-(() => {
-	const vscode = acquireVsCodeApi();
+(function () {
+    const vscode = acquireVsCodeApi();
+
 })();

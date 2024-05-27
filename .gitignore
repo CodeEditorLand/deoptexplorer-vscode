@@ -1,5 +1,6 @@
 dist
 out
+node_modules
 .vscode-test/
 .archive/
 *.vsix
@@ -46,6 +47,7 @@ bower_components
 build/Release
 
 # Dependency directories
+node_modules/
 jspm_packages/
 
 # TypeScript v1 declaration files
@@ -76,6 +78,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
+.env
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)
