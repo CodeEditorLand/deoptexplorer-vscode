@@ -11,11 +11,11 @@
 		"start": "node bin/dexnode"
 	},
 	"dependencies": {
-		"semver": "^7.3.8",
-		"winreg": "^1.2.4"
+		"semver": "7.3.8",
+		"winreg": "1.2.4"
 	},
 	"devDependencies": {
-		"@types/semver": "^7.3.13",
-		"@types/winreg": "^1.2.32"
+		"@types/semver": "7.3.13",
+		"@types/winreg": "1.2.32"
 	}
 }
