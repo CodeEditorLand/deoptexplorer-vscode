@@ -11,7 +11,7 @@
 		"start": "node bin/dexnode"
 	},
 	"dependencies": {
-		"semver": "7.3.8",
+		"semver": "7.5.2",
 		"winreg": "1.2.4"
 	},
 	"devDependencies": {
