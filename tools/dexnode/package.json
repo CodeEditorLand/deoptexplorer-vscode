@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
 	"bin": {
 		"dexnode": "./bin/dexnode.js"
 	},
@@ -12,10 +13,28 @@
 		"@types/winreg": "^1.2.32"
 	},
 	"name": "dexnode",
+=======
+	"name": "dexnode",
+	"description": "Run NodeJS with logging options needed by Deopt Explorer",
+	"bin": {
+		"dexnode": "./bin/dexnode.js"
+	},
+>>>>>>> 80f3498f65970fc355e3663aa94ca026b3c832f6
 	"scripts": {
 		"clean": "tsc -b --clean",
 		"compile": "tsc -b",
 		"prestart": "npm run compile",
 		"start": "node bin/dexnode"
+<<<<<<< HEAD
+=======
+	},
+	"dependencies": {
+		"semver": "7.6.3",
+		"winreg": "1.2.5"
+	},
+	"devDependencies": {
+		"@types/semver": "7.5.8",
+		"@types/winreg": "1.2.36"
+>>>>>>> 80f3498f65970fc355e3663aa94ca026b3c832f6
 	}
 }
