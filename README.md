@@ -86,7 +86,7 @@ published on NPM. It wraps the existing `node` executable to provide the
 commandline options necessary to generate a v8 log that can be consumed by Deopt
 Explorer.
 
-#### Installation
+#### 🚀 Installation
 
 ```sh
 npm install --global dexnode
@@ -105,7 +105,7 @@ npm exec dexnode myscript.js
 deno run -A npm:dexnode myscript.js
 ```
 
-#### Usage
+#### 🛠️ Usage
 
 ```
 dexnode [options] [--] <executable> [executable_options]
