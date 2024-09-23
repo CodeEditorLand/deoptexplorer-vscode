@@ -3,13 +3,13 @@
 		"dexnode": "./bin/dexnode.js"
 	},
 	"dependencies": {
-		"semver": "^7.3.8",
-		"winreg": "^1.2.4"
+		"semver": "7.6.3",
+		"winreg": "1.2.5"
 	},
 	"description": "Run NodeJS with logging options needed by Deopt Explorer",
 	"devDependencies": {
-		"@types/semver": "^7.3.13",
-		"@types/winreg": "^1.2.32"
+		"@types/semver": "7.5.8",
+		"@types/winreg": "1.2.36"
 	},
 	"name": "dexnode",
 	"scripts": {
