@@ -15,8 +15,8 @@ import { TimeTicks } from "#core/time.js";
  * Represents a deoptimization event in a V8 execution timeline.
  */
 export class DeoptEvent {
-    constructor(
-        readonly timestamp: TimeTicks,
-        readonly size: number
-    ) { }
+	constructor(
+		readonly timestamp: TimeTicks,
+		readonly size: number,
+	) {}
 }
