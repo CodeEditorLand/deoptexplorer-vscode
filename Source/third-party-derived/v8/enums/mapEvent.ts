@@ -12,31 +12,39 @@
 import { assert } from "#core/assert.js";
 
 export const enum MapEvent {
-    InitialMap = "InitialMap",
-    Normalize = "Normalize",
-    Transition = "Transition",
-    ReplaceDescriptors = "ReplaceDescriptors",
-    SlowToFast = "SlowToFast",
-    Deprecate = "Deprecate",
+	InitialMap = "InitialMap",
+	Normalize = "Normalize",
+	Transition = "Transition",
+	ReplaceDescriptors = "ReplaceDescriptors",
+	SlowToFast = "SlowToFast",
+	Deprecate = "Deprecate",
 
-    // Added in 8.9.79
-    // https://github.com/v8/v8/commit/02ab03b9e8d07f09bcfba456e02b7baa4e4eac18#diff-69c61bffac6f10589d4a6f8392d22ca12a5f9472558fc2a67b8dfd0217535958R1523
-    NormalizeCached = "NormalizeCached",
+	// Added in 8.9.79
+	// https://github.com/v8/v8/commit/02ab03b9e8d07f09bcfba456e02b7baa4e4eac18#diff-69c61bffac6f10589d4a6f8392d22ca12a5f9472558fc2a67b8dfd0217535958R1523
+	NormalizeCached = "NormalizeCached",
 }
 
 export function parseMapEvent(text: string) {
-    switch (text.toLowerCase()) {
-        case "initialmap": return MapEvent.InitialMap;
-        case "normalize": return MapEvent.Normalize;
-        case "normalizecached": return MapEvent.NormalizeCached;
-        case "transition": return MapEvent.Transition;
-        case "replacedescriptors": return MapEvent.ReplaceDescriptors;
-        case "slowtofast": return MapEvent.SlowToFast;
-        case "deprecate": return MapEvent.Deprecate;
-        default: assert(false, `Unrecognized map event '${text}'.`);
-    }
+	switch (text.toLowerCase()) {
+		case "initialmap":
+			return MapEvent.InitialMap;
+		case "normalize":
+			return MapEvent.Normalize;
+		case "normalizecached":
+			return MapEvent.NormalizeCached;
+		case "transition":
+			return MapEvent.Transition;
+		case "replacedescriptors":
+			return MapEvent.ReplaceDescriptors;
+		case "slowtofast":
+			return MapEvent.SlowToFast;
+		case "deprecate":
+			return MapEvent.Deprecate;
+		default:
+			assert(false, `Unrecognized map event '${text}'.`);
+	}
 }
 
 export function formatMapEvent(value: MapEvent): string {
-    return value;
+	return value;
 }

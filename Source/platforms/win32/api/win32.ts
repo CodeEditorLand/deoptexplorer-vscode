@@ -2,28 +2,44 @@
 // Licensed under the MIT License.
 
 import * as ref from "ref-napi";
+
 import { ArrayType, TypedArray } from "./ref-array";
 import { StructObject, StructType } from "./ref-struct";
 
 const MAX_SAFE_INTEGER = BigInt(Number.MAX_SAFE_INTEGER);
 const MIN_SAFE_INTEGER = BigInt(Number.MIN_SAFE_INTEGER);
-const MAX_BIGUINT64 = (BigInt(2) ** BigInt(64)) - BigInt(1);
-const MAX_BIGINT64 = (BigInt(2) ** BigInt(63)) - BigInt(1);
+const MAX_BIGUINT64 = BigInt(2) ** BigInt(64) - BigInt(1);
+const MAX_BIGINT64 = BigInt(2) ** BigInt(63) - BigInt(1);
 const MIN_BIGINT64 = ~MAX_BIGINT64;
 const _WIN64 = ref.sizeof.pointer === 8;
 
-function alias<T>(name: string, type: ref.Type<T>, overrides?: Partial<ref.Type<T>>): ref.Type<T>;
-function alias<T>(name: string, type: ref.Type<unknown>, overrides: Partial<ref.Type<T>> & Pick<ref.Type<T>, "get" | "set">): ref.Type<T>;
-function alias<T>(name: string, type: ref.Type<T>, overrides: Partial<ref.Type<T>> = {}) {
-    const alias: ref.Type<T> = Object.create(type, Object.getOwnPropertyDescriptors(overrides));
-    alias.name = name;
-    return alias;
+function alias<T>(
+	name: string,
+	type: ref.Type<T>,
+	overrides?: Partial<ref.Type<T>>,
+): ref.Type<T>;
+function alias<T>(
+	name: string,
+	type: ref.Type<unknown>,
+	overrides: Partial<ref.Type<T>> & Pick<ref.Type<T>, "get" | "set">,
+): ref.Type<T>;
+function alias<T>(
+	name: string,
+	type: ref.Type<T>,
+	overrides: Partial<ref.Type<T>> = {},
+) {
+	const alias: ref.Type<T> = Object.create(
+		type,
+		Object.getOwnPropertyDescriptors(overrides),
+	);
+	alias.name = name;
+	return alias;
 }
 
 function bigintToStringOrNumber(value: bigint) {
-    return value < MIN_SAFE_INTEGER || value > MAX_SAFE_INTEGER ?
-        value.toString() :
-        Number(value);
+	return value < MIN_SAFE_INTEGER || value > MAX_SAFE_INTEGER
+		? value.toString()
+		: Number(value);
 }
 
 // MSVC Types
@@ -31,69 +47,70 @@ function bigintToStringOrNumber(value: bigint) {
 export const bool = ref.types.bool;
 
 export namespace signed {
-    /** An 8-bit signed integer */
-    export const __int8 = alias("__int8", ref.types.int8);
-    /** A 16-bit signed integer */
-    export const __int16 = alias("__int16", ref.types.int16);
-    /** A 32-bit signed integer */
-    export const __int32 = alias("__int32", ref.types.int32);
-    /** A 64-bit signed integer */
-    export const __int64 = alias<bigint>("__int64", ref.types.int64, {
-        get(buffer, offset) {
-            return ref.endianness === "LE" ?
-                BigInt(buffer.readInt64LE(offset)) :
-                BigInt(buffer.readInt64BE(offset));
-        },
-        set(buffer, offset, value) {
-            if (value < MIN_BIGINT64 || value > MAX_BIGINT64) throw new RangeError();
-            return ref.endianness === "LE" ?
-                buffer.writeInt64LE(bigintToStringOrNumber(value), offset) :
-                buffer.writeInt64BE(bigintToStringOrNumber(value), offset);
-        }
-    });
-    /** An 8-bit signed integer */
-    export const char = alias("char", __int8);
-    /** A 16-bit signed integer */
-    export const short = alias("short", __int16);
-    /** A 32-bit signed integer */
-    export const int = alias("int", __int32);
-    /** A 32-bit signed integer */
-    export const long = alias("long", __int32);
-    /** A 64-bit signed integer */
-    export const longlong = alias("long long", __int64);
+	/** An 8-bit signed integer */
+	export const __int8 = alias("__int8", ref.types.int8);
+	/** A 16-bit signed integer */
+	export const __int16 = alias("__int16", ref.types.int16);
+	/** A 32-bit signed integer */
+	export const __int32 = alias("__int32", ref.types.int32);
+	/** A 64-bit signed integer */
+	export const __int64 = alias<bigint>("__int64", ref.types.int64, {
+		get(buffer, offset) {
+			return ref.endianness === "LE"
+				? BigInt(buffer.readInt64LE(offset))
+				: BigInt(buffer.readInt64BE(offset));
+		},
+		set(buffer, offset, value) {
+			if (value < MIN_BIGINT64 || value > MAX_BIGINT64)
+				throw new RangeError();
+			return ref.endianness === "LE"
+				? buffer.writeInt64LE(bigintToStringOrNumber(value), offset)
+				: buffer.writeInt64BE(bigintToStringOrNumber(value), offset);
+		},
+	});
+	/** An 8-bit signed integer */
+	export const char = alias("char", __int8);
+	/** A 16-bit signed integer */
+	export const short = alias("short", __int16);
+	/** A 32-bit signed integer */
+	export const int = alias("int", __int32);
+	/** A 32-bit signed integer */
+	export const long = alias("long", __int32);
+	/** A 64-bit signed integer */
+	export const longlong = alias("long long", __int64);
 }
 
 export namespace unsigned {
-    /** An 8-bit unsigned integer */
-    export const __int8 = alias("unsigned __int8", ref.types.uint8);
-    /** A 16-bit unsigned integer */
-    export const __int16 = alias("unsigned __int16", ref.types.uint16);
-    /** A 32-bit unsigned integer */
-    export const __int32 = alias("unsigned __int32", ref.types.uint32);
-    /** A 64-bit unsigned integer */
-    export const __int64 = alias<bigint>("unsigned __int64", ref.types.uint64, {
-        get(buffer, offset) {
-            return ref.endianness === "LE" ?
-                BigInt(buffer.readUInt64LE(offset)) :
-                BigInt(buffer.readUInt64BE(offset));
-        },
-        set(buffer, offset, value) {
-            if (value < 0 || value > MAX_BIGUINT64) throw new RangeError();
-            return ref.endianness === "LE" ?
-                buffer.writeUInt64LE(bigintToStringOrNumber(value), offset) :
-                buffer.writeUInt64BE(bigintToStringOrNumber(value), offset);
-        },
-    });
-    /** An 8-bit unsigned integer */
-    export const char = alias("unsigned char", __int8);
-    /** A 16-bit unsigned integer */
-    export const short = alias("unsigned short", __int16);
-    /** A 32-bit unsigned integer */
-    export const int = alias("unsigned int", __int32);
-    /** A 32-bit unsigned integer */
-    export const long = alias("unsigned long", __int32);
-    /** A 64-bit unsigned integer */
-    export const longlong = alias("unsigned long long", __int64);
+	/** An 8-bit unsigned integer */
+	export const __int8 = alias("unsigned __int8", ref.types.uint8);
+	/** A 16-bit unsigned integer */
+	export const __int16 = alias("unsigned __int16", ref.types.uint16);
+	/** A 32-bit unsigned integer */
+	export const __int32 = alias("unsigned __int32", ref.types.uint32);
+	/** A 64-bit unsigned integer */
+	export const __int64 = alias<bigint>("unsigned __int64", ref.types.uint64, {
+		get(buffer, offset) {
+			return ref.endianness === "LE"
+				? BigInt(buffer.readUInt64LE(offset))
+				: BigInt(buffer.readUInt64BE(offset));
+		},
+		set(buffer, offset, value) {
+			if (value < 0 || value > MAX_BIGUINT64) throw new RangeError();
+			return ref.endianness === "LE"
+				? buffer.writeUInt64LE(bigintToStringOrNumber(value), offset)
+				: buffer.writeUInt64BE(bigintToStringOrNumber(value), offset);
+		},
+	});
+	/** An 8-bit unsigned integer */
+	export const char = alias("unsigned char", __int8);
+	/** A 16-bit unsigned integer */
+	export const short = alias("unsigned short", __int16);
+	/** A 32-bit unsigned integer */
+	export const int = alias("unsigned int", __int32);
+	/** A 32-bit unsigned integer */
+	export const long = alias("unsigned long", __int32);
+	/** A 64-bit unsigned integer */
+	export const longlong = alias("unsigned long long", __int64);
 }
 
 export import __int8 = signed.__int8;
@@ -131,8 +148,12 @@ export const wchar_t = alias("wchar_t", unsigned.__int16);
 
 /** A Boolean value (should be `TRUE` or `FALSE`), represented by 32-bits */
 export const BOOL = alias<boolean>("BOOL", signed.__int32, {
-    get(buffer, offset) { return signed.__int32.get(buffer, offset) !== 0; },
-    set(buffer, offset, value) { return signed.__int32.set(buffer, offset, value ? 1 : 0); },
+	get(buffer, offset) {
+		return signed.__int32.get(buffer, offset) !== 0;
+	},
+	set(buffer, offset, value) {
+		return signed.__int32.set(buffer, offset, value ? 1 : 0);
+	},
 });
 export type BOOL = ref.UnderlyingType<typeof BOOL>;
 
@@ -218,23 +239,46 @@ export type DWORD32 = ref.UnderlyingType<typeof DWORD32>;
 export type DWORD64 = ref.UnderlyingType<typeof DWORD64>;
 export type QWORD = ref.UnderlyingType<typeof QWORD>;
 
-export const INT_PTR = _WIN64 ? alias("INT_PTR", signed.__int64) : alias("INT_PTR", signed.__int32);
-export const LONG_PTR = _WIN64 ? alias("LONG_PTR", signed.__int64) : alias("LONG_PTR", signed.__int32);
-export const UINT_PTR = _WIN64 ? alias("UINT_PTR", unsigned.__int64) : alias("UINT_PTR", unsigned.__int32);
-export const ULONG_PTR = _WIN64 ? alias("ULONG_PTR", unsigned.__int64) : alias("ULONG_PTR", unsigned.__int32);
+export const INT_PTR = _WIN64
+	? alias("INT_PTR", signed.__int64)
+	: alias("INT_PTR", signed.__int32);
+export const LONG_PTR = _WIN64
+	? alias("LONG_PTR", signed.__int64)
+	: alias("LONG_PTR", signed.__int32);
+export const UINT_PTR = _WIN64
+	? alias("UINT_PTR", unsigned.__int64)
+	: alias("UINT_PTR", unsigned.__int32);
+export const ULONG_PTR = _WIN64
+	? alias("ULONG_PTR", unsigned.__int64)
+	: alias("ULONG_PTR", unsigned.__int32);
 export type INT_PTR = ref.UnderlyingType<typeof INT_PTR>;
 export type LONG_PTR = ref.UnderlyingType<typeof LONG_PTR>;
 export type UINT_PTR = ref.UnderlyingType<typeof UINT_PTR>;
 export type ULONG_PTR = ref.UnderlyingType<typeof ULONG_PTR>;
 
-export const DWORD_PTR = alias("DWORD_PTR", ULONG_PTR as ref.Type<number | bigint>) as ref.Type<number> | ref.Type<bigint>;
-export const SIZE_T = alias("SIZE_T", ULONG_PTR as ref.Type<number | bigint>) as ref.Type<number> | ref.Type<bigint>;
+export const DWORD_PTR = alias(
+	"DWORD_PTR",
+	ULONG_PTR as ref.Type<number | bigint>,
+) as ref.Type<number> | ref.Type<bigint>;
+export const SIZE_T = alias(
+	"SIZE_T",
+	ULONG_PTR as ref.Type<number | bigint>,
+) as ref.Type<number> | ref.Type<bigint>;
 export type DWORD_PTR = ref.UnderlyingType<typeof DWORD_PTR>;
 export type SIZE_T = ref.UnderlyingType<typeof SIZE_T>;
 
-export const PVOID: ref.Type<ref.Pointer<unknown>> = alias("PVOID", ref.refType(VOID));
-export const LPVOID: ref.Type<ref.Pointer<unknown>> = alias("LPVOID", ref.refType(VOID));
-export const LPCVOID: ref.Type<ref.Pointer<unknown>> = alias("LPCVOID", ref.refType(VOID));
+export const PVOID: ref.Type<ref.Pointer<unknown>> = alias(
+	"PVOID",
+	ref.refType(VOID),
+);
+export const LPVOID: ref.Type<ref.Pointer<unknown>> = alias(
+	"LPVOID",
+	ref.refType(VOID),
+);
+export const LPCVOID: ref.Type<ref.Pointer<unknown>> = alias(
+	"LPCVOID",
+	ref.refType(VOID),
+);
 export const HANDLE: ref.Type<ref.Pointer<unknown>> = alias("HANDLE", PVOID);
 export const HMODULE: ref.Type<ref.Pointer<unknown>> = alias("HMODULE", HANDLE);
 export const PHANDLE = alias("PHANDLE", ref.refType(HANDLE));
@@ -348,27 +392,27 @@ export type LPSTR = ref.UnderlyingType<typeof LPSTR>;
 export type PSTR = ref.UnderlyingType<typeof PSTR>;
 
 const CWString: ref.Type<string | null> = {
-    size: ref.sizeof.pointer,
-    alignment: ref.alignof.pointer,
-    indirection: 1,
-    ffi_type: ref.types.CString.ffi_type,
-    get: function get (buf, offset) {
-        const _buf = ref.readPointer(buf, offset)
-        if (ref.isNull(_buf)) {
-            return null;
-        }
-        const _buf2 = ref.reinterpretUntilZeros(_buf, 2, 0);
-        return _buf2.toString("utf16le");
-    },
-    set: function set (buf, offset, val) {
-        let _buf
-        if (Buffer.isBuffer(val)) {
-            _buf = val;
-        } else {
-            _buf = ref.allocCString(val, "utf16le");
-        }
-        return ref.writePointer(buf, offset, _buf);
-    }
+	size: ref.sizeof.pointer,
+	alignment: ref.alignof.pointer,
+	indirection: 1,
+	ffi_type: ref.types.CString.ffi_type,
+	get: function get(buf, offset) {
+		const _buf = ref.readPointer(buf, offset);
+		if (ref.isNull(_buf)) {
+			return null;
+		}
+		const _buf2 = ref.reinterpretUntilZeros(_buf, 2, 0);
+		return _buf2.toString("utf16le");
+	},
+	set: function set(buf, offset, val) {
+		let _buf;
+		if (Buffer.isBuffer(val)) {
+			_buf = val;
+		} else {
+			_buf = ref.allocCString(val, "utf16le");
+		}
+		return ref.writePointer(buf, offset, _buf);
+	},
 };
 
 // can't do wide characters since native bindings don't support them
@@ -386,32 +430,38 @@ export type PWSTR = ref.UnderlyingType<typeof PWSTR>;
 // const PCTSTR = unicode ? PCWSTR : PCSTR;
 
 export const GUID = StructType({
-    Data1: unsigned.long,
-    Data2: unsigned.short,
-    Data3: unsigned.short,
-    Data4: ArrayType(unsigned.char, 8),
+	Data1: unsigned.long,
+	Data2: unsigned.short,
+	Data3: unsigned.short,
+	Data4: ArrayType(unsigned.char, 8),
 });
 export type GUID = ref.UnderlyingType<typeof GUID>;
 
 export function sizeof(type: ref.TypeLike) {
-    type = ref.coerceType(type);
-    return type.size;
+	type = ref.coerceType(type);
+	return type.size;
 }
 
-export function reinterpret_cast<T extends ref.TypeLike>(value: Buffer | StructObject<any> | TypedArray<any>, type: T): ref.UnderlyingType<T>;
-export function reinterpret_cast(value: Buffer | StructObject<{}> | TypedArray<any>, type: ref.TypeLike, offset?: number) {
-    type = ref.coerceType(type);
-    let valueBuffer: Buffer;
-    if (Buffer.isBuffer(value)) {
-        valueBuffer = value;
-    }
-    else {
-        valueBuffer = value.ref();
-    }
+export function reinterpret_cast<T extends ref.TypeLike>(
+	value: Buffer | StructObject<any> | TypedArray<any>,
+	type: T,
+): ref.UnderlyingType<T>;
+export function reinterpret_cast(
+	value: Buffer | StructObject<{}> | TypedArray<any>,
+	type: ref.TypeLike,
+	offset?: number,
+) {
+	type = ref.coerceType(type);
+	let valueBuffer: Buffer;
+	if (Buffer.isBuffer(value)) {
+		valueBuffer = value;
+	} else {
+		valueBuffer = value.ref();
+	}
 
-    const reinterpretBuffer = ref.reinterpret(valueBuffer, type.size, offset);
-    if (!reinterpretBuffer.type) {
-        reinterpretBuffer.type = type;
-    }
-    return ref.get(reinterpretBuffer, 0, type);
+	const reinterpretBuffer = ref.reinterpret(valueBuffer, type.size, offset);
+	if (!reinterpretBuffer.type) {
+		reinterpretBuffer.type = type;
+	}
+	return ref.get(reinterpretBuffer, 0, type);
 }

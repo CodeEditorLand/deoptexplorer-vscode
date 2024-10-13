@@ -1541,14 +1541,12 @@ export class LogProcessor {
 				entry.updates.push(update);
 
 				if (codeFilePosition) {
-					this._functions
-						.get(codeFilePosition)
-						?.timeline.push({
-							event: "ic",
-							timestamp,
-							entry,
-							update,
-						});
+					this._functions.get(codeFilePosition)?.timeline.push({
+						event: "ic",
+						timestamp,
+						entry,
+						update,
+					});
 				}
 
 				if (map) {
