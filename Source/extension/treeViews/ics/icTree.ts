@@ -82,6 +82,7 @@ export class IcsTree implements Disposable {
 				: ``;
 
 		const description = `${sortBy}${filtered}`;
+
 		if (this.treeView.description !== description) {
 			this.treeView.description = description;
 		}

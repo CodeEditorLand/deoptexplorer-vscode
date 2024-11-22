@@ -13,16 +13,22 @@ import { ICHoverProvider } from "./icHoverProvider";
 
 export function activateHoverProviders(context: ExtensionContext) {
 	const disposables = new VSDisposableStack();
+
 	const icProvider = disposables.use(new ICHoverProvider());
+
 	const deoptProvider = disposables.use(new DeoptHoverProvider());
+
 	const functionStateProvider = disposables.use(
 		new FunctionStateHoverProvider(),
 	);
+
 	const resetCache = () => {
 		icProvider.resetCache();
 		deoptProvider.resetCache();
+
 		functionStateProvider.resetCache();
 	};
+
 	const selectors = supportedLanguages.flatMap((language) => [
 		{ scheme: "file", language },
 		{ scheme: constants.schemes.source },
@@ -34,5 +40,6 @@ export function activateHoverProviders(context: ExtensionContext) {
 	);
 	disposables.use(events.onDidOpenLogFile(resetCache));
 	disposables.use(events.onDidCloseLogFile(resetCache));
+
 	return disposables;
 }

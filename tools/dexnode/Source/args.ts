@@ -28,7 +28,9 @@ export interface Options extends HostOptions {
 const HOST_FLAG_NAMES: readonly HostFlagKey[] = HOSTS.map(
 	(host) => host.flagName,
 );
+
 const MUTUALLY_EXCLUSIVE_BOOLEAN_GROUPS = [HOST_FLAG_NAMES] as const;
+
 const BOOLEANS: ReadonlySet<string> = new Set([
 	"maps",
 	"ics",
@@ -39,12 +41,15 @@ const BOOLEANS: ReadonlySet<string> = new Set([
 	"help",
 	...HOST_FLAG_NAMES,
 ]);
+
 const STRINGS: ReadonlySet<string> = new Set([
 	"v8_version",
 	"exec_path",
 	"out",
 ]);
+
 const ALIASES = { h: "help", "?": "help" } as const;
+
 const DEFAULTS: Readonly<Partial<Options>> = {
 	maps: true,
 	ics: true,
@@ -57,8 +62,10 @@ const DEFAULTS: Readonly<Partial<Options>> = {
 
 function parse(args: string[]) {
 	const argv: Options = Object.create(null);
+
 	while (args.length) {
 		let arg = args[0];
+
 		let value: string | boolean = true;
 
 		// stop parsing at --
@@ -85,18 +92,21 @@ function parse(args: string[]) {
 
 		// extract argument value
 		const eqIndex = arg.indexOf("=");
+
 		if (eqIndex >= 0) {
 			value = arg.slice(eqIndex + 1);
 			arg = arg.slice(0, eqIndex);
 		}
 
 		arg = arg.replaceAll("-", "_");
+
 		if (STRINGS.has(arg)) {
 			// stop parsing if argument already encountered
 			if (arg in argv) break;
 
 			// stop parsing if string argument was negated
 			if (value === false) break;
+
 			if (value === true) {
 				// stop parsing if there is no next argument
 				if (args.length <= 1) break;
@@ -127,6 +137,7 @@ function validateConflicts(argv: Options) {
 	for (const mutuallyExclusiveBooleanGroup of MUTUALLY_EXCLUSIVE_BOOLEAN_GROUPS) {
 		for (let i = 0; i < mutuallyExclusiveBooleanGroup.length; i++) {
 			const option = mutuallyExclusiveBooleanGroup[i];
+
 			if (argv[option]) {
 				for (
 					let j = i + 1;
@@ -134,6 +145,7 @@ function validateConflicts(argv: Options) {
 					j++
 				) {
 					const other = mutuallyExclusiveBooleanGroup[j];
+
 					if (argv[other])
 						throw new Error(
 							`'${keyToSwitch(option)}' cannot be used with '${keyToSwitch(other)}'`,
@@ -155,15 +167,19 @@ function detectHost(argv: Options) {
 	}
 
 	const host = HOSTS.find((host) => argv[host.flagName]);
+
 	if (!host) {
 		const switchNames = HOST_FLAG_NAMES.map(
 			(flagName) => `'${keyToSwitch(flagName)}'`,
 		);
+
 		const formatter = new Intl.ListFormat("en-US", {
 			type: "disjunction",
 			style: "long",
 		});
+
 		const formattedSwitchNames = formatter.format(switchNames);
+
 		throw new Error(
 			`Could not detect host. Please specify one of ${formattedSwitchNames}`,
 		);

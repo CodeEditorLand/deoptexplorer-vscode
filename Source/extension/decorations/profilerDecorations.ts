@@ -52,6 +52,7 @@ export class ProfilerDecorations {
 
 	constructor() {
 		const stack = new VSDisposableStack();
+
 		try {
 			this._profileHeavyDecorationType = stack.use(
 				createDecorationType("profileHeavy", {
@@ -110,6 +111,7 @@ export class ProfilerDecorations {
 		if (this._showProfilerDecorations !== value) {
 			this._hide();
 			this._showProfilerDecorations = value;
+
 			if (this._showProfilerDecorations !== "none") {
 				this._showAsync();
 			}
@@ -123,6 +125,7 @@ export class ProfilerDecorations {
 		if (this._showLineTickDecorations !== value) {
 			this._hide();
 			this._showLineTickDecorations = value;
+
 			if (this._showLineTickDecorations !== "none") {
 				this._showAsync();
 			}
@@ -135,11 +138,13 @@ export class ProfilerDecorations {
 		)
 			? "visible"
 			: "none";
+
 		const showLineTickDecorations = showDecorations.has(
 			ShowDecorations.LineTicks,
 		)
 			? "visible"
 			: "none";
+
 		if (
 			showProfilerDecorations !== this._showProfilerDecorations ||
 			showLineTickDecorations !== this._showLineTickDecorations
@@ -147,6 +152,7 @@ export class ProfilerDecorations {
 			this._hide();
 			this._showProfilerDecorations = showProfilerDecorations;
 			this._showLineTickDecorations = showLineTickDecorations;
+
 			if (
 				showProfilerDecorations !== "none" ||
 				showLineTickDecorations !== "none"
@@ -159,10 +165,12 @@ export class ProfilerDecorations {
 	private _hide() {
 		this._cancelSource.cancel();
 		this._cancelSource = new CancellationTokenSource();
+
 		const editorSet = new Set<TextEditor>([
 			...getTextEditors(this._showProfilerDecorations),
 			...getTextEditors(this._showLineTickDecorations),
 		]);
+
 		for (const editor of editorSet) {
 			editor.setDecorations(this._profileMeagerDecorationType, []);
 			editor.setDecorations(this._profileHeavyDecorationType, []);
@@ -284,6 +292,7 @@ export class ProfilerDecorations {
 		token: CancellationToken,
 	) {
 		const uri = unwrapScriptSource(editor.document.uri).uri;
+
 		if (!uri) return;
 
 		const fileUri = getCanonicalUri(uri);
@@ -291,11 +300,13 @@ export class ProfilerDecorations {
 		const lineTicks =
 			snapshot.tryGetMappedLineTicks() ??
 			(await snapshot.getMappedLineTicksAsync(token));
+
 		if (!lineTicks || token.isCancellationRequested) return;
 
 		const fileLineTicks = lineTicks.filter((lineTick) =>
 			UriEqualer.equals(lineTick.file, fileUri),
 		);
+
 		const [q1, q2, q3] = quartiles(
 			fileLineTicks
 				.map(({ hitCount: hit_count }) => hit_count)
@@ -313,12 +324,17 @@ export class ProfilerDecorations {
 				const selfTime =
 					entry.hitCount *
 					snapshot.averageSampleDuration.inMillisecondsF();
+
 				const percentOfFunction = (selfTime * 100) / snapshot.selfTime;
+
 				const percentOfProgram =
 					(selfTime * 100) /
 					snapshot.profileDuration.inMillisecondsF();
+
 				const position = new Position(entry.line - 1, 0);
+
 				const range = new Range(position, position);
+
 				const options: DecorationOptions = {
 					range,
 					hoverMessage: markdown`${[
@@ -328,6 +344,7 @@ export class ProfilerDecorations {
 						markdown`Percent of program: ${percentOfProgram.toFixed(1)}%`,
 					]}`,
 				};
+
 				return { type, options };
 			})
 			.groupBy(
@@ -338,8 +355,10 @@ export class ProfilerDecorations {
 
 		for (const { type, entries } of decorations) {
 			let rangeMap = decorationsMap.get(type);
+
 			if (!rangeMap)
 				decorationsMap.set(type, (rangeMap = new RangeMap()));
+
 			for (const entry of entries) {
 				rangeMap.set(entry.range, entry);
 			}
@@ -363,10 +382,13 @@ export class ProfilerDecorations {
 
 	private async _showAsync() {
 		if (!openedLog) return;
+
 		try {
 			this._cancelSource.cancel();
 			this._cancelSource = new CancellationTokenSource();
+
 			const token = this._cancelSource.token;
+
 			const editorDecorations = new Map<
 				TextEditor,
 				Map<
@@ -374,11 +396,14 @@ export class ProfilerDecorations {
 					RangeMap<Range | DecorationOptions>
 				>
 			>();
+
 			const snapshot = currentProfileViewNodeSnapshot;
+
 			for (const editor of getTextEditors(
 				this._showProfilerDecorations,
 			)) {
 				let decorationMap = editorDecorations.get(editor);
+
 				if (!decorationMap)
 					editorDecorations.set(editor, (decorationMap = new Map()));
 				await this._fillProfilerDecorations(
@@ -392,6 +417,7 @@ export class ProfilerDecorations {
 					this._showLineTickDecorations,
 				)) {
 					let decorationMap = editorDecorations.get(editor);
+
 					if (!decorationMap)
 						editorDecorations.set(
 							editor,
@@ -408,6 +434,7 @@ export class ProfilerDecorations {
 			for (const [editor, decorationMap] of editorDecorations) {
 				for (const [decorationType, ranges] of decorationMap) {
 					const entries: DecorationOptions[] = [];
+
 					for (const range of ranges.values()) {
 						entries.push(
 							range instanceof Range ? { range } : range,
@@ -438,5 +465,6 @@ export class ProfilerDecorations {
 export function activateProfilerDecorations(context: ExtensionContext) {
 	const stack = new VSDisposableStack();
 	stack.use(new ProfilerDecorations());
+
 	return stack;
 }

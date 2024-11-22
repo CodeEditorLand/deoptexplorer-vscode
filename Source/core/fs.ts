@@ -63,6 +63,7 @@ export async function tryReaddirAsync(uri: Uri) {
 export async function* readLines(file: string | Uri) {
 	if (typeof file !== "string") {
 		yield* vscodeReadLines(file);
+
 		return;
 	}
 
@@ -72,10 +73,15 @@ export async function* readLines(file: string | Uri) {
 	// }
 
 	// const reader = fs.createReadStream(typeof file === "string" ? file : new URL(file.toString()), { encoding: "utf8" });
+
 	const reader = fs.createReadStream(file, { encoding: "utf8" });
+
 	let remaining = "";
+
 	let hasRemaining = false;
+
 	let chunk: string;
+
 	for await (chunk of reader) {
 		const lines = chunk.split("\n");
 		assert(lines.length > 0);
@@ -102,11 +108,15 @@ export async function* readLines(file: string | Uri) {
 
 async function* vscodeReadLines(file: Uri) {
 	const data = Buffer.from(await workspace.fs.readFile(file));
+
 	const decoder = new TextDecoder("utf8");
+
 	let start = 0;
+
 	for (let pos = 0; pos < data.length; pos++) {
 		if (data[pos] === 0x0d || data[pos] === 0xa) {
 			yield decoder.decode(data.slice(start, pos));
+
 			if (
 				data[pos] === 0x0d &&
 				pos < data.length - 1 &&
@@ -131,6 +141,7 @@ export async function readFileAsync(uri: Uri | string) {
 			: Uri.file(uri);
 	}
 	const data = await workspace.fs.readFile(uri);
+
 	return Buffer.from(data).toString("utf8");
 }
 

@@ -84,12 +84,14 @@ export class FileNode extends BaseNode {
 			this.fileEntry.ics,
 			(ic) => ic.getWorstIcState() === IcState.MEGAMORPHIC,
 		);
+
 		const deoptCount = this.fileEntry.deopts.length;
 		treeItem.tooltip = markdown`${[
 			markdown`${formatUri(this.file, { as: "file" })}  \n`,
 			markdown`**Megamorphic ICs:** ${megamorphicIcCount}  \n`,
 			markdown`**Deopts:** ${deoptCount}`,
 		]}`;
+
 		return treeItem;
 	}
 
@@ -97,7 +99,9 @@ export class FileNode extends BaseNode {
 		yield new FunctionCategoryNode(this, [
 			...this.fileEntry.functions.values(),
 		]);
+
 		yield new IcCategoryNode(this, [...this.fileEntry.ics.values()]);
+
 		yield new DeoptCategoryNode(this, [...this.fileEntry.deopts.values()]);
 	}
 
@@ -108,6 +112,7 @@ export class FileNode extends BaseNode {
 		for (const child of await this.children) {
 			if (child instanceof CategoryNode && child.kind === entry.kind) {
 				const node = await child.findNode(entry);
+
 				if (node) return node;
 			}
 		}

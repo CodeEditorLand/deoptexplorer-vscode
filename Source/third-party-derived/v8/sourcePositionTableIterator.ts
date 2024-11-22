@@ -37,15 +37,22 @@ export function* sourcePositionTableIterator(
 	//        <script-offset> is the position within the script
 	//        <inlining-id> is the offset in the <inlining> table
 	sourcePositionRegExp.lastIndex = 0;
+
 	let match: RegExpExecArray | null;
+
 	while ((match = sourcePositionRegExp.exec(sourcePositions))) {
 		assert(match.groups);
+
 		const code_offset = toAddress(parseInt(match.groups.code_offset, 10));
+
 		const script_offset = parseInt(match.groups.script_offset, 10);
+
 		const inlining_id = match.groups.inlining_id
 			? parseInt(match.groups.inlining_id, 10)
 			: undefined;
+
 		const source_position = new SourcePosition(script_offset, inlining_id);
+
 		yield new SourcePositionTableEntry(code_offset, source_position);
 	}
 }

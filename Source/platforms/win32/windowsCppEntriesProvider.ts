@@ -148,10 +148,12 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 		this.symbolsFormat = undefined;
 
 		const headers = winnt.getImageHeaders(libName);
+
 		if (!headers) {
 			output.warn(
 				`shared library '${libName}' was not a valid PE image.`,
 			);
+
 			return;
 		}
 
@@ -161,8 +163,10 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 		// If we are not explicitly using `dbghelp`, attempt to load a linker map
 		if (this.useDbghelp !== true) {
 			const mapFileName = path.join(dir, name + ".map");
+
 			try {
 				this._symbols = fs.readFileSync(mapFileName, "utf8");
+
 				return;
 			} catch (e: unknown) {
 				if ((e as NodeJS.ErrnoException).code !== "ENOENT") {
@@ -176,15 +180,18 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 
 		// check for the existence of a .pdb file, if so, we can use `dumpbin /map`
 		const pdbFileName = path.join(dir, name + ".pdb");
+
 		const hasPdb = fs.existsSync(pdbFileName);
 
 		// If we are not explicitly using dbghelp, and the workspace is trusted, attempt to generate
 		// a linker map equivalent using dumpbin.
 		if (this.useDbghelp !== true && workspace.isTrusted) {
 			const dumpbin = this.findDumpbinPath();
+
 			if (dumpbin) {
 				// create a temporary file to dump symbols.
 				const tempFile = this.createTempFile(base);
+
 				if (tempFile) {
 					// TODO: consider caching this for performance?
 					try {
@@ -206,6 +213,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 									encoding: "utf8",
 								});
 								this.symbolsFormat = "dumpbin-map";
+
 								return;
 							} catch (e) {
 								output.warn(
@@ -249,13 +257,16 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 
 	private createTempFile(base: string) {
 		const tmpdir = os.tmpdir();
+
 		for (let i = 0; i < 1_000; i++) {
 			const tempFile = path.join(
 				tmpdir,
 				`${base}~${randomInt(0x7fffffff).toString(16).padStart(8, "0")}.dumpbin`,
 			);
+
 			try {
 				fs.closeSync(fs.openSync(tempFile, fs.constants.O_CREAT));
+
 				return tempFile;
 			} catch (e: unknown) {
 				if ((e as NodeJS.ErrnoException).code === "EEXIST") {
@@ -263,6 +274,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 					continue;
 				}
 				output.warn("Unable to create temp file:", e);
+
 				break;
 			}
 		}
@@ -277,18 +289,22 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 		const dumpbinPath = workspace
 			.getConfiguration("deoptexplorer")
 			.get("dumpbinPath", null);
+
 		if (dumpbinPath !== null && fs.existsSync(dumpbinPath)) {
 			return (this.dumpbinPath = dumpbinPath);
 		}
 
 		// search for an installed Visual Studio instance
 		const programData = process.env.ProgramData;
+
 		if (programData) {
 			const instancesDir = path.join(
 				programData,
 				"Microsoft/VisualStudio/Packages/_Instances",
 			);
+
 			const instanceNames = tryReaddirSync(instancesDir);
+
 			if (instanceNames) {
 				interface VsInstanceState {
 					installationPath: string;
@@ -297,16 +313,19 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 
 				// discover installed VS installations
 				const instances: VsInstanceState[] = [];
+
 				for (const instanceName of instanceNames) {
 					const stateFile = path.join(
 						instancesDir,
 						instanceName,
 						"state.json",
 					);
+
 					try {
 						const state = JSON.parse(
 							fs.readFileSync(stateFile, "utf8"),
 						) as VsInstanceState;
+
 						if (
 							typeof state.installationPath === "string" &&
 							typeof state.installationVersion === "string"
@@ -314,11 +333,13 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 							const match = /^\d+\.\d+\.\d+/.exec(
 								state.installationVersion,
 							);
+
 							if (match) {
 								const installationVersion = semver.parse(
 									match[0],
 									{ loose: true },
 								);
+
 								if (
 									installationVersion &&
 									semver.valid(installationVersion)
@@ -348,19 +369,24 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 						installationPath,
 						"VC/Tools/MSVC",
 					);
+
 					const versionNames = tryReaddirSync(msvcDir);
+
 					if (versionNames) {
 						// discover MSVC tools versions
 						const msvcToolsVersions: {
 							name: string;
 							version: semver.SemVer;
 						}[] = [];
+
 						for (const versionName of versionNames) {
 							const match = /^\d+\.\d+\.\d+/.exec(versionName);
+
 							if (match) {
 								const version = semver.parse(match[0], {
 									loose: true,
 								});
+
 								if (version && semver.valid(version)) {
 									msvcToolsVersions.push({
 										name: versionName,
@@ -382,6 +408,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 								name,
 								"bin/Hostx86/x86/dumpbin.exe",
 							);
+
 							if (fs.existsSync(dumpbinPath)) {
 								return (this.dumpbinPath = dumpbinPath);
 							}
@@ -405,6 +432,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 					return true;
 				}
 				break;
+
 			case ".dll":
 				if (
 					imageBase === WindowsCppEntriesProvider.DLL_IMAGE_BASE_32 ||
@@ -430,6 +458,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 		}
 
 		const lineEndPos = this._symbols.indexOf("\r\n", this.parsePos);
+
 		if (lineEndPos == -1) {
 			return false;
 		}
@@ -439,6 +468,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 
 		if (this.imageBase != toAddress(0) && !this.imageBaseChecked) {
 			this.imageBaseChecked = true;
+
 			if (!this.isValidImageBase(this.imageBase)) {
 				return false;
 			}
@@ -447,6 +477,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 		if (!this.symbolsFormat) {
 			if (WindowsCppEntriesProvider.DUMPBIN_MAP_RE.test(line)) {
 				this.symbolsFormat = "dumpbin-map";
+
 				return null;
 			} else {
 				// Image base entry is above all other symbols, so we can just
@@ -454,11 +485,14 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 				const imageBaseFields = line.match(
 					WindowsCppEntriesProvider.IMAGE_BASE_RE,
 				);
+
 				if (imageBaseFields) {
 					this.symbolsFormat = "map";
+
 					if (!this.imageBaseChecked) {
 						this.imageBaseChecked = true;
 						this.imageBase = parseAddress(imageBaseFields[1]);
+
 						if (!this.isValidImageBase(this.imageBase)) {
 							return false;
 						}
@@ -477,12 +511,16 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 				: WindowsCppEntriesProvider.FUNC_RE;
 
 		const fields = regexp.exec(line)?.groups;
+
 		if (fields) {
 			const name = this.unmangleName(fields.name);
+
 			const rva = fields.rva
 				? parseAddress(fields.rva)
 				: parseAddress(fields.address) - this.imageBase;
+
 			const start = this.libStart + rva;
+
 			return { name, start };
 		}
 		return null;
@@ -490,10 +528,14 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 
 	private removeTemplateParameters(name: string) {
 		let start = 0;
+
 		let bracketDepth = 0;
+
 		let result = "";
+
 		for (let i = 0; i < name.length; i++) {
 			const ch = name.charAt(i);
+
 			if (ch === "<") {
 				if (bracketDepth === 0) {
 					result += name.slice(start, i);
@@ -501,12 +543,14 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 				bracketDepth++;
 			} else if (ch === ">") {
 				bracketDepth--;
+
 				if (bracketDepth === 0) {
 					start = i + 1;
 				}
 			}
 		}
 		result += name.slice(start);
+
 		return result;
 	}
 
@@ -524,9 +568,11 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 		}
 
 		let undecorated = this.dbghelpWrapper.unmangleName(name);
+
 		if (undecorated === undefined) {
 			const prefix =
 				WindowsCppEntriesProvider.SYMBOL_PREFIX_RE.exec(name);
+
 			if (!prefix) {
 				return name;
 			}
@@ -538,6 +584,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 				.join("::");
 		}
 		undecorated = undecorated.replace(/(?<=\W)\s+|\s+(?=\W)/g, "");
+
 		return this.removeTemplates
 			? this.removeTemplateParameters(undecorated)
 			: undecorated;

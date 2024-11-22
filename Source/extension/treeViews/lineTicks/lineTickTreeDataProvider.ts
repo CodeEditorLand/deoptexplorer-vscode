@@ -26,15 +26,20 @@ export class LineTickTreeDataProvider extends BaseNodeProvider {
 
 	private async _createRoots(token: CancellationToken) {
 		const node = this._node;
+
 		if (!node) return [];
+
 		let lineTicks =
 			node.tryGetMappedLineTicks() ??
 			(await node.getMappedLineTicksAsync(token));
+
 		if (lineTicks.length === 0) {
 			lineTicks = node.getFileLineTicks();
 		}
 		const log = node.log;
+
 		const commonBase = log?.commonBaseDirectory;
+
 		return lineTicks.map(
 			(lineTick) => new LineTickNode(this, log, lineTick, commonBase),
 		);

@@ -19,7 +19,9 @@ const inspectOptions: InspectOptions = {
 function timestamp(level: "log" | "warn" | "error") {
 	const prefix =
 		level === "warn" ? "WRN!" : level === "error" ? "ERR!" : "INFO";
+
 	const timestamp = Temporal.Now.plainTimeISO();
+
 	return `[${prefix}: ${timestamp.toString({ fractionalSecondDigits: 3 })}] `;
 }
 
@@ -44,17 +46,23 @@ export function error(...args: any[]) {
 
 export function measureSync<T>(name: string, cb: () => T) {
 	const start = Date.now();
+
 	const result = cb();
+
 	const end = Date.now();
 	log(`${name} took ${formatMilliseconds(end - start)}`);
+
 	return result;
 }
 
 export async function measureAsync<T>(name: string, cb: () => PromiseLike<T>) {
 	const start = Date.now();
+
 	const result = await cb();
+
 	const end = Date.now();
 	log(`${name} took ${formatMilliseconds(end - start)}`);
+
 	return result;
 }
 

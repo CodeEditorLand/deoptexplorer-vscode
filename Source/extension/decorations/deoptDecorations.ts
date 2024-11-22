@@ -27,6 +27,7 @@ export class DeoptDecorations {
 
 	constructor() {
 		const stack = new VSDisposableStack();
+
 		try {
 			this._eagerDeoptDecorationType = stack.use(
 				createDecorationType("eagerDeopt"),
@@ -65,6 +66,7 @@ export class DeoptDecorations {
 		if (this._showDecorations !== value) {
 			this._hide();
 			this._showDecorations = value;
+
 			if (this._showDecorations !== "none") {
 				this._show();
 			}
@@ -87,13 +89,18 @@ export class DeoptDecorations {
 
 	private _show() {
 		if (!openedLog) return;
+
 		for (const editor of getTextEditors(this._showDecorations)) {
 			const uri = unwrapScriptSource(editor.document.uri).uri;
+
 			if (!uri) continue;
 
 			const fileUri = getCanonicalUri(uri);
+
 			const entries = openedLog.files.get(fileUri);
+
 			const deopts = entries?.deopts;
+
 			if (!deopts?.length) return;
 
 			if (deopts.length > this._maxDecorations) {
@@ -151,8 +158,10 @@ export class DeoptDecorations {
 		switch (type) {
 			case DeoptimizeKind.Eager:
 				return this._eagerDeoptDecorationType;
+
 			case DeoptimizeKind.Lazy:
 				return this._lazyDeoptDecorationType;
+
 			case DeoptimizeKind.Soft:
 				return this._softDeoptDecorationType;
 		}
@@ -171,5 +180,6 @@ export class DeoptDecorations {
 export function activateDeoptDecorations(context: ExtensionContext) {
 	const stack = new VSDisposableStack();
 	stack.use(new DeoptDecorations());
+
 	return stack;
 }

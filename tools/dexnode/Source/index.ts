@@ -19,6 +19,7 @@ if (!argv.v8_version)
 	);
 
 const { flags, cleanup } = prepareV8Flags(argv, argv.v8_version ?? "");
+
 const args = getHostExecArgs(argv, flags);
 
 if (!argv.quiet) {

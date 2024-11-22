@@ -35,9 +35,12 @@ import {
 import { getWordAtText } from "./wordHelpers";
 
 const isWindows = process.platform === "win32";
+
 const WORD_REGEXP =
 	/(-?\d*\.\d\w*)|([^-=+~!@#$%^&*|;:`'",.<>?(){}[\]\\\/\s]+)/g;
+
 const CR = "\r".charCodeAt(0);
+
 const LF = "\n".charCodeAt(0);
 
 abstract class TextDocumentSourceBase {
@@ -53,18 +56,25 @@ abstract class TextDocumentSourceBase {
 
 	getEndOfLine() {
 		const lineStarts = this.getLineStarts();
+
 		let lfCount = 0;
+
 		let crlfCount = 0;
+
 		for (let i = 1; i < lineStarts.length; i++) {
 			let lineEnd = lineStarts[i];
+
 			let ch = this.text.charCodeAt(lineEnd - 1);
+
 			if (ch === CR) {
 				crlfCount++;
+
 				continue;
 			}
 			if (ch === LF) {
 				if (lineEnd > 1 && this.text.charCodeAt(lineEnd - 2) === CR) {
 					crlfCount++;
+
 					continue;
 				}
 				lfCount++;
@@ -81,6 +91,7 @@ abstract class TextDocumentSourceBase {
 
 	getLanguageId(): string {
 		const uri = this.uri;
+
 		return isTsxFile(uri)
 			? "typescriptreact"
 			: isTypeScriptFile(uri)
@@ -146,6 +157,7 @@ class SourceFileTextDocumentSource extends TextDocumentSourceBase {
 	positionAt(offset: number) {
 		const { line, character } =
 			this.sourceFile.getLineAndCharacterOfPosition(offset);
+
 		return new Position(line, character);
 	}
 
@@ -222,7 +234,9 @@ export class TextDocumentLike implements TextDocument {
 
 	static fromSource(sources: Sources, uri: Uri) {
 		const text = sources.getExistingContent(uri);
+
 		if (text === undefined) return undefined;
+
 		return new TextDocumentLike(
 			new StringTextDocumentSource(uri, text, sources),
 		);
@@ -277,6 +291,7 @@ export class TextDocumentLike implements TextDocument {
 				: typeof lineOrPosition === "number"
 					? lineOrPosition
 					: undefined;
+
 		if (
 			line === undefined ||
 			line < 0 ||
@@ -286,6 +301,7 @@ export class TextDocumentLike implements TextDocument {
 			throw new RangeError();
 		}
 		const lineStarts = this._source.getLineStarts();
+
 		return new TextLineLike(
 			line,
 			this._getLine(line, lineStarts),
@@ -300,13 +316,16 @@ export class TextDocumentLike implements TextDocument {
 	positionAt(offset: number) {
 		offset = Math.floor(offset);
 		offset = Math.max(0, offset);
+
 		return this._source.positionAt(offset);
 	}
 
 	getText(range?: Range) {
 		if (!range) return this._source.text;
 		range = this.validateRange(range);
+
 		if (range.isEmpty) return "";
+
 		return this._source.text.slice(
 			this.offsetAt(range.start),
 			this.offsetAt(range.end),
@@ -315,16 +334,22 @@ export class TextDocumentLike implements TextDocument {
 
 	getWordRangeAtPosition(position: Position, regex?: RegExp) {
 		position = this.validatePosition(position);
+
 		const lineStarts = this._source.getLineStarts();
+
 		const text = this._source.text;
+
 		const lineStart = this._getLineStart(position.line, lineStarts);
+
 		const lineEnd = this._getLineEnd(position.line, lineStarts);
+
 		const line = text.slice(lineStart, lineEnd);
 
 		if (!regex) {
 			regex = WORD_REGEXP;
 		} else {
 			regex.lastIndex = 0;
+
 			if (regex.test("") && regex.lastIndex === 0) {
 				throw new Error(
 					"Ignoring custom regexp because it matches the empty string.",
@@ -332,14 +357,19 @@ export class TextDocumentLike implements TextDocument {
 			}
 			if (!regex.global || regex.sticky) {
 				let flags = "g";
+
 				if (regex.ignoreCase) flags += "i";
+
 				if (regex.multiline) flags += "m";
+
 				if (regex.unicode) flags += "u";
 				regex = new RegExp(regex.source, flags);
 			}
 		}
 		regex.lastIndex = position.character;
+
 		const wordAtText = getWordAtText(position.character + 1, regex, line);
+
 		if (wordAtText) {
 			return new Range(
 				position.line,
@@ -362,12 +392,15 @@ export class TextDocumentLike implements TextDocument {
 			return position.with(0, 0);
 		}
 		let { line, character } = position;
+
 		if (line < 0) {
 			line = 0;
 			character = 0;
 		} else {
 			const lineStarts = this._source.getLineStarts();
+
 			const lineCount = lineStarts.length;
+
 			if (line >= lineCount) {
 				line = lineCount - 1;
 				character = this._getLineLength(line, lineStarts);
@@ -375,6 +408,7 @@ export class TextDocumentLike implements TextDocument {
 				character = 0;
 			} else {
 				const lineLength = this._getLineLength(line, lineStarts);
+
 				if (character > lineLength) {
 					character = lineLength;
 				}
@@ -400,6 +434,7 @@ export class TextDocumentLike implements TextDocument {
 	 */
 	private _getLineStart(line: number, lineStarts: readonly number[]) {
 		assert(line >= 0 && line < lineStarts.length);
+
 		return lineStarts[line];
 	}
 
@@ -409,14 +444,21 @@ export class TextDocumentLike implements TextDocument {
 	private _getLineEnd(line: number, lineStarts: readonly number[]) {
 		const lineCount = lineStarts.length;
 		assert(line >= 0 && line < lineCount);
+
 		const text = this._source.text;
+
 		if (line === lineCount - 1) return text.length;
+
 		const lineStart = lineStarts[line];
+
 		let lineEnd = lineStarts[line + 1];
+
 		while (lineEnd > lineStart) {
 			const ch = text.charCodeAt(lineEnd - 1);
+
 			if (ch === CR || ch === LF) {
 				lineEnd--;
+
 				continue;
 			}
 			break;
@@ -429,13 +471,17 @@ export class TextDocumentLike implements TextDocument {
 	 */
 	private _getLineLength(line: number, lineStarts: readonly number[]) {
 		const lineStart = this._getLineStart(line, lineStarts);
+
 		const lineEnd = this._getLineEnd(line, lineStarts);
+
 		return lineEnd - lineStart;
 	}
 
 	private _getLine(line: number, lineStarts: readonly number[]) {
 		const lineStart = this._getLineStart(line, lineStarts);
+
 		const lineEnd = this._getLineEnd(line, lineStarts);
+
 		return this._source.text.slice(lineStart, lineEnd);
 	}
 }

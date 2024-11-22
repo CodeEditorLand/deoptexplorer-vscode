@@ -33,6 +33,7 @@ export class SourcePosition {
 
 	get isKnown() {
 		if (this.isExternal) return true;
+
 		return (
 			this.scriptOffset !== kNoSourcePosition ||
 			this.inliningId !== kNotInlined
@@ -41,6 +42,7 @@ export class SourcePosition {
 
 	get isInlined() {
 		if (this.isExternal) return false;
+
 		return this.inliningId !== kNotInlined;
 	}
 
@@ -58,6 +60,7 @@ export class SourcePosition {
 
 	get externalLine() {
 		assert(this.isExternal);
+
 		return this._externalLine;
 	}
 
@@ -69,6 +72,7 @@ export class SourcePosition {
 
 	get externalFileId() {
 		assert(this.isExternal);
+
 		return this._externalFileId;
 	}
 
@@ -80,6 +84,7 @@ export class SourcePosition {
 
 	get scriptOffset() {
 		assert(this.isJavaScript);
+
 		return this._scriptOffset;
 	}
 
@@ -104,6 +109,7 @@ export class SourcePosition {
 		pos.externalLine = line;
 		pos.externalFileId = file_id;
 		pos.inliningId = kNotInlined;
+
 		return pos;
 	}
 
@@ -114,10 +120,14 @@ export class SourcePosition {
 	// https://github.com/v8/v8/blob/a0c3797461810e3159662851e64946e17654236e/src/codegen/source-position.cc#L62
 	inliningStack(deopt_data: DeoptimizationData) {
 		let stack: SourcePositionInfo[] = [];
+
 		let pos: SourcePosition = this;
+
 		while (pos.isInlined) {
 			assert(pos.inliningId < deopt_data.inliningPositions.length);
+
 			let inl = deopt_data.inliningPositions[pos.inliningId];
+
 			let func = deopt_data.getInlinedFunction(inl.inlinedFunctionId);
 			stack.push(new SourcePositionInfo(pos, func, func.script));
 			pos = inl.position;
@@ -129,6 +139,7 @@ export class SourcePosition {
 				deopt_data.shared.script,
 			),
 		);
+
 		return stack;
 	}
 }

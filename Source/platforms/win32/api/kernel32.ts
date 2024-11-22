@@ -41,6 +41,7 @@ export function GetLastError() {
 
 export function FormatErrorMessage(lMessageId: DWORD) {
 	const buffer = Buffer.alloc(4096) as PSTR;
+
 	const byteLength = kernel32().FormatMessageA(
 		0x00001000 | 0x00000200,
 		ref.NULL_POINTER,
@@ -50,6 +51,7 @@ export function FormatErrorMessage(lMessageId: DWORD) {
 		buffer.byteLength,
 		ref.NULL_POINTER,
 	);
+
 	return buffer.toString("utf8", 0, +byteLength);
 }
 
@@ -58,6 +60,7 @@ export const LOAD_LIBRARY_AS_DATAFILE = 0x2;
 
 const _kernel32 = lazy(() => {
 	if (process.platform !== "win32") return undefined;
+
 	return tryExec(() =>
 		ffi.Library("kernel32", {
 			// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibraryexa
@@ -118,10 +121,12 @@ const _kernel32 = lazy(() => {
 
 function kernel32() {
 	const kernel32 = _kernel32();
+
 	if (!kernel32)
 		throw new ReferenceError(
 			"Module could not be loaded. Check `isAvailable()` before calling debug apis.",
 		);
+
 	return kernel32;
 }
 
@@ -131,6 +136,7 @@ export function isAvailable() {
 
 export class Win32Error extends Error {
 	readonly errno: number;
+
 	constructor(message?: string, errno = GetLastError()) {
 		super(
 			message
@@ -142,6 +148,7 @@ export class Win32Error extends Error {
 
 	static throwIfNotSuccess(message?: string) {
 		const errno = GetLastError();
+
 		if (errno !== 0) {
 			throw new Win32Error(message, errno);
 		}

@@ -15,11 +15,15 @@ export class TextWriter {
 
 	private computeLineStarts(text: string): number[] {
 		const result: number[] = new Array();
+
 		let pos = 0;
+
 		let lineStart = 0;
+
 		while (pos < text.length) {
 			const ch = text.charCodeAt(pos);
 			pos++;
+
 			switch (ch) {
 				case 0x0d:
 					if (text.charCodeAt(pos) === 0x0a) {
@@ -29,7 +33,9 @@ export class TextWriter {
 				case 0x0a:
 					result.push(lineStart);
 					lineStart = pos;
+
 					break;
+
 				default:
 					if (ch === 0x2028 || ch === 0x2029) {
 						result.push(lineStart);
@@ -39,11 +45,13 @@ export class TextWriter {
 			}
 		}
 		result.push(lineStart);
+
 		return result;
 	}
 
 	private updateLineCountAndPosFor(s: string) {
 		const lineStartsOfS = this.computeLineStarts(s);
+
 		if (lineStartsOfS.length > 1) {
 			this.lineCount = this.lineCount + lineStartsOfS.length - 1;
 			this.linePos =
@@ -72,6 +80,7 @@ export class TextWriter {
 				this.lineStart = false;
 			}
 			const startLine = this.line;
+
 			const startColumn = this.column;
 			this.text += text;
 			this.updateLineCountAndPosFor(text);

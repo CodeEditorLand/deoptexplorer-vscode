@@ -32,6 +32,7 @@ export class FunctionEntryNode extends EntryNode<FunctionEntry> {
 	protected formatDescription() {
 		// For a function, the description is the base filename and its line/character offset.
 		const { range } = this.entry.pickExtentLocation(this.file);
+
 		return `${uriBasename(this.file)}${formatPosition(range.start)}`;
 	}
 
@@ -44,18 +45,25 @@ export class FunctionEntryNode extends EntryNode<FunctionEntry> {
 		switch (this.entry.symbolKind) {
 			case SymbolKind.Function:
 				return new ThemeIcon("symbol-function");
+
 			case SymbolKind.Class:
 				return new ThemeIcon("symbol-class");
+
 			case SymbolKind.Namespace:
 				return new ThemeIcon("symbol-namespace");
+
 			case SymbolKind.Enum:
 				return new ThemeIcon("symbol-enum");
+
 			case SymbolKind.Method:
 				return new ThemeIcon("symbol-method");
+
 			case SymbolKind.Property:
 				return new ThemeIcon("symbol-property");
+
 			case SymbolKind.Field:
 				return new ThemeIcon("symbol-field");
+
 			case SymbolKind.Constructor:
 				return new ThemeIcon("symbol-constructor");
 		}

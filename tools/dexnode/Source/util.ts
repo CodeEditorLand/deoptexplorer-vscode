@@ -18,6 +18,7 @@ export function canAccess(file: string, mode: "write" | "exec") {
 	try {
 		const modenum = mode === "exec" ? fs.constants.X_OK : fs.constants.W_OK;
 		fs.accessSync(file, modenum);
+
 		return true;
 	} catch {
 		return false;
@@ -30,9 +31,11 @@ export async function regQuery(
 	valueName: string = Registry.DEFAULT_VALUE,
 ) {
 	const reg = new Registry({ hive, key });
+
 	const keyExists = await new Promise<boolean>((res, rej) =>
 		reg.keyExists((err, exists) => (err ? rej(err) : res(exists))),
 	);
+
 	if (!keyExists) return undefined;
 
 	const valueExists = await new Promise<boolean>((res, rej) =>
@@ -40,11 +43,13 @@ export async function regQuery(
 			err ? rej(err) : res(exists),
 		),
 	);
+
 	if (!valueExists) return undefined;
 
 	const value = await new Promise<string>((res, rej) =>
 		reg.get(valueName, (err, item) => (err ? rej(err) : res(item.value))),
 	);
+
 	return value;
 }
 
@@ -70,20 +75,27 @@ export function which(execPath: string) {
 		(ALT_PATH_SEP && execPath.includes(ALT_PATH_SEP))
 	) {
 		execPath = path.resolve(execPath);
+
 		return canAccess(execPath, "exec") ? path.resolve(execPath) : undefined;
 	}
 
 	const PATH = (process.env.PATH ?? "").split(path.delimiter).map(unquote);
+
 	const PATHEXT = (process.env.PATHEXT ?? "").split(";").map(unquote);
+
 	const extname = path.extname(execPath);
+
 	const basePathCandidates = [process.cwd(), ...PATH];
+
 	const extnameCandidates = extname ? ["", ...PATHEXT] : PATHEXT;
+
 	for (const basePathCandidate of basePathCandidates) {
 		for (const extnameCandidate of extnameCandidates) {
 			const candidate = path.resolve(
 				basePathCandidate,
 				execPath + extnameCandidate,
 			);
+
 			if (canAccess(candidate, "exec")) {
 				return candidate;
 			}

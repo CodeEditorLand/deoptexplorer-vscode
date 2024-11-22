@@ -108,17 +108,20 @@ export class FunctionEntry extends ReferenceableEntryBase {
 		}
 
 		if (this.filePosition.uri.scheme === "node") return true;
+
 		return false;
 	}
 
 	getExtentLocation(kind: LocationKind) {
 		this.resolveLocations();
+
 		if (kind === "source")
 			return (
 				this.extentLocation ??
 				this.referenceLocation ??
 				this.filePosition
 			);
+
 		if (kind === "generated")
 			return (
 				this.generatedExtentLocation ??
@@ -132,6 +135,7 @@ export class FunctionEntry extends ReferenceableEntryBase {
 	pickExtentLocation(file: Uri, exact?: boolean): Location | undefined;
 	pickExtentLocation(file: Uri, exact?: boolean) {
 		const kind = this.getLocationKind(file, exact);
+
 		return kind !== undefined ? this.getExtentLocation(kind) : undefined;
 	}
 }

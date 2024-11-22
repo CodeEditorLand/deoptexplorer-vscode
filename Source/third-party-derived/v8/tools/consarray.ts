@@ -75,6 +75,7 @@ export class ConsArray<T> {
 	 */
 	next() {
 		let result = this.currCell_.data[this.currCellPos_++];
+
 		if (this.currCellPos_ >= this.currCell_.data.length) {
 			this.currCell_ = this.currCell_.next;
 			this.currCellPos_ = 0;

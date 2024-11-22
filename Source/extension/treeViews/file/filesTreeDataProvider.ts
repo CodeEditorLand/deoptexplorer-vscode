@@ -77,7 +77,9 @@ export class FilesTreeDataProvider extends BaseNodeProvider {
 	async findNode(entry: Entry) {
 		const fileNode =
 			entry.filePosition && this.fileNodes.get(entry.filePosition.uri);
+
 		if (!fileNode) return;
+
 		return await fileNode.findNode(entry);
 	}
 

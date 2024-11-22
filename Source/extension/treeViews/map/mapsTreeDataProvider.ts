@@ -81,6 +81,7 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 
 		tooltip: (key) => {
 			const lines: MarkdownString[] = [];
+
 			if (key.constructorEntry) {
 				const relativeTo = this.log && {
 					log: this.log,
@@ -151,13 +152,16 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 		keyEqualer: MapFunctionKey.equaler,
 		keySelector: ({ map }) => {
 			const source = map.getMapSource();
+
 			const filePos = map.getMapFilePosition();
+
 			const position =
 				source &&
 				filePos &&
 				UriEqualer.equals(filePos.uri, source.filePosition.uri)
 					? source.filePosition.range.start
 					: undefined;
+
 			return new MapFunctionKey(
 				source?.functionName,
 				filePos?.uri,
@@ -170,10 +174,12 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 		description: (_, elements) => `${elements.length}`,
 		tooltip: (key) => {
 			const lines: MarkdownString[] = [];
+
 			const relativeTo = this.log && {
 				log: this.log,
 				ignoreIfBasename: true,
 			};
+
 			const file =
 				key.file && key.position
 					? formatLocationMarkdown(
@@ -204,20 +210,28 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 			switch (key.symbolKind) {
 				case SymbolKind.Function:
 					return new ThemeIcon("symbol-function");
+
 				case SymbolKind.Class:
 					return new ThemeIcon("symbol-class");
+
 				case SymbolKind.Namespace:
 					return new ThemeIcon("symbol-namespace");
+
 				case SymbolKind.Enum:
 					return new ThemeIcon("symbol-enum");
+
 				case SymbolKind.Method:
 					return new ThemeIcon("symbol-method");
+
 				case SymbolKind.Property:
 					return new ThemeIcon("symbol-property");
+
 				case SymbolKind.Field:
 					return new ThemeIcon("symbol-field");
+
 				case SymbolKind.Constructor:
 					return new ThemeIcon("symbol-constructor");
+
 				default:
 					return new ThemeIcon("symbol-misc");
 			}
@@ -319,12 +333,15 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 		const showUnreferenced = this._filter.has(
 			constants.ShowMaps.Unreferenced,
 		);
+
 		const showNonUserCode = this._filter.has(
 			constants.ShowMaps.NonUserCode,
 		);
+
 		const showTransitions = this._filter.has(
 			constants.ShowMaps.Transitions,
 		);
+
 		return q
 			.through((q) =>
 				showUnreferenced
@@ -349,14 +366,19 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 
 	private _applyGroups(q: Query<MapNode>) {
 		const groupByFile = this.groupBy.has(constants.GroupMaps.ByFile);
+
 		const groupByFunction = this.groupBy.has(
 			constants.GroupMaps.ByFunction,
 		);
+
 		const groupings: GroupingOptions<MapNode>[] = [
 			this._groupByConstructor,
 		];
+
 		if (groupByFile) groupings.push(this._groupByFile);
+
 		if (groupByFunction) groupings.push(this._groupByFunction);
+
 		return GroupingNode.groupBy(q.toArray(), groupings);
 	}
 }
@@ -386,6 +408,7 @@ class MapConstructorKey {
 				hc,
 				Equaler.defaultEqualer.hash(value.disambiguator),
 			);
+
 			return hc;
 		},
 	);
@@ -428,6 +451,7 @@ class MapConstructorKey {
 			const disambiguator = this.constructorEntry?.lastSfiAddress
 				? formatAddress(this.constructorEntry.lastSfiAddress)
 				: `#${this.disambiguator}`;
+
 			return `${this.constructorName} @ ${disambiguator}`;
 		}
 		return this.name;
@@ -476,6 +500,7 @@ class MapFunctionKey implements Equatable {
 				hc,
 				Equaler.defaultEqualer.hash(value.symbolKind),
 			);
+
 			return hc;
 		},
 	);

@@ -43,8 +43,10 @@ export class VersionedEnum<E extends number> {
 	 */
 	toEnum(value: number, version: V8Version) {
 		const enumMappings = this._evolutions.match(version);
+
 		if (enumMappings && value >= 0 && value < enumMappings.length) {
 			const result = enumMappings[value];
+
 			return typeof result === "number" ? result : result[0];
 		}
 		throw new TypeError(`Argument is not a valid ${this._name}: ${value}`);
@@ -61,16 +63,22 @@ export class VersionedEnum<E extends number> {
 	parseEnum(value: string, version: V8Version, ignoreCase = false) {
 		if (digitsRegExp.test(value))
 			return this.toEnum(parseInt(value, 10), version);
+
 		const enumMappings = this._evolutions.match(version);
+
 		if (enumMappings) {
 			const left = ignoreCase ? value.toLowerCase().toUpperCase() : value;
+
 			for (const entry of enumMappings) {
 				if (typeof entry === "number") continue;
+
 				const [first, ...rest] = entry;
+
 				for (let i = 0; i < rest.length; i++) {
 					const right = ignoreCase
 						? rest[i].toLowerCase().toUpperCase()
 						: rest[i];
+
 					if (left === right) return first;
 				}
 			}
@@ -87,10 +95,12 @@ export class VersionedEnum<E extends number> {
 	 */
 	formatEnum(value: E, version: V8Version) {
 		const enumMappings = this._evolutions.match(version);
+
 		if (enumMappings) {
 			for (const mapping of enumMappings) {
 				const mappingValue =
 					typeof mapping === "number" ? mapping : mapping[0];
+
 				if (mappingValue === value) {
 					return typeof mapping === "number"
 						? `${mapping}`

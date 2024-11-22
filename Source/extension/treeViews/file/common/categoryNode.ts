@@ -115,6 +115,7 @@ export abstract class CategoryNode<TEntry extends Entry> extends BaseNode {
 			for (const child of await this.children) {
 				if (child instanceof GroupNode) {
 					const node = await child.findNode(entry);
+
 					if (node) return node;
 				}
 			}

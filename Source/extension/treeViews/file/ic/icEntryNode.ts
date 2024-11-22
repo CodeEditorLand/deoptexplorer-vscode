@@ -25,9 +25,11 @@ export class IcEntryNode extends EntryNode<IcEntry> {
 		const update = from(this.entry.updates).maxBy(
 			(update) => update.newState,
 		);
+
 		const title = update
 			? `${update.type}: ${formatIcState(update.newState)}`
 			: "Unknown";
+
 		return title;
 	}
 

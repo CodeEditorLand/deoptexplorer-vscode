@@ -19,7 +19,9 @@ export class RangeMap<T> {
 
 	has(range: Range) {
 		const { start, end } = range;
+
 		const entry = findPosition(this._ranges, start);
+
 		if (entry) {
 			return !!findPosition(entry, end);
 		}
@@ -28,7 +30,9 @@ export class RangeMap<T> {
 
 	get(key: Range) {
 		const { start, end } = key;
+
 		const entry = findPosition(this._ranges, start);
+
 		if (entry) {
 			return findPosition(entry, end)?.[1];
 		}
@@ -36,10 +40,15 @@ export class RangeMap<T> {
 
 	set(key: Range, value: T) {
 		const { start, end } = key;
+
 		const startCharacters = ensureCharactersForLine(this._ranges, start);
+
 		const endLines = ensureLinesForCharacter(startCharacters, start);
+
 		const endCharacters = ensureCharactersForLine(endLines, end);
+
 		let entry = get(endCharacters, end.character);
+
 		if (!entry) {
 			this._size++;
 			endCharacters[end.character] = [key, value];
@@ -54,20 +63,26 @@ export class RangeMap<T> {
 		const { start, end } = key;
 
 		const startCharacters = get(this._ranges, start.line);
+
 		if (!startCharacters) return false;
 
 		const endLines = get(startCharacters, start.character);
+
 		if (!endLines) return false;
 
 		const endCharacters = get(endLines, end.line);
+
 		if (!endCharacters) return false;
 
 		if (remove(endCharacters, end.character)) {
 			this._size--;
+
 			if (isEmpty(endCharacters)) {
 				remove(endLines, end.line);
+
 				if (isEmpty(endLines)) {
 					remove(startCharacters, start.character);
+
 					if (isEmpty(startCharacters)) {
 						remove(this._ranges, start.line);
 					}
@@ -98,6 +113,7 @@ export class RangeMap<T> {
 				continue;
 			}
 			const startCharacters = this._ranges[startLine];
+
 			for (
 				let startCharacter = 0;
 				startCharacter < startCharacters.length;
@@ -107,6 +123,7 @@ export class RangeMap<T> {
 					continue;
 				}
 				const endLines = startCharacters[startCharacter];
+
 				for (
 					let endLine = startLine;
 					endLine < endLines.length;
@@ -116,6 +133,7 @@ export class RangeMap<T> {
 						continue;
 					}
 					const endCharacters = endLines[endLine];
+
 					for (
 						let endCharacter =
 							endLine === startLine ? startCharacter : 0;
@@ -126,6 +144,7 @@ export class RangeMap<T> {
 							continue;
 						}
 						const [key] = endCharacters[endCharacter];
+
 						yield key;
 					}
 				}
@@ -139,6 +158,7 @@ export class RangeMap<T> {
 				continue;
 			}
 			const startCharacters = this._ranges[startLine];
+
 			for (
 				let startCharacter = 0;
 				startCharacter < startCharacters.length;
@@ -148,6 +168,7 @@ export class RangeMap<T> {
 					continue;
 				}
 				const endLines = startCharacters[startCharacter];
+
 				for (
 					let endLine = startLine;
 					endLine < endLines.length;
@@ -157,6 +178,7 @@ export class RangeMap<T> {
 						continue;
 					}
 					const endCharacters = endLines[endLine];
+
 					for (
 						let endCharacter =
 							endLine === startLine ? startCharacter : 0;
@@ -167,6 +189,7 @@ export class RangeMap<T> {
 							continue;
 						}
 						const [, value] = endCharacters[endCharacter];
+
 						yield value;
 					}
 				}
@@ -180,6 +203,7 @@ export class RangeMap<T> {
 				continue;
 			}
 			const startCharacters = this._ranges[startLine];
+
 			for (
 				let startCharacter = 0;
 				startCharacter < startCharacters.length;
@@ -189,6 +213,7 @@ export class RangeMap<T> {
 					continue;
 				}
 				const endLines = startCharacters[startCharacter];
+
 				for (
 					let endLine = startLine;
 					endLine < endLines.length;
@@ -198,6 +223,7 @@ export class RangeMap<T> {
 						continue;
 					}
 					const endCharacters = endLines[endLine];
+
 					for (
 						let endCharacter =
 							endLine === startLine ? startCharacter : 0;
@@ -208,6 +234,7 @@ export class RangeMap<T> {
 							continue;
 						}
 						const [key, value] = endCharacters[endCharacter];
+
 						yield [key, value];
 					}
 				}
@@ -241,6 +268,7 @@ export class RangeMap<T> {
 				continue;
 			}
 			const startCharacters = this._ranges[startLine];
+
 			for (
 				let startCharacter = 0;
 				startCharacter < startCharacters.length;
@@ -263,6 +291,7 @@ export class RangeMap<T> {
 						continue;
 					}
 					const endCharacters = endLines[endLine];
+
 					for (
 						let endCharacter =
 							endLine === end.line ? end.character : 0;
@@ -273,6 +302,7 @@ export class RangeMap<T> {
 							continue;
 						}
 						const [key, value] = endCharacters[endCharacter];
+
 						if (key.contains(range)) {
 							yield [key, value];
 						}
@@ -312,6 +342,7 @@ export class RangeMap<T> {
 				continue;
 			}
 			const startCharacters = this._ranges[startLine];
+
 			for (
 				let startCharacter =
 					startLine === start.line
@@ -334,6 +365,7 @@ export class RangeMap<T> {
 						continue;
 					}
 					const endCharacters = endLines[endLine];
+
 					for (
 						let endCharacter =
 							endLine === end.line ? end.character : 0;
@@ -344,6 +376,7 @@ export class RangeMap<T> {
 							continue;
 						}
 						const [key, value] = endCharacters[endCharacter];
+
 						if (key.contains(range)) {
 							return [key, value];
 						}
@@ -372,6 +405,7 @@ export class RangeMap<T> {
 				continue;
 			}
 			const startCharacters = this._ranges[startLine];
+
 			for (
 				let startCharacter =
 						startLine === start.line ? start.character : 0,
@@ -398,6 +432,7 @@ export class RangeMap<T> {
 						continue;
 					}
 					const endCharacters = endLines[endLine];
+
 					for (
 						let endCharacter =
 								endLine === startLine ? startCharacter : 0,
@@ -412,6 +447,7 @@ export class RangeMap<T> {
 							continue;
 						}
 						const [key, value] = endCharacters[endCharacter];
+
 						if (range.contains(key)) {
 							yield [key, value];
 						}
@@ -452,6 +488,7 @@ export class RangeMap<T> {
 				continue;
 			}
 			const startCharacters = this._ranges[startLine];
+
 			for (
 				let startCharacter = 0;
 				startCharacter < startCharacters.length;
@@ -474,6 +511,7 @@ export class RangeMap<T> {
 						continue;
 					}
 					const endCharacters = endLines[endLine];
+
 					for (
 						let endCharacter =
 							endLine === start.line ? start.character : 0;
@@ -484,6 +522,7 @@ export class RangeMap<T> {
 							continue;
 						}
 						const [key, value] = endCharacters[endCharacter];
+
 						if (intersects(key, range)) {
 							yield [key, value];
 						}
@@ -516,13 +555,16 @@ function isEmpty<T>(ar: T[]) {
 function remove<T>(ar: T[], index: number) {
 	if (index < ar.length) {
 		delete ar[index];
+
 		let i: number;
+
 		for (i = ar.length - 1; i >= 0; i--) {
 			if (i in ar) {
 				break;
 			}
 		}
 		ar.length = i + 1;
+
 		return true;
 	}
 	return false;
@@ -530,18 +572,23 @@ function remove<T>(ar: T[], index: number) {
 
 function findPosition<T>(map: LineMap<T>, position: Position) {
 	const chars = get(map, position.line);
+
 	return chars && get(chars, position.character);
 }
 
 function ensureCharactersForLine<T>(map: LineMap<T>, position: Position) {
 	let characters = get(map, position.line);
+
 	if (!characters) map[position.line] = characters = [];
+
 	return characters;
 }
 
 function ensureLinesForCharacter<T>(map: EndLineMap<T>, position: Position) {
 	let characters = get(map, position.character);
+
 	if (!characters) map[position.character] = characters = [];
+
 	return characters;
 }
 

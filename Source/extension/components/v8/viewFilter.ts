@@ -31,25 +31,31 @@ export class ViewFilter {
 			(codeEntry.type === "CPP" || codeEntry.type === "SHARED_LIB")
 		)
 			return true;
+
 		if (
 			this.hideNodeJsCode &&
 			codeEntry.filePosition?.uri.scheme === "node"
 		)
 			return true;
+
 		if (
 			this.hideNodeModulesCode &&
 			codeEntry.filePosition?.uri.path.includes("/node_modules/")
 		)
 			return true;
+
 		return false;
 	}
 
 	applyFilter(callTree: CallTree) {
 		if (!this.hideNativeCode && !this.hideNodeJsCode) return callTree;
+
 		const newCallTree = new CallTree();
+
 		const newRoot = newCallTree.getRoot();
 		callTree.traverse<CallTreeNode>((node, parentNode) => {
 			const newParent = parentNode || newRoot;
+
 			if (this.skipThisFunction(node.entry)) {
 				if (parentNode) {
 					parentNode.selfWeight += node.selfWeight;
@@ -57,9 +63,11 @@ export class ViewFilter {
 				return newParent;
 			} else {
 				let newNode = newParent.findChild(node.entry);
+
 				if (!newNode) {
 					newNode = newParent.addChild(node.entry);
 					newNode.selfWeight = node.selfWeight;
+
 					for (const lineTick of node.getLineTicks()) {
 						newNode.incrementLineTicks(
 							lineTick.line,
@@ -70,6 +78,7 @@ export class ViewFilter {
 				return newNode;
 			}
 		});
+
 		return newCallTree;
 	}
 }

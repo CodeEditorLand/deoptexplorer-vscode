@@ -66,10 +66,12 @@ export class DeoptTreeDataProvider extends BaseNodeProvider {
 			switch (this.sortBy) {
 				case constants.SortDeopts.ByKind:
 					return `${elements.length}`;
+
 				default:
 					const worstBailoutType = from(elements).minBy(
 						(e) => e.worstBailoutType,
 					)!.worstBailoutType;
+
 					const kind =
 						worstBailoutType === undefined
 							? "unknown"
@@ -77,6 +79,7 @@ export class DeoptTreeDataProvider extends BaseNodeProvider {
 									worstBailoutType,
 									this.log?.version,
 								);
+
 					return `${kind} (${elements.length})`;
 			}
 		},
@@ -85,20 +88,28 @@ export class DeoptTreeDataProvider extends BaseNodeProvider {
 			switch (key?.symbolKind) {
 				case SymbolKind.Function:
 					return new ThemeIcon("symbol-function");
+
 				case SymbolKind.Class:
 					return new ThemeIcon("symbol-class");
+
 				case SymbolKind.Namespace:
 					return new ThemeIcon("symbol-namespace");
+
 				case SymbolKind.Enum:
 					return new ThemeIcon("symbol-enum");
+
 				case SymbolKind.Method:
 					return new ThemeIcon("symbol-method");
+
 				case SymbolKind.Property:
 					return new ThemeIcon("symbol-property");
+
 				case SymbolKind.Field:
 					return new ThemeIcon("symbol-field");
+
 				case SymbolKind.Constructor:
 					return new ThemeIcon("symbol-constructor");
+
 				default:
 					return new ThemeIcon("symbol-misc");
 			}
@@ -106,7 +117,9 @@ export class DeoptTreeDataProvider extends BaseNodeProvider {
 
 		command: (key) => {
 			if (!key?.location) return;
+
 			const uri = getScriptSourceUri(key.location.uri, this.log?.sources);
+
 			return (
 				uri && {
 					title: "",
@@ -259,6 +272,7 @@ export class DeoptTreeDataProvider extends BaseNodeProvider {
 					this._groupByFunction,
 					this._groupByDeoptimizeKind,
 				]);
+
 			case constants.SortDeopts.ByKind:
 				return GroupingNode.groupBy(q.toArray(), [
 					this._groupByDeoptimizeKind,

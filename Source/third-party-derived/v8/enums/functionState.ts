@@ -72,28 +72,34 @@ export function parseFunctionState(text: string) {
 		case "":
 		case "compiled":
 			return FunctionState.Compiled;
+
 		case "~":
 		case "optimizable":
 		case "interpreted":
 			return FunctionState.Interpreted;
+
 		case "*":
 		case "deoptimized":
 		case "optimized":
 		case "optimized (turbofan)":
 			return FunctionState.Optimized;
+
 		case "^":
 		case "baseline":
 		case "sparkplug":
 		case "compiled (sparkplug)":
 			return FunctionState.CompiledSparkplug;
+
 		case "+":
 		case "turboprop":
 		case "maglev":
 		case "optimized (turboprop)":
 		case "optimized (maglev)":
 			return FunctionState.OptimizedTurboprop;
+
 		case "inlined":
 			return FunctionState.Inlined;
+
 		default:
 			assert(false, `Unrecognized function state '${text}'.`);
 	}
@@ -103,16 +109,22 @@ export function formatFunctionState(value: FunctionState) {
 	switch (value) {
 		case FunctionState.Compiled:
 			return "Compiled";
+
 		case FunctionState.CompiledSparkplug:
 			return "Compiled (sparkplug)";
+
 		case FunctionState.Interpreted:
 			return "Interpreted";
+
 		case FunctionState.Optimized:
 			return "Optimized (turbofan)";
+
 		case FunctionState.OptimizedTurboprop:
 			return "Optimized (turboprop)";
+
 		case FunctionState.Inlined:
 			return "Inlined";
+
 		default:
 			assert(false, "Argument out of range: value");
 	}

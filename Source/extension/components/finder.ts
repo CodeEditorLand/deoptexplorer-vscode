@@ -19,15 +19,22 @@ export function createFinder(file: CanonicalUri, entries: Entry[]) {
 	}
 
 	const localEntries = entries.slice();
+
 	const ranges = localEntries.map(
 		(entry) => entry.pickReferenceLocation(file).range,
 	);
+
 	const starts: PositionInfo[] = [];
+
 	const ends: PositionInfo[] = [];
+
 	let lastStart: PositionInfo | undefined;
+
 	let lastEnd: PositionInfo | undefined;
+
 	for (let i = 0; i < ranges.length; i++) {
 		const { start, end } = ranges[i];
+
 		if (!lastStart || !lastStart.position.isEqual(start)) {
 			starts.push((lastStart = { position: start, index: i }));
 		}
@@ -62,8 +69,11 @@ export function createFinder(file: CanonicalUri, entries: Entry[]) {
 
 	function* find(position: Position) {
 		if (localEntries.length === 0) return;
+
 		const end = findLeastUpperBound(position);
+
 		const start = findGreatestLowerBound(position);
+
 		if (end - start <= 0) return;
 
 		for (let i = start; i < end; i++) {

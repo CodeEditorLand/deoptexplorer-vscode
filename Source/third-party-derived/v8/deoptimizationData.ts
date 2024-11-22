@@ -20,6 +20,7 @@ import { CodeMap } from "./tools/codemap";
 
 const inliningPositionRegExp =
 	/F(?<function_id>\d+)?O(?<script_offset>\d+)(?:I(?<inlining_id>\d+))?/y;
+
 const inlinedFunctionsRegExp = /S(?<address>0[xX][0-9a-fA-F]+)/y;
 
 /**
@@ -45,6 +46,7 @@ export class DeoptimizationData {
 			index >= kNotInlined && index < this.inlinedFunctions.length,
 			"Index out of range",
 		);
+
 		return index === kNotInlined
 			? this.shared
 			: this.inlinedFunctions[index];
@@ -64,15 +66,20 @@ export class DeoptimizationData {
 		//         <function-id> is an index into the <fns> function table
 		const inliningPositionsArray: InliningPosition[] = [];
 		inliningPositionRegExp.lastIndex = 0;
+
 		while ((match = inliningPositionRegExp.exec(inliningPositions))) {
 			assert(match.groups);
+
 			const inlined_function_id = match.groups.function_id
 				? parseInt(match.groups.function_id, 10)
 				: -1;
+
 			const script_offset = parseInt(match.groups.script_offset, 10);
+
 			const inlining_id = match.groups.inlining_id
 				? parseInt(match.groups.inlining_id, 10)
 				: kNotInlined;
+
 			const position = new SourcePosition(script_offset, inlining_id);
 			inliningPositionsArray.push(
 				new InliningPosition(position, inlined_function_id),
@@ -83,15 +90,19 @@ export class DeoptimizationData {
 		//      S<shared-function-info-address>
 		const inlinedFunctionsArray: SharedFunctionCodeEntry[] = [];
 		inlinedFunctionsRegExp.lastIndex = 0;
+
 		while ((match = inlinedFunctionsRegExp.exec(inlinedFunctions))) {
 			assert(match.groups);
+
 			const address = parseAddress(match.groups.address);
+
 			const entry = codeMap.findEntry(address);
 			// if (entry?.type === "SHARED_LIB" && entry.name.includes("node.exe")) {
 			//     debugger;
 			// }
 			let sharedEntry =
 				entry instanceof SharedFunctionCodeEntry ? entry : undefined;
+
 			if (!sharedEntry) {
 				sharedEntry = SharedFunctionCodeEntry.unresolved_entry();
 				codeMap.addCode(address, sharedEntry);

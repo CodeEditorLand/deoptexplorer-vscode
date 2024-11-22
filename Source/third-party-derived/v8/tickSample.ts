@@ -33,11 +33,13 @@ export class TickSample {
 
 	get external_callback_entry() {
 		assert(this.has_external_callback);
+
 		return this.tosOrExternalCallbackEntry;
 	}
 
 	get tos() {
 		assert(!this.has_external_callback);
+
 		return this.tosOrExternalCallbackEntry;
 	}
 

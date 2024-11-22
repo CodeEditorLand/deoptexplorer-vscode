@@ -13,11 +13,15 @@ import { average, sum } from "@esfx/iter-fn";
  */
 export function stdDev(array: readonly number[], isTotalPopulation: boolean) {
 	if (array.length < 2) return 0;
+
 	const mean = average(array);
+
 	const deviations = array.map((a) => (a - mean) ** 2);
+
 	const variance = isTotalPopulation
 		? sum(deviations) / array.length
 		: sum(deviations) / (array.length - 1);
+
 	return Math.sqrt(variance);
 }
 
@@ -29,8 +33,11 @@ export function stdDev(array: readonly number[], isTotalPopulation: boolean) {
  */
 export function quantile(sorted: readonly number[], q: number) {
 	const pos = (sorted.length - 1) * q;
+
 	const base = Math.floor(pos);
+
 	const rest = pos - base;
+
 	return base < sorted.length - 1
 		? sorted[base] + rest * (sorted[base + 1] - sorted[base])
 		: sorted[base];

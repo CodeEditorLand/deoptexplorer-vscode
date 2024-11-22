@@ -45,6 +45,7 @@ let currentContext: ExtensionContext | undefined;
 // let debugSession: DebugSession | undefined;
 
 let waitForLogResolved = false;
+
 let waitForLogDeferred = new Deferred<LogFile>();
 
 export async function openLogFile(uri: Uri | undefined) {
@@ -60,6 +61,7 @@ export async function openLogFile(uri: Uri | undefined) {
 			canSelectMany: false,
 			filters: { "V8 Logs": ["log"] },
 		});
+
 		if (files === undefined || files.length === 0) return;
 		uri = files[0];
 	}
@@ -69,6 +71,7 @@ export async function openLogFile(uri: Uri | undefined) {
 
 async function openLogFileWorker(uri: Uri) {
 	let ok = false;
+
 	try {
 		closeLogFile();
 
@@ -98,6 +101,7 @@ async function openLogFileWorker(uri: Uri) {
 
 					// Try to load a native CppEntriesProvider on Windows
 					let cppEntriesProvider: CppEntriesProvider | undefined;
+
 					if (process.platform === "win32") {
 						cppEntriesProvider = new WindowsCppEntriesProvider({
 							globalStorageUri: currentContext?.globalStorageUri,
@@ -113,13 +117,16 @@ async function openLogFileWorker(uri: Uri) {
 						globalStorageUri: currentContext?.globalStorageUri,
 						cppEntriesProvider,
 					});
+
 					const stats = await tryStatAsync(file);
+
 					const log = await processor.process(
 						readLines(file),
 						scaleProgress(progress, 0.6),
 						token,
 						stats?.size || undefined,
 					);
+
 					if (token.isCancellationRequested) return;
 
 					// // Start a debugger
@@ -135,6 +142,7 @@ async function openLogFileWorker(uri: Uri) {
 					// });
 
 					progress.report({ increment: 100, message: "Log parsed" });
+
 					return log;
 				},
 			),
@@ -145,17 +153,20 @@ async function openLogFileWorker(uri: Uri) {
 			emitters.didOpenLogFile({ uri, log: openedLog });
 
 			const recentFiles = storage.getRecentFiles();
+
 			const index = recentFiles.findIndex((recent) =>
 				UriEqualer.equals(recent, uri),
 			);
 
 			let recentFilesPromise: Promise<void> | undefined;
+
 			if (index !== 0) {
 				if (index !== -1) {
 					recentFiles.splice(index, 1);
 					recentFiles.unshift(uri);
 				} else {
 					recentFiles.unshift(uri);
+
 					if (recentFiles.length > 5) {
 						recentFiles.pop();
 					}
@@ -185,12 +196,14 @@ export function waitForLog(token?: CancellationToken) {
 	if (!token) return waitForLogDeferred.promise;
 
 	let subscription: Disposable | undefined;
+
 	const cancelPromise = new Promise<LogFile>(
 		(_, reject) =>
 			(subscription = token.onCancellationRequested(() =>
 				reject(new CancellationError()),
 			)),
 	);
+
 	return Promise.race([cancelPromise, waitForLogDeferred.promise]).finally(
 		() => {
 			subscription?.dispose();
@@ -224,13 +237,18 @@ export function getEntryId(entry: Entry) {
 export function findEntry(id: string) {
 	if (openedLog) {
 		const match = /^(ic|deopt|function):(.*)$/.exec(id);
+
 		if (match) {
 			const key = (match[1] + "s") as "ics" | "deopts" | "functions";
+
 			const filePosition = getCanonicalLocation(
 				parseLocation(match[2], /*strict*/ false),
 			);
+
 			const fileEntry = openedLog.files.get(filePosition.uri);
+
 			const entries = fileEntry?.[key] as Entry[] | undefined;
+
 			return entries?.find((entry) =>
 				equateNullable(
 					filePosition,
@@ -266,5 +284,6 @@ export function activateCurrentLogFileService(context: ExtensionContext) {
 	// }));
 
 	stack.defer(closeLogFile);
+
 	return stack;
 }

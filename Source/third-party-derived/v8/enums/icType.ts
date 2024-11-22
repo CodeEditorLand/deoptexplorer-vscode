@@ -52,18 +52,25 @@ export function parseIcType(text: string) {
 	switch (text.toLowerCase()) {
 		case "loadglobalic":
 			return IcType.LoadGlobalIC;
+
 		case "storeglobalic":
 			return IcType.StoreGlobalIC;
+
 		case "loadic":
 			return IcType.LoadIC;
+
 		case "storeic":
 			return IcType.StoreIC;
+
 		case "keyedloadic":
 			return IcType.KeyedLoadIC;
+
 		case "keyedstoreic":
 			return IcType.KeyedStoreIC;
+
 		case "storeinarrayliteralic":
 			return IcType.StoreInArrayLiteralIC;
+
 		default:
 			assert(false, `Unrecognized IC type '${text}'.`);
 	}

@@ -46,6 +46,7 @@ export class MapNode extends BaseNode {
 
 	protected createTreeItem() {
 		const groupByFunction = this.provider.groupBy.has(GroupMaps.ByFunction);
+
 		return createTreeItem(
 			this.mapId.toString(),
 			TreeItemCollapsibleState.None,
@@ -79,11 +80,13 @@ export class MapNode extends BaseNode {
 		token: CancellationToken,
 	): ProviderResult<TreeItem> {
 		const source = this.map.getMapSource();
+
 		if (source) {
 			treeItem.description = `${source.functionName} (${formatLocation(this.map.getMapFilePosition(), { as: "file", include: "none" })})`;
 		}
 
 		const lines: MarkdownString[] = [];
+
 		if (source) {
 			const relativeTo = this.provider.log && {
 				log: this.provider.log,
@@ -97,12 +100,15 @@ export class MapNode extends BaseNode {
 
 		if (this.map.mapType)
 			lines.push(markdown`**type:** ${this.map.mapType}  \n`);
+
 		if (this.map.elementsKind)
 			lines.push(markdown`**elements:** ${this.map.elementsKind}  \n`);
+
 		if (this.map.instanceSize)
 			lines.push(
 				markdown`**instance size:** ${this.map.instanceSize}  \n`,
 			);
+
 		if (this.map.inobjectPropertiesCount)
 			lines.push(
 				markdown`**inobject properties:** ${this.map.inobjectPropertiesCount}  \n`,
@@ -116,6 +122,7 @@ export class MapNode extends BaseNode {
 			title: `${this.mapId}`,
 		});
 		treeItem.tooltip = markdown`${header}\n\n${lines}`;
+
 		return treeItem;
 	}
 }

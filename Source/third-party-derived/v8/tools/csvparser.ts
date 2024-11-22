@@ -43,14 +43,18 @@ export class CsvParser {
 	 */
 	escapeField(string: string) {
 		let nextPos = string.indexOf("\\");
+
 		if (nextPos === -1) return string;
 
 		let result = string.substring(0, nextPos);
 		// Escape sequences of the form \x00 and \u0000;
+
 		let pos = 0;
+
 		while (nextPos !== -1) {
 			let escapeIdentifier = string.charAt(nextPos + 1);
 			pos = nextPos + 2;
+
 			if (escapeIdentifier === "n") {
 				result += "\n";
 				nextPos = pos;
@@ -67,6 +71,7 @@ export class CsvParser {
 				}
 				// Convert the selected escape sequence to a single character.
 				let escapeChars = string.substring(pos, nextPos);
+
 				if (escapeChars === "2C") {
 					result += ",";
 				} else {
@@ -94,13 +99,20 @@ export class CsvParser {
 	 */
 	parseLine(line: string) {
 		var pos = 0;
+
 		var endPos = line.length;
+
 		var fields: string[] = [];
+
 		if (endPos == 0) return fields;
+
 		let nextPos = 0;
+
 		while (nextPos !== -1) {
 			nextPos = line.indexOf(",", pos);
+
 			let field;
+
 			if (nextPos === -1) {
 				field = line.substr(pos);
 			} else {

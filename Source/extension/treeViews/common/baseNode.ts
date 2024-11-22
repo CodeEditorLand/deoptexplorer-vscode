@@ -25,6 +25,7 @@ export abstract class BaseNode extends ContextCommandHandler {
 		private paginationOptions?: PaginationOptions,
 	) {
 		super();
+
 		if (parent) assert(parent.provider === provider);
 		this._provider = provider;
 		this._parent = parent;

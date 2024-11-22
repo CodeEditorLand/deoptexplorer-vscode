@@ -4,7 +4,9 @@
 import { CancellationTokenSource, Disposable, ExtensionContext } from "vscode";
 
 let extensionSource = new CancellationTokenSource();
+
 let diskOperationSource = new CancellationTokenSource();
+
 let uiOperationSource = new CancellationTokenSource();
 
 export let extensionToken = extensionSource.token;
@@ -14,6 +16,7 @@ export let uiOperationToken = uiOperationSource.token;
 let diskOperationSubscription = extensionToken.onCancellationRequested(
 	cancelPendingIOOperation,
 );
+
 let uiOperationSubscription = extensionToken.onCancellationRequested(
 	cancelPendingUIOperation,
 );

@@ -18,6 +18,7 @@ import { assert } from "./assert";
  */
 export function html(array: TemplateStringsArray, ...args: HtmlValue[]) {
 	const result = new HtmlString(array[0]);
+
 	for (let i = 1; i < array.length; i++) {
 		appendArg(result, args[i - 1]);
 		result.appendHtml(array[i]);
@@ -69,11 +70,13 @@ export class HtmlString {
 
 	appendText(text: string) {
 		this.value += HtmlString.htmlEncode(text);
+
 		return this;
 	}
 
 	appendHtml(text: string) {
 		this.value += text;
+
 		return this;
 	}
 
@@ -93,6 +96,7 @@ function appendArg(result: HtmlString, arg: HtmlValue) {
 				"Cannot mix trusted and untrusted content",
 			);
 			result.appendHtml(arg.value);
+
 			return;
 		}
 		if (Symbol.iterator in arg) {

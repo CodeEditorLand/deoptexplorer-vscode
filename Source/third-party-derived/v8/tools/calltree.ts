@@ -66,12 +66,14 @@ export class CallTree {
 			return this.root_;
 		}
 		let curr = this.root_;
+
 		for (let i = path.length - 1; i >= 0; --i) {
 			curr = curr.findOrAddChild(path[i].code_entry);
 		}
 		curr.incrementSelfTicks();
 		curr.incrementLineTicks(src_line);
 		this.totalsComputed_ = false;
+
 		return curr;
 	}
 
@@ -108,8 +110,10 @@ export class CallTree {
 			}
 			let child = (parent ?? subTree).findOrAddChild(node.entry);
 			child.selfWeight += node.selfWeight;
+
 			return child;
 		});
+
 		return subTree;
 	}
 
@@ -146,10 +150,14 @@ export class CallTree {
 			param: T | null;
 		}>();
 		pairsToProcess.concat([{ node: this.root_, param: null }]);
+
 		while (!pairsToProcess.atEnd()) {
 			let pair = pairsToProcess.next();
+
 			let node = pair.node;
+
 			let newParam = f(node, pair.param);
+
 			let morePairsToProcess: { node: CallTreeNode; param: T | null }[] =
 				[];
 			node.forEachChild((child) => {
@@ -235,6 +243,7 @@ export class CallTreeNode {
 	incrementLineTicks(src_line: number, amount = 1) {
 		assert(src_line >= kNoLineNumberInfo);
 		assert(amount >= 1);
+
 		if (src_line === kNoLineNumberInfo) return;
 		this._line_ticks ??= Object.create(null) as Record<number, number>;
 		this._line_ticks[src_line] ??= 0;
@@ -253,6 +262,7 @@ export class CallTreeNode {
 	addChild(entry: CodeEntry) {
 		let child = new CallTreeNode(this.tree, entry, this);
 		this.children[child.label] = child;
+
 		return child;
 	}
 
@@ -264,6 +274,7 @@ export class CallTreeNode {
 		this.forEachChild((child) => {
 			totalWeight += child.computeTotalWeight();
 		});
+
 		return (this.totalWeight = totalWeight);
 	}
 
@@ -273,6 +284,7 @@ export class CallTreeNode {
 	exportChildren() {
 		let result: CallTreeNode[] = [];
 		this.forEachChild((node) => result.push(node));
+
 		return result;
 	}
 
@@ -336,8 +348,10 @@ export class CallTreeNode {
 		opt_f?: (node: CallTreeNode, pos: number) => void,
 	): CallTreeNode | null {
 		let curr: CallTreeNode | null = this;
+
 		for (let pos = 0; pos < entries.length && curr !== null; pos++) {
 			let child: CallTreeNode | null = curr.findChild(entries[pos]);
+
 			if (child !== null && opt_f) {
 				opt_f(child, pos);
 			}

@@ -7,10 +7,15 @@ import { ArrayType, TypedArray } from "./ref-array";
 import { StructObject, StructType } from "./ref-struct";
 
 const MAX_SAFE_INTEGER = BigInt(Number.MAX_SAFE_INTEGER);
+
 const MIN_SAFE_INTEGER = BigInt(Number.MIN_SAFE_INTEGER);
+
 const MAX_BIGUINT64 = BigInt(2) ** BigInt(64) - BigInt(1);
+
 const MAX_BIGINT64 = BigInt(2) ** BigInt(63) - BigInt(1);
+
 const MIN_BIGINT64 = ~MAX_BIGINT64;
+
 const _WIN64 = ref.sizeof.pointer === 8;
 
 function alias<T>(
@@ -33,6 +38,7 @@ function alias<T>(
 		Object.getOwnPropertyDescriptors(overrides),
 	);
 	alias.name = name;
+
 	return alias;
 }
 
@@ -63,6 +69,7 @@ export namespace signed {
 		set(buffer, offset, value) {
 			if (value < MIN_BIGINT64 || value > MAX_BIGINT64)
 				throw new RangeError();
+
 			return ref.endianness === "LE"
 				? buffer.writeInt64LE(bigintToStringOrNumber(value), offset)
 				: buffer.writeInt64BE(bigintToStringOrNumber(value), offset);
@@ -96,6 +103,7 @@ export namespace unsigned {
 		},
 		set(buffer, offset, value) {
 			if (value < 0 || value > MAX_BIGUINT64) throw new RangeError();
+
 			return ref.endianness === "LE"
 				? buffer.writeUInt64LE(bigintToStringOrNumber(value), offset)
 				: buffer.writeUInt64BE(bigintToStringOrNumber(value), offset);
@@ -398,14 +406,17 @@ const CWString: ref.Type<string | null> = {
 	ffi_type: ref.types.CString.ffi_type,
 	get: function get(buf, offset) {
 		const _buf = ref.readPointer(buf, offset);
+
 		if (ref.isNull(_buf)) {
 			return null;
 		}
 		const _buf2 = ref.reinterpretUntilZeros(_buf, 2, 0);
+
 		return _buf2.toString("utf16le");
 	},
 	set: function set(buf, offset, val) {
 		let _buf;
+
 		if (Buffer.isBuffer(val)) {
 			_buf = val;
 		} else {
@@ -439,6 +450,7 @@ export type GUID = ref.UnderlyingType<typeof GUID>;
 
 export function sizeof(type: ref.TypeLike) {
 	type = ref.coerceType(type);
+
 	return type.size;
 }
 
@@ -452,7 +464,9 @@ export function reinterpret_cast(
 	offset?: number,
 ) {
 	type = ref.coerceType(type);
+
 	let valueBuffer: Buffer;
+
 	if (Buffer.isBuffer(value)) {
 		valueBuffer = value;
 	} else {
@@ -460,6 +474,7 @@ export function reinterpret_cast(
 	}
 
 	const reinterpretBuffer = ref.reinterpret(valueBuffer, type.size, offset);
+
 	if (!reinterpretBuffer.type) {
 		reinterpretBuffer.type = type;
 	}

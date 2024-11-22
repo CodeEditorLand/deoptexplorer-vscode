@@ -21,6 +21,7 @@ import { CharacterCodes } from "../types";
 function getLocation(uriOrLocation: Uri | Location | undefined, range?: Range) {
 	if (uriOrLocation instanceof Location) {
 		assert(!range);
+
 		return uriOrLocation;
 	}
 	if (uriOrLocation instanceof Uri && range instanceof Range) {
@@ -46,17 +47,23 @@ function setReferenceLocation(
 	range?: Range,
 ) {
 	const location = getLocation(uriOrLocation, range);
+
 	if (!location) return false;
 
 	switch (locationKind) {
 		case "source":
 			entry.referenceLocation = location;
+
 			break;
+
 		case "generated":
 			entry.generatedReferenceLocation = location;
+
 			break;
+
 		default:
 			assertNever(locationKind);
+
 			break;
 	}
 	return true;
@@ -89,6 +96,7 @@ function tokenAt(sourceFile: ts.SourceFile, position: Position) {
 		position.character,
 		/*allowEdits*/ true,
 	);
+
 	return ts.getTokenAtPosition(sourceFile, offset);
 }
 
@@ -98,6 +106,7 @@ function precedingTokenAt(sourceFile: ts.SourceFile, position: Position) {
 		position.character,
 		/*allowEdits*/ true,
 	);
+
 	return ts.findPrecedingToken(
 		offset,
 		sourceFile,
@@ -118,14 +127,17 @@ function resolveLocations<T extends Entry>(
 	) => boolean,
 ) {
 	const filePosition = entry.getLocation(locationKind);
+
 	if (!filePosition) return false;
 
 	const sourceFile = entry.getSourceFile(locationKind);
+
 	if (sourceFile) {
 		const document = TextDocumentLike.fromSourceFile(
 			sourceFile,
 			filePosition.uri,
 		);
+
 		if (document) {
 			if (
 				tryResolveLocations(
@@ -142,6 +154,7 @@ function resolveLocations<T extends Entry>(
 		const range =
 			document.getWordRangeAtPosition(filePosition.range.start) ??
 			filePosition.range;
+
 		return setReferenceLocation(
 			locationKind,
 			entry,
@@ -180,17 +193,23 @@ function setExtentLocation(
 	range?: Range,
 ) {
 	const location = getLocation(uriOrLocation, range);
+
 	if (!location) return false;
 
 	switch (locationKind) {
 		case "source":
 			entry.extentLocation = location;
+
 			break;
+
 		case "generated":
 			entry.generatedExtentLocation = location;
+
 			break;
+
 		default:
 			assertNever(locationKind);
+
 			break;
 	}
 	return true;
@@ -207,8 +226,11 @@ function getRangeForNameOrKeywordOfFunction(
 	// function () {}
 	// ~~~~~~~~
 	const range = ts.moveRangePastModifiers(node);
+
 	const start = ts.skipTrivia(document.getText(), range.pos);
+
 	const end = start + "function".length;
+
 	return new Range(document.positionAt(start), document.positionAt(end));
 }
 
@@ -222,13 +244,20 @@ function getRangeForKeywordOfConstructor(
 	// "constructor"() {}
 	// ~~~~~~~~~~~~~
 	if (node.name) return getRangeForNode(document, node.name);
+
 	const range = ts.moveRangePastModifiers(node);
+
 	const text = document.getText();
+
 	const start = ts.skipTrivia(text, range.pos);
+
 	const ch = text.charCodeAt(start);
+
 	const isString =
 		ch === CharacterCodes.singleQuote || ch === CharacterCodes.doubleQuote;
+
 	const end = start + "constructor".length + (isString ? 2 : 0);
+
 	return new Range(document.positionAt(start), document.positionAt(end));
 }
 
@@ -252,9 +281,13 @@ function getRangeForEqualsGreaterThanTokenOfArrowFunction(
 	//    ~~
 	if (node.equalsGreaterThanToken)
 		return getRangeForNode(document, node.equalsGreaterThanToken);
+
 	const range = ts.moveRangePastModifiers(node);
+
 	const start = ts.skipTrivia(document.getText(), range.pos);
+
 	const end = node.body.getFullStart();
+
 	return new Range(document.positionAt(start), document.positionAt(end));
 }
 
@@ -265,18 +298,21 @@ function setFunctionLocationsFromFunctionNode(
 	node: ts.FunctionDeclaration | ts.FunctionExpression,
 ) {
 	const uri = document.uri;
+
 	setReferenceLocation(
 		locationKind,
 		entry,
 		uri,
 		getRangeForNameOrKeywordOfFunction(document, node),
 	);
+
 	setExtentLocation(
 		locationKind,
 		entry,
 		uri,
 		getRangeForNode(document, node),
 	);
+
 	return true;
 }
 
@@ -287,18 +323,21 @@ function setFunctionLocationsForConstructorNode(
 	node: ts.ConstructorDeclaration,
 ) {
 	const uri = document.uri;
+
 	setReferenceLocation(
 		locationKind,
 		entry,
 		uri,
 		getRangeForKeywordOfConstructor(document, node),
 	);
+
 	setExtentLocation(
 		locationKind,
 		entry,
 		uri,
 		getRangeForNode(document, node),
 	);
+
 	return true;
 }
 
@@ -309,18 +348,21 @@ function setFunctionLocationsForMethodNode(
 	node: ts.MethodDeclaration | ts.AccessorDeclaration,
 ) {
 	const uri = document.uri;
+
 	setReferenceLocation(
 		locationKind,
 		entry,
 		uri,
 		getRangeForNameOfMethod(document, node),
 	);
+
 	setExtentLocation(
 		locationKind,
 		entry,
 		uri,
 		getRangeForNode(document, node),
 	);
+
 	return true;
 }
 
@@ -331,18 +373,21 @@ function setFunctionLocationsForArrowFunctionNode(
 	node: ts.ArrowFunction,
 ) {
 	const uri = document.uri;
+
 	setReferenceLocation(
 		locationKind,
 		entry,
 		uri,
 		getRangeForEqualsGreaterThanTokenOfArrowFunction(document, node),
 	);
+
 	setExtentLocation(
 		locationKind,
 		entry,
 		uri,
 		getRangeForNode(document, node),
 	);
+
 	return true;
 }
 
@@ -588,7 +633,9 @@ function tryResolveFunctionLocationsInJavaScript(
 	sourceFile: ts.SourceFile,
 ) {
 	const token = tokenAt(sourceFile, filePosition.range.start);
+
 	let node = token;
+
 	while (node) {
 		if (ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node)) {
 			//           ▼
@@ -660,16 +707,21 @@ function tryResolveFunctionLocationsInTypeScript(
 	sourceFile: ts.SourceFile,
 ) {
 	assert(locationKind === "source");
+
 	if (entry.generatedReferenceLocation && entry.generatedExtentLocation) {
 		const sourceMap = entry.getSourceMap();
+
 		if (sourceMap) {
 			let changed = false;
+
 			const sourceReferenceLocation = sourceMap.toSourceLocation(
 				entry.generatedReferenceLocation,
 			);
+
 			const sourceExtentLocation = sourceMap.toSourceLocation(
 				entry.generatedExtentLocation,
 			);
+
 			if (
 				sourceReferenceLocation?.range.isEmpty ||
 				sourceExtentLocation?.range.isEmpty
@@ -694,8 +746,10 @@ function tryResolveFunctionLocationsInTypeScript(
 				)
 			)
 				changed = true;
+
 			if (setExtentLocation(locationKind, entry, sourceExtentLocation))
 				changed = true;
+
 			if (changed) {
 				return true;
 			}
@@ -717,8 +771,11 @@ function tryResolveSymbolInfo(
 	resolveName: boolean,
 ) {
 	const location = entry.pickReferenceLocation(fileUri);
+
 	const token = tokenAt(sourceFile, location.range.start);
+
 	let nameContext: ts.NamedDeclaration | undefined;
+
 	if (ts.isModuleDeclaration(token.parent)) {
 		if (ts.isIdentifier(token.parent.name)) nameContext = token.parent;
 		entry.symbolKind = SymbolKind.Namespace;
@@ -758,6 +815,7 @@ function tryResolveSymbolInfo(
 				: ts.isClassDeclaration(nameContext)
 					? "default"
 					: undefined;
+
 		if (functionName) {
 			if (ts.isClassStaticBlockDeclaration(token.parent)) {
 				functionName += " static {}";
@@ -796,6 +854,7 @@ function tryResolveFunctionLocations(
 				sourceFile,
 				/*resolveName*/ false,
 			);
+
 			return true;
 		}
 	}
@@ -815,6 +874,7 @@ function tryResolveFunctionLocations(
 				sourceFile,
 				!entry.functionName || entry.functionName === "(anonymous)",
 			);
+
 			return true;
 		}
 	}
@@ -955,8 +1015,10 @@ function tryResolveIcLocationInJavaScript(
 	// NOTE: ▼ - Indicates current token
 	//       ~ - Indicates derived range
 	let token = tokenAt(sourceFile, filePosition.range.start);
+
 	if (worst.type === IcType.LoadIC || worst.type === IcType.KeyedLoadIC) {
 		let node = token;
+
 		while (node && !ts.isStatement(node)) {
 			if (ts.isPropertyAccessExpression(node)) {
 				// ▼
@@ -1007,6 +1069,7 @@ function tryResolveIcLocationInJavaScript(
 		worst.type === IcType.KeyedStoreIC
 	) {
 		let node = token;
+
 		while (node && !ts.isStatement(node)) {
 			if (ts.isBinaryExpression(node)) {
 				//   ▼
@@ -1148,6 +1211,7 @@ function tryResolveIcLocationInJavaScript(
 			);
 		}
 		let node = token;
+
 		while (node && !ts.isStatement(node)) {
 			if (ts.isBinaryExpression(node)) {
 				return setReferenceLocationFromNode(
@@ -1161,6 +1225,7 @@ function tryResolveIcLocationInJavaScript(
 		}
 	} else if (worst.type === IcType.StoreInArrayLiteralIC) {
 		let node = token;
+
 		while (node && !ts.isStatement(node)) {
 			if (ts.isArrayLiteralExpression(node.parent)) {
 				//  ▼
@@ -1597,12 +1662,15 @@ function tryResolveIcLocationInTypeScript(
 	sourceFile: ts.SourceFile,
 ): boolean {
 	assert(locationKind === "source");
+
 	if (entry.generatedReferenceLocation) {
 		const sourceMap = entry.getSourceMap();
+
 		if (sourceMap) {
 			const location = sourceMap.toSourceLocation(
 				entry.generatedReferenceLocation,
 			);
+
 			if (location) {
 				if (location.range.isEmpty) {
 					if (
@@ -1661,11 +1729,17 @@ export function resolveIcLocations(locationKind: LocationKind, entry: IcEntry) {
 // #region DeoptEntry Locations
 
 const wrongMapRegExp = /wrong map/i;
+
 const wrongCallTargetRegExp = /wrong call/i;
+
 const notAnSmiRegExp = /not.*smi/i;
+
 const binaryTypeFeedbackRegExp = /type feedback.*(binary|compare)/;
+
 const unaryTypeFeedbackRegExp = /type feedback.*unary/;
+
 const callTypeFeedbackRegExp = /type feedback.*call/;
+
 const genericTypeFeedbackRegExp = /type feedback.*generic/;
 
 function tryResolveDeoptLocationInJavaScript(
@@ -1676,7 +1750,9 @@ function tryResolveDeoptLocationInJavaScript(
 	sourceFile: ts.SourceFile,
 ): boolean {
 	const token = tokenAt(sourceFile, filePosition.range.start);
+
 	const worst = from(entry.updates).minBy((update) => update.bailoutType);
+
 	if (
 		(worst?.bailoutType === DeoptimizeKind.Eager &&
 			wrongCallTargetRegExp.test(worst.deoptReason)) ||
@@ -1684,9 +1760,11 @@ function tryResolveDeoptLocationInJavaScript(
 			callTypeFeedbackRegExp.test(worst.deoptReason))
 	) {
 		let node = token;
+
 		while (node && !ts.isStatement(node)) {
 			if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
 				node = node.expression;
+
 				while (ts.isParenthesizedExpression(node)) {
 					node = node.expression;
 				}
@@ -1698,6 +1776,7 @@ function tryResolveDeoptLocationInJavaScript(
 				);
 			} else if (ts.isTaggedTemplateExpression(node)) {
 				node = node.tag;
+
 				while (ts.isParenthesizedExpression(node)) {
 					node = node.expression;
 				}
@@ -1715,6 +1794,7 @@ function tryResolveDeoptLocationInJavaScript(
 		notAnSmiRegExp.test(worst.deoptReason)
 	) {
 		let node = token;
+
 		while (node && !ts.isStatement(node)) {
 			if (ts.isBinaryExpression(node)) {
 				return setReferenceLocationFromNode(
@@ -1747,6 +1827,7 @@ function tryResolveDeoptLocationInJavaScript(
 		binaryTypeFeedbackRegExp.test(worst.deoptReason)
 	) {
 		let node = token;
+
 		while (node && !ts.isStatement(node)) {
 			if (ts.isBinaryExpression(node)) {
 				return setReferenceLocationFromNode(
@@ -1763,6 +1844,7 @@ function tryResolveDeoptLocationInJavaScript(
 		unaryTypeFeedbackRegExp.test(worst.deoptReason)
 	) {
 		let node = token;
+
 		while (node && !ts.isStatement(node)) {
 			if (ts.isPrefixUnaryExpression(node)) {
 				const operatorToken = ts.factory.createToken(node.operator);
@@ -1771,6 +1853,7 @@ function tryResolveDeoptLocationInJavaScript(
 					end: node.operand.end,
 				});
 				ts.setParent(operatorToken, node.parent);
+
 				return setReferenceLocationFromNode(
 					locationKind,
 					entry,
@@ -1785,6 +1868,7 @@ function tryResolveDeoptLocationInJavaScript(
 					end: node.end,
 				});
 				ts.setParent(operatorToken, node.parent);
+
 				return setReferenceLocationFromNode(
 					locationKind,
 					entry,
@@ -1797,6 +1881,7 @@ function tryResolveDeoptLocationInJavaScript(
 	}
 
 	let node = token;
+
 	while (node && !ts.isStatement(node)) {
 		if (ts.isPropertyAccessExpression(node)) {
 			return setReferenceLocationFromNode(
@@ -1919,10 +2004,12 @@ function tryResolveDeoptLocationInTypeScript(
 ): boolean {
 	if (entry.generatedReferenceLocation) {
 		const sourceMap = entry.getSourceMap();
+
 		if (sourceMap) {
 			const location = sourceMap.toSourceLocation(
 				entry.generatedReferenceLocation,
 			);
+
 			if (location) {
 				if (location.range.isEmpty) {
 					if (

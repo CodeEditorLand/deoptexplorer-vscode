@@ -42,11 +42,13 @@ export class VSDisposableStack extends DisposableStack {
 	 */
 	move(): VSDisposableStack {
 		const stack = super.move();
+
 		if (stack instanceof VSDisposableStack) {
 			return stack;
 		}
 		const vsStack = new VSDisposableStack();
 		vsStack.use(stack);
+
 		return vsStack;
 	}
 }

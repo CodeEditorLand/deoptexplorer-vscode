@@ -32,24 +32,34 @@ export type ScriptSource =
 
 export function isOpenableScriptUri(uri: Uri, sources: Sources | undefined) {
 	const resolution = sources?.getExistingResolution(uri);
+
 	if (resolution?.result === "ok" && resolution.local) return true;
+
 	if (isFileSystemLocation(uri)) return true;
+
 	return !!sources?.getScript(uri);
 }
 
 function adjustUriToRemote(uri: Uri) {
 	if (openedFile?.scheme !== "vscode-remote") return uri;
+
 	if (uri.scheme === "vscode-remote") return uri;
+
 	if (uri.scheme !== "file" || uri.authority) return uri;
+
 	return resolveUri(openedFile, uri.path);
 }
 
 export function getScriptSourceUri(uri: Uri, sources: Sources | undefined) {
 	const resolution = sources?.getExistingResolution(uri);
+
 	if (resolution?.result === "ok" && resolution.local)
 		return adjustUriToRemote(uri);
+
 	const script = sources?.getScript(uri);
+
 	if (script) return wrapScriptSource(script);
+
 	if (isFileSystemLocation(uri)) return adjustUriToRemote(uri);
 }
 
@@ -58,6 +68,7 @@ export function getScriptSourceLocation(
 	sources: Sources | undefined,
 ) {
 	const uri = getScriptSourceUri(location.uri, sources);
+
 	return uri === location.uri
 		? location
 		: uri
@@ -68,10 +79,13 @@ export function getScriptSourceLocation(
 export function wrapScriptSource(source: ScriptSource) {
 	if (source.scriptId && source.scriptId > 0) {
 		let path = "";
+
 		const query = new URLSearchParams();
 		query.set("scriptId", `${source.scriptId}`);
+
 		if (source.uri) {
 			query.set("uri", source.uri.toString(/*skipEncoding*/ false));
+
 			switch (source.uri.scheme) {
 				case "file":
 				case "vscode-remote":
@@ -79,9 +93,12 @@ export function wrapScriptSource(source: ScriptSource) {
 				case "http":
 				case "node":
 					path = source.uri.path;
+
 					break;
+
 				default:
 					path = `/${encodeURIComponent(source.uri.toString(/*skipEncoding*/ true))}`;
+
 					break;
 			}
 		}
@@ -99,14 +116,21 @@ export function wrapScriptSource(source: ScriptSource) {
 
 export function unwrapScriptSource(uri: Uri): ScriptSource {
 	if (uri.scheme !== constants.schemes.source) return { uri };
+
 	const query = new URLSearchParams(uri.query);
+
 	const scriptIdString = query.get("scriptId");
+
 	if (scriptIdString === null) throw new Error("Invalid source");
+
 	const scriptId = parseInt(scriptIdString, 10);
+
 	const scriptUriString = query.get("uri");
+
 	const scriptUri = scriptUriString
 		? Uri.parse(scriptUriString, /*strict*/ true)
 		: undefined;
+
 	return { uri: scriptUri, scriptId: scriptId };
 }
 
@@ -122,6 +146,7 @@ export class ScriptSourceFileSystemProvider implements FileSystemProvider {
 		},
 	): Disposable {
 		if (options.recursive) return new Disposable(() => {});
+
 		const stack = new VSDisposableStack();
 		stack.use(
 			events.onDidCloseLogFile(() =>
@@ -137,11 +162,13 @@ export class ScriptSourceFileSystemProvider implements FileSystemProvider {
 				]),
 			),
 		);
+
 		return stack;
 	}
 
 	stat(uri: Uri): FileStat | Thenable<FileStat> {
 		const source = unwrapScriptSource(uri);
+
 		const exists =
 			source.scriptId && source.scriptId > 0
 				? openedLog?.sources.hasScriptId(source.scriptId)
@@ -164,6 +191,7 @@ export class ScriptSourceFileSystemProvider implements FileSystemProvider {
 
 	readFile(uri: Uri): Uint8Array | Thenable<Uint8Array> {
 		const source = unwrapScriptSource(uri);
+
 		const text =
 			source.scriptId && source.scriptId > 0
 				? openedLog?.sources.getScriptById(source.scriptId)?.text
@@ -173,6 +201,7 @@ export class ScriptSourceFileSystemProvider implements FileSystemProvider {
 
 		if (text !== undefined) {
 			const encoder = new TextEncoder();
+
 			return encoder.encode(text);
 		}
 
@@ -204,6 +233,7 @@ let provider: ScriptSourceFileSystemProvider;
 
 export function activateScriptsFileSystemProvider(context: ExtensionContext) {
 	provider = new ScriptSourceFileSystemProvider();
+
 	return Disposable.from(
 		workspace.registerFileSystemProvider(
 			constants.schemes.source,

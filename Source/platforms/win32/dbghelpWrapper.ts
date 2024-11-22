@@ -38,13 +38,16 @@ export class DbghelpWrapper {
 		options: LoadSymbolsOptions = {},
 	) {
 		const { progress, token, globalStorageUri } = options;
+
 		for (const { using, fail } of Disposable.scope())
 			try {
 				const deferrals = using(new DisposableStack());
+
 				const hProcess = this.#dbghelp.createSimpleHandle();
 
 				// Initialize dbghelp
 				const fInitialized = this.#dbghelp.SymInitialize(hProcess);
+
 				if (!fInitialized) {
 					kernel32.Win32Error.throwIfNotSuccess();
 				} else {
@@ -56,6 +59,7 @@ export class DbghelpWrapper {
 				}
 
 				let prevOptions = this.#dbghelp.SymGetOptions();
+
 				let options = prevOptions & ~dbghelp.SYMOPT_UNDNAME;
 
 				// TODO: Should I specify SYMOPT_SECURE depending on whether the workspace is trusted? If I specify\
@@ -93,6 +97,7 @@ export class DbghelpWrapper {
 				// this can be very slow...
 				if (USE_MS_PUBLIC_SYMBOL_STORE && globalStorageUri) {
 					const pSearchPath = Buffer.alloc(260) as PSTR;
+
 					if (
 						!this.#dbghelp.SymGetSearchPath(
 							hProcess,
@@ -104,6 +109,7 @@ export class DbghelpWrapper {
 					}
 
 					const searchPath = pSearchPath.readCString();
+
 					if (
 						!searchPath.includes(
 							"https://msdl.microsoft.com/download/symbols",
@@ -112,11 +118,14 @@ export class DbghelpWrapper {
 						const searchPaths = searchPath.length
 							? searchPath.split(";")
 							: [];
+
 						const globalStoragePath = globalStorageUri.fsPath;
+
 						const symbolStoragePath = path.join(
 							globalStoragePath,
 							"symbols",
 						);
+
 						try {
 							fs.mkdirSync(symbolStoragePath, {
 								recursive: true,
@@ -125,6 +134,7 @@ export class DbghelpWrapper {
 						searchPaths.push(
 							`srv*${symbolStoragePath}*https://msdl.microsoft.com/download/symbols`,
 						);
+
 						if (
 							!this.#dbghelp.SymSetSearchPath(
 								hProcess,
@@ -157,12 +167,15 @@ export class DbghelpWrapper {
 							) => {
 								if (token?.isCancellationRequested)
 									throw new CancellationError();
+
 								switch (ActionCode) {
 									case dbghelp.CBA_DEBUG_INFO:
 										console.log(
 											ref.readCString(CallbackData),
 										);
+
 										return true;
+
 									default:
 										return false;
 								}
@@ -199,6 +212,7 @@ export class DbghelpWrapper {
 				const moduleInfo = dbghelp.IMAGEHLP_MODULE64({
 					SizeOfStruct: sizeof(dbghelp.IMAGEHLP_MODULE64),
 				});
+
 				if (
 					!this.#dbghelp.SymGetModuleInfo64(
 						hProcess,
@@ -210,6 +224,7 @@ export class DbghelpWrapper {
 				}
 
 				const symbols: FuncInfo[] = [];
+
 				if (
 					!this.#dbghelp.SymEnumSymbols(
 						hProcess,
@@ -217,12 +232,17 @@ export class DbghelpWrapper {
 						"*",
 						(pSymbol) => {
 							const symbol = pSymbol.deref();
+
 							const name = symbol.Name.buffer.readCString();
+
 							const rva = symbol.Address - symbol.ModBase;
+
 							const start = libStart + rva;
+
 							const size = symbol.Size ? symbol.Size : undefined;
 
 							symbols.push({ name, start, size });
+
 							return true;
 						},
 						ref.NULL as any as ref.Pointer<null>,
@@ -240,12 +260,14 @@ export class DbghelpWrapper {
 	private undecorateSymbolName(name: string, flags: number) {
 		this.#symbolNameBuffer ??= Buffer.alloc(4096);
 		this.#symbolNameBuffer.type ??= ref.types.byte;
+
 		const bytesWritten = this.#dbghelp.UnDecorateSymbolName(
 			name,
 			this.#symbolNameBuffer as ref.Pointer<number>,
 			this.#symbolNameBuffer.byteLength,
 			flags,
 		);
+
 		if (bytesWritten > 0) {
 			return this.#symbolNameBuffer.toString("utf8", 0, +bytesWritten);
 		}
@@ -274,6 +296,7 @@ export class DbghelpWrapper {
 			dbghelp.UNDNAME_NO_SPECIAL_SYMS |
 			dbghelp.UNDNAME_NO_TYPE_PREFIX |
 			dbghelp.UNDNAME_NO_PTR64_EXPANSION;
+
 		return this.undecorateSymbolName(name, flags);
 	}
 }

@@ -40,10 +40,14 @@ export class LocationMap<T> {
 	 */
 	set(key: Location, value: T) {
 		const uriString = key.uri.toString();
+
 		let ranges = this._files.find(uriString)?.value;
+
 		if (!ranges) this._files.insert(uriString, (ranges = new RangeMap()));
+
 		const initialSize = ranges.size;
 		ranges.set(key.range, [key, value]);
+
 		if (initialSize > ranges.size) {
 			this._size++;
 		}
@@ -56,9 +60,12 @@ export class LocationMap<T> {
 	 */
 	delete(key: Location) {
 		const uriString = key.uri.toString();
+
 		const ranges = this._files.find(uriString)?.value;
+
 		if (ranges?.delete(key.range)) {
 			this._size--;
+
 			if (ranges.size === 0) {
 				this._files.remove(uriString);
 			}

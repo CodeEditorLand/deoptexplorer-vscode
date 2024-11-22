@@ -30,6 +30,7 @@ export class PickerTreeDataProvider extends BaseNodeProvider {
 		this.openFileNode.invalidate();
 		this.recentFilesNode.invalidate();
 		this.workspaceFilesNode.invalidate();
+
 		super.invalidate();
 	}
 }

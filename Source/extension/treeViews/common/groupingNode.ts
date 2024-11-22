@@ -77,9 +77,13 @@ export class GroupingNode<
 
 	protected override createTreeItem(): TreeItem {
 		const options = this.groupings[this.groupingIndex];
+
 		const context = this.context;
+
 		const key = this.key;
+
 		const elements = this.elements;
+
 		return createTreeItem(
 			build(options.label, key, elements, context),
 			TreeItemCollapsibleState.Collapsed,
@@ -114,6 +118,7 @@ export class GroupingNode<
 			this.elements,
 			this.context,
 		);
+
 		return treeItem;
 	}
 
@@ -149,8 +154,11 @@ export class GroupingNode<
 			);
 		}
 		const provider = elements[0].provider;
+
 		const nextGrouping = groupings[groupingIndex];
+
 		const context = nextGrouping.context?.(elements, parent);
+
 		return from(elements)
 			.groupBy(
 				(value) => nextGrouping.keySelector(value, context),

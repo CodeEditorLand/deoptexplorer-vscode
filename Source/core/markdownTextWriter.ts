@@ -20,11 +20,15 @@ export class MarkdownTextWriter {
 
 	private computeLineStarts(text: string): number[] {
 		const result: number[] = new Array();
+
 		let pos = 0;
+
 		let lineStart = 0;
+
 		while (pos < text.length) {
 			const ch = text.charCodeAt(pos);
 			pos++;
+
 			switch (ch) {
 				case 0x0d:
 					if (text.charCodeAt(pos) === 0x0a) {
@@ -34,7 +38,9 @@ export class MarkdownTextWriter {
 				case 0x0a:
 					result.push(lineStart);
 					lineStart = pos;
+
 					break;
+
 				default:
 					if (ch === 0x2028 || ch === 0x2029) {
 						result.push(lineStart);
@@ -44,11 +50,13 @@ export class MarkdownTextWriter {
 			}
 		}
 		result.push(lineStart);
+
 		return result;
 	}
 
 	private updateLineCountAndPosFor(s: string) {
 		const lineStartsOfS = this.computeLineStarts(s);
+
 		if (lineStartsOfS.length > 1) {
 			this.lineCount = this.lineCount + lineStartsOfS.length - 1;
 			this.linePos =
@@ -105,6 +113,7 @@ export class MarkdownTextWriter {
 				this.markdown.supportThemeIcons || !chunk.supportThemeIcons,
 				"Cannot mix markdown strings that support theme icons with ones that don't",
 			);
+
 			if (chunk.value.length) {
 				if (this.lineStart) {
 					this.lineStart = false;
@@ -128,6 +137,7 @@ export class MarkdownTextWriter {
 			/*supportThemeIcons*/ true,
 		).appendMarkdown(this.markdown.value);
 		result.isTrusted = this.markdown.isTrusted;
+
 		return result;
 	}
 

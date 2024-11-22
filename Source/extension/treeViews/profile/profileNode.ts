@@ -59,13 +59,16 @@ export class ProfileNode extends BaseNode {
 
 	protected createTreeItem(): TreeItem {
 		const { entry, functionName } = this.node;
+
 		const location =
 			(entry.filePosition &&
 				entry.pickLocation(entry.filePosition.uri)) ||
 			functionName.filePosition;
+
 		const collapsibleState = this.node.children.length
 			? TreeItemCollapsibleState.Collapsed
 			: TreeItemCollapsibleState.None;
+
 		return createTreeItem(functionName.name, collapsibleState, {
 			contextValue:
 				location && this.node.lineTicks.length
@@ -95,23 +98,32 @@ export class ProfileNode extends BaseNode {
 			this.provider.log?.findFunctionEntryByFunctionName(
 				this.node.functionName,
 			);
+
 		switch (functionEntry?.symbolKind) {
 			case SymbolKind.Function:
 				return new ThemeIcon("symbol-function");
+
 			case SymbolKind.Class:
 				return new ThemeIcon("symbol-class");
+
 			case SymbolKind.Namespace:
 				return new ThemeIcon("symbol-namespace");
+
 			case SymbolKind.Enum:
 				return new ThemeIcon("symbol-enum");
+
 			case SymbolKind.Method:
 				return new ThemeIcon("symbol-method");
+
 			case SymbolKind.Property:
 				return new ThemeIcon("symbol-property");
+
 			case SymbolKind.Field:
 				return new ThemeIcon("symbol-field");
+
 			case SymbolKind.Constructor:
 				return new ThemeIcon("symbol-constructor");
+
 			default:
 				return new ThemeIcon("symbol-misc");
 		}
@@ -125,12 +137,16 @@ export class ProfileNode extends BaseNode {
 			const location =
 				this.node.entry.filePosition ??
 				this.node.entry.functionName.filePosition;
+
 			if (!location) return;
+
 			const uri = getScriptSourceUri(
 				location.uri,
 				this.provider.log?.sources,
 			);
+
 			if (!uri) return;
+
 			setCurrentProfileViewNodeSnapshot(
 				new ProfileViewNodeSnapshot(this.provider.log, this.node),
 			);
@@ -149,6 +165,7 @@ export class ProfileNode extends BaseNode {
 					selection: location.range,
 				}),
 			]);
+
 			return;
 		}
 		return super.onCommand(commandName);
@@ -156,11 +173,14 @@ export class ProfileNode extends BaseNode {
 
 	resolveTreeItem(item: TreeItem, token: CancellationToken) {
 		if (item.tooltip !== undefined && item.command !== undefined) return;
+
 		const { entry, functionName } = this.node;
+
 		const location =
 			(entry.filePosition &&
 				entry.pickLocation(entry.filePosition.uri)) ||
 			functionName.filePosition;
+
 		if (item.tooltip === undefined) {
 			const inlined =
 				entry instanceof DynamicFuncCodeEntry &&
@@ -199,6 +219,7 @@ export class ProfileNode extends BaseNode {
 				location.uri,
 				this.provider.log?.sources,
 			);
+
 			if (uri) {
 				item.command = typeSafeCommand({
 					title: "open",

@@ -65,9 +65,11 @@ export class IcNode extends BaseNode {
 	private formatLabelCommon() {
 		// IC entries are labeled by their worst IC state
 		const update = from(this.ic.updates).maxBy((update) => update.newState);
+
 		const label = update
 			? `${update.type}: ${formatIcState(update.newState)}`
 			: "Unknown";
+
 		return label;
 	}
 
@@ -82,33 +84,40 @@ export class IcNode extends BaseNode {
 					"symbol-variable",
 					new ThemeColor("symbolIcon.fieldForeground"),
 				);
+
 			case IcType.StoreGlobalIC:
 				return new ThemeIcon(
 					"symbol-variable",
 					new ThemeColor("symbolIcon.methodForeground"),
 				);
+
 			case IcType.LoadIC:
 				return new ThemeIcon(
 					"symbol-field",
 					new ThemeColor("symbolIcon.fieldForeground"),
 				);
+
 			case IcType.StoreIC:
 				return new ThemeIcon(
 					"symbol-field",
 					new ThemeColor("symbolIcon.methodForeground"),
 				);
+
 			case IcType.KeyedLoadIC:
 				return new ThemeIcon(
 					"symbol-string",
 					new ThemeColor("symbolIcon.fieldForeground"),
 				);
+
 			case IcType.KeyedStoreIC:
 				return new ThemeIcon(
 					"symbol-string",
 					new ThemeColor("symbolIcon.methodForeground"),
 				);
+
 			case IcType.StoreInArrayLiteralIC:
 				return new ThemeIcon("symbol-array");
+
 			case undefined:
 				return new ThemeIcon("symbol-misc");
 		}
@@ -116,10 +125,12 @@ export class IcNode extends BaseNode {
 
 	private getCommand(): TypeSafeCommand | undefined {
 		if (!this.ic.referenceLocation) return undefined;
+
 		const uri = getScriptSourceUri(
 			this.ic.referenceLocation.uri,
 			this.provider.log?.sources,
 		);
+
 		return (
 			uri && {
 				title: "Go to IC",
@@ -137,16 +148,19 @@ export class IcNode extends BaseNode {
 
 	protected override createTreeItem() {
 		const label = this.formatLabel();
+
 		const relativeTo = this.provider.log && {
 			log: this.provider.log,
 			ignoreIfBasename: true,
 		};
+
 		const description = formatLocation(this.ic.referenceLocation, {
 			as: "file",
 			skipEncoding: true,
 			relativeTo,
 			include: "position",
 		});
+
 		return createTreeItem(label, TreeItemCollapsibleState.None, {
 			contextValue: "",
 			description: description,
@@ -164,6 +178,7 @@ export class IcNode extends BaseNode {
 		lines.push(markdown`**hit count:** ${this.ic.updates.length}  \n`);
 
 		treeItem.tooltip = markdown`${this.formatLabelCommon()}\n\n${lines}`;
+
 		return treeItem;
 	}
 }

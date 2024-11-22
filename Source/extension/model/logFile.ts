@@ -59,10 +59,12 @@ export class LogFile {
 
 	tryGetRelativeUriFragment(file: Uri, { ignoreIfBasename = false } = {}) {
 		const base = this.commonBaseDirectory;
+
 		let relative =
 			this.sourcePaths.has(file) && base
 				? relativeUriFragment(base, file)
 				: undefined;
+
 		if (relative && /^\.[\\/]/.test(relative)) {
 			relative = relative.slice(2);
 		}
@@ -109,9 +111,12 @@ export class LogFile {
 
 	findEntriesContainingPosition(uri: Uri, position: Position) {
 		const file = getCanonicalUri(uri);
+
 		let finders = this._fileEntryFinders.get(file);
+
 		if (!finders) {
 			const fileEntry = this.files.get(file);
+
 			if (!fileEntry) return [];
 
 			this._fileEntryFinders.set(
@@ -125,8 +130,11 @@ export class LogFile {
 		}
 
 		const functions = finders.function(position);
+
 		const ics = finders.ic(position);
+
 		const deopts = finders.deopt(position);
+
 		return from([functions, ics, deopts]).flatMap(identity).toArray();
 	}
 }

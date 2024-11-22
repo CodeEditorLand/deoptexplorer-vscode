@@ -39,6 +39,7 @@ export class CodeEntryAndLineNumber {
 			hash,
 			Equaler.defaultEqualer.hash(this.line_number),
 		);
+
 		return hash;
 	}
 

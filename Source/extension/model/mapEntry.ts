@@ -50,15 +50,21 @@ export class MapId implements ToMarkdownString {
 			/^(?<address>0x[A-Fa-f0-9]+)(?:[$_#:](?<index>\d+))?$/.exec(
 				text,
 			)?.groups;
+
 		if (!fields) return undefined;
+
 		const address = parseAddress(fields.address);
+
 		const index = fields.index ? parseInt(fields.index, 10) : 0;
+
 		return new MapId(address, index);
 	}
 
 	static parse(text: string) {
 		const result = MapId.tryParse(text);
+
 		if (!result) throw new RangeError();
+
 		return result;
 	}
 
@@ -109,6 +115,7 @@ export class MapEntry {
 	private _constructorName?: string;
 
 	details: string = "";
+
 	constructorEntry?: FunctionEntry;
 	baseMap?: MapReference;
 	mapType?: string;
@@ -149,12 +156,14 @@ export class MapEntry {
 			)
 		)
 			return true;
+
 		if (
 			this.mapType &&
 			nonUserCodeMapTypes.has(this.mapType) &&
 			!this.properties.length
 		)
 			return true;
+
 		return false;
 	}
 
@@ -162,10 +171,14 @@ export class MapEntry {
 		const references = this.referencedBy.filter(
 			(ref) => ref.kind === "map",
 		) as MapReferencedByMap[];
+
 		if (!references.length) return false;
+
 		const thisSource = this.getMapSource();
+
 		for (const { map } of references) {
 			const source = map.map.getMapSource();
+
 			if (source !== thisSource) return false;
 		}
 		return true;
@@ -173,6 +186,7 @@ export class MapEntry {
 
 	*propertySources() {
 		let lastSource: FunctionEntry | undefined;
+
 		for (const prop of this.properties) {
 			if (prop.source && prop.source !== lastSource) {
 				yield prop.source;
@@ -182,8 +196,10 @@ export class MapEntry {
 
 	getMapFilePosition(): Location | undefined {
 		let update: MapEntryUpdate | undefined;
+
 		for (let i = this.updates.length - 1; i >= 0; i--) {
 			update = this.updates[i];
+
 			if (update.filePosition) {
 				return update.filePosition;
 			}
@@ -195,8 +211,10 @@ export class MapEntry {
 
 	getMapSource(): FunctionEntry | undefined {
 		let update: MapEntryUpdate | undefined;
+
 		for (let i = this.updates.length - 1; i >= 0; i--) {
 			update = this.updates[i];
+
 			if (update.functionEntry) {
 				return update.functionEntry;
 			}
@@ -212,6 +230,7 @@ export class MapEntry {
  */
 export class MapEntryUpdate extends EntryBase {
 	declare kind: "map-update";
+
 	functionEntry?: FunctionEntry;
 	generatedFunctionName?: string;
 
@@ -247,6 +266,7 @@ export class SymbolName implements Equatable, Comparable {
 
 	[Comparable.compareTo](other: unknown): number {
 		if (!(other instanceof SymbolName)) return 0;
+
 		return SymbolNameComparer.compare(this, other);
 	}
 
@@ -266,9 +286,12 @@ export class SymbolName implements Equatable, Comparable {
 				text = text.slice(7, -1).trim();
 
 				let hashIndex = text.lastIndexOf("hash ");
+
 				let hash: number | undefined;
+
 				if (hashIndex >= 0) {
 					hash = parseInt(text.slice(hashIndex + 5).trim(), 16);
+
 					if (isFinite(hash)) {
 						text = text.slice(0, hashIndex).trim();
 					}
@@ -276,6 +299,7 @@ export class SymbolName implements Equatable, Comparable {
 
 				if (text.startsWith(`"`))
 					return new SymbolName(JSON.parse(text));
+
 				if (hash !== undefined) return new SymbolName(hash);
 			}
 		} catch {}
@@ -428,6 +452,7 @@ export class MapReference {
 	static fromMapId(mapId: MapId, map: MapEntry) {
 		const result = new MapReference(mapId.address, mapId.index, map);
 		result._mapId = mapId;
+
 		return result;
 	}
 }

@@ -229,9 +229,11 @@ export function getFunctionEntryFromFunctionUri(uri: Uri) {
 				.slice(constants.schemes.functionHistory.length + 1)
 				.split("/")[0],
 		);
+
 		const filePosition =
 			positionText &&
 			getCanonicalLocation(parseLocation(positionText, /*strict*/ false));
+
 		if (filePosition && openedLog) {
 			return openedLog.findFunctionEntryByFilePosition(filePosition);
 		}

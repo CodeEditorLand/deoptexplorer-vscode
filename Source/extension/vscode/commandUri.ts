@@ -71,6 +71,7 @@ export class CommandUri {
 	 */
 	static from(uri: Uri) {
 		assert(uri.scheme === "command", "Invalid CommandUri");
+
 		return new CommandUri(uri.path, this.decodeCommandArgument(uri.query));
 	}
 

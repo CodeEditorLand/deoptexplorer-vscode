@@ -67,15 +67,19 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 
 	private refreshWebview() {
 		if (!this._webviewView) return;
+
 		const title = this._openedFile
 			? path.basename(this._openedFile.fsPath)
 			: "Log";
 		this._webviewView.title = title;
+
 		const webview = this._webviewView.webview;
+
 		if (!this._openedLog) {
 			webview.html = "";
 		} else {
 			const nonce = createNonce();
+
 			const scriptOverviewUri = webview.asWebviewUri(
 				Uri.joinPath(
 					this._extensionUri,
@@ -84,6 +88,7 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 					"overview.js",
 				),
 			);
+
 			const styleResetUri = webview.asWebviewUri(
 				Uri.joinPath(
 					this._extensionUri,
@@ -92,6 +97,7 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 					"reset.css",
 				),
 			);
+
 			const styleVSCodeUri = webview.asWebviewUri(
 				Uri.joinPath(
 					this._extensionUri,
@@ -100,6 +106,7 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 					"vscode.css",
 				),
 			);
+
 			const styleOverviewUri = webview.asWebviewUri(
 				Uri.joinPath(
 					this._extensionUri,
@@ -108,6 +115,7 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 					"overview.css",
 				),
 			);
+
 			const codiconsUri = webview.asWebviewUri(
 				Uri.joinPath(
 					this._extensionUri,
@@ -117,6 +125,7 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 					"codicon.css",
 				),
 			);
+
 			const codiconsFontUri = webview.asWebviewUri(
 				Uri.joinPath(
 					this._extensionUri,
@@ -126,10 +135,13 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 					"codicon.ttf",
 				),
 			);
+
 			const pieChartStyleUri = webview.asWebviewUri(
 				Uri.joinPath(this._extensionUri, pieChartStyleResource),
 			);
+
 			const profile = this._openedLog.profile;
+
 			const timeSlices: Slice[] = [
 				{
 					value: profile.totalProgramTime.inMillisecondsF(),
@@ -161,7 +173,9 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 				.toArray();
 
 			let totalEntrySize = 0;
+
 			const memorySlices: Slice[] = [];
+
 			for (const memoryCategory of entryCategories) {
 				totalEntrySize += memoryCategory.size;
 				memorySlices.push({
@@ -289,6 +303,7 @@ export function activateLogOverviewWebview(context: ExtensionContext) {
 	const overviewProvider = new OverviewWebviewViewProvider(
 		context.extensionUri,
 	);
+
 	return Disposable.from(
 		window.registerWebviewViewProvider(
 			constants.webviews.logOverviewView,

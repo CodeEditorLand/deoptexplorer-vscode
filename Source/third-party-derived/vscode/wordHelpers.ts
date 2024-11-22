@@ -9,7 +9,9 @@
 //  Licensed under the MIT License. See LICENSE.vscode in the project root for license information.
 
 const maxLen = 1000;
+
 const timeBudget = 150;
+
 const windowSize = 15;
 
 export interface IWordAtPosition {
@@ -27,8 +29,10 @@ export function getWordAtText(
 	text: string,
 ): IWordAtPosition | null {
 	let textOffset = 0;
+
 	if (text.length > maxLen) {
 		let start = column - maxLen / 2;
+
 		if (start < 0) {
 			start = 0;
 		} else {
@@ -37,25 +41,32 @@ export function getWordAtText(
 		text = text.substring(start, column + maxLen / 2);
 	}
 	const t1 = Date.now();
+
 	const pos = column - 1 - textOffset;
+
 	let prevRegexIndex = -1;
+
 	let match: RegExpExecArray | null = null;
+
 	for (let i = 1; ; i++) {
 		if (Date.now() - t1 >= timeBudget) {
 			break;
 		}
 		const regexIndex = pos - windowSize * i;
 		wordDefinition.lastIndex = Math.max(0, regexIndex);
+
 		const thisMatch = _findRegexMatchEnclosingPosition(
 			wordDefinition,
 			text,
 			pos,
 			prevRegexIndex,
 		);
+
 		if (!thisMatch && match) {
 			break;
 		}
 		match = thisMatch;
+
 		if (regexIndex <= 0) {
 			break;
 		}
@@ -68,6 +79,7 @@ export function getWordAtText(
 			endColumn: textOffset + 1 + match.index + match[0].length,
 		};
 		wordDefinition.lastIndex = 0;
+
 		return result;
 	}
 	return null;
@@ -80,11 +92,13 @@ function _findRegexMatchEnclosingPosition(
 	stopPos: number,
 ): RegExpExecArray | null {
 	let match: RegExpExecArray | null;
+
 	while ((match = wordDefinition.exec(text))) {
 		if (match.index <= pos && wordDefinition.lastIndex >= pos) {
 			break;
 		} else if (stopPos > 0 && match.index > stopPos) {
 			match = null;
+
 			break;
 		}
 	}

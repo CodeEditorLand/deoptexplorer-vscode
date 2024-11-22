@@ -47,8 +47,11 @@ export enum SYM_TYPE {
 
 export namespace SYM_TYPE {
 	export const size = INT.size;
+
 	export const alignment = INT.alignment;
+
 	export const indirection = 1;
+
 	export function get(buffer: Buffer, offset: number) {
 		return INT.get(buffer, offset) as SYM_TYPE;
 	}
@@ -322,6 +325,7 @@ let extensionUri: Uri | undefined;
 
 function dbghelpFactory() {
 	if (process.platform !== "win32") return undefined;
+
 	if (extensionUri === undefined) return undefined;
 
 	const dbghelpFile =
@@ -1080,6 +1084,7 @@ export class Dbghelp {
 		const buffer = Buffer.alloc(ref.sizeof.pointer);
 		buffer.writeBigInt64LE(BigInt(1));
 		buffer.type = ref.refType(ref.types.void);
+
 		return buffer as HANDLE;
 	}
 
@@ -1087,6 +1092,7 @@ export class Dbghelp {
 	createRandomHandle() {
 		const buffer = randomBytes(ref.sizeof.pointer);
 		buffer.type = ref.refType(ref.types.void);
+
 		return buffer as HANDLE;
 	}
 }

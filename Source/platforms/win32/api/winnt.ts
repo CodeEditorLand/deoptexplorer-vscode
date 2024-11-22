@@ -295,14 +295,18 @@ export const IMAGE_NT_HEADERS64 = StructType({
 
 export function getImageHeaders(file: string) {
 	const fd = fs.openSync(file, fs.constants.O_RDONLY);
+
 	try {
 		// read the DOS header
 		let dos_header: IMAGE_DOS_HEADER | undefined =
 			endianness === "LE" ? new IMAGE_DOS_HEADER() : undefined;
+
 		const dos_header_size = IMAGE_DOS_HEADER.SIZE;
+
 		const dos_header_bytes = dos_header
 			? new Uint8Array(dos_header.buffer)
 			: new Uint8Array(dos_header_size);
+
 		if (
 			fs.readSync(fd, dos_header_bytes, {
 				position: 0,
@@ -314,14 +318,18 @@ export function getImageHeaders(file: string) {
 				0,
 				"LE",
 			);
+
 			if (dos_header.e_magic === IMAGE_DOS_SIGNATURE_LE) {
 				// Try to read the NT header as a 32-bit PE
 				let nt_headers32: IMAGE_NT_HEADERS32 | undefined =
 					endianness === "LE" ? new IMAGE_NT_HEADERS32() : undefined;
+
 				const nt_headers32_size = IMAGE_NT_HEADERS32.SIZE;
+
 				const nt_headers32_bytes = nt_headers32
 					? new Uint8Array(nt_headers32.buffer)
 					: new Uint8Array(nt_headers32_size);
+
 				if (
 					fs.readSync(fd, nt_headers32_bytes, {
 						position: dos_header.e_lfanew,
@@ -333,6 +341,7 @@ export function getImageHeaders(file: string) {
 						0,
 						"LE",
 					);
+
 					if (
 						nt_headers32.Signature === IMAGE_NT_SIGNATURE_LE &&
 						nt_headers32.OptionalHeader.Magic ===
@@ -345,10 +354,13 @@ export function getImageHeaders(file: string) {
 				// Try to read the NT header as a 64-bit PE
 				let nt_headers64: IMAGE_NT_HEADERS64 | undefined =
 					endianness === "LE" ? new IMAGE_NT_HEADERS64() : undefined;
+
 				const nt_headers64_size = IMAGE_NT_HEADERS64.SIZE;
+
 				const nt_headers64_bytes = nt_headers64
 					? new Uint8Array(nt_headers64.buffer)
 					: new Uint8Array(nt_headers64_size);
+
 				if (
 					fs.readSync(fd, nt_headers64_bytes, {
 						position: dos_header.e_lfanew,
@@ -360,6 +372,7 @@ export function getImageHeaders(file: string) {
 						0,
 						"LE",
 					);
+
 					if (
 						nt_headers64.Signature === IMAGE_NT_SIGNATURE_LE &&
 						nt_headers64.OptionalHeader.Magic ===

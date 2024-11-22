@@ -19,6 +19,7 @@ export class VersionedData<T> {
 	constructor(evolutions: Record<string, T>) {
 		for (const key of Object.keys(evolutions)) {
 			const mappings = evolutions[key];
+
 			if (key === "*" || key === "") {
 				this._defaultEvolution = mappings;
 			} else {
@@ -47,6 +48,7 @@ export class VersionedData<T> {
 	 */
 	match(version: V8Version | semver.SemVer | string) {
 		let data: T | undefined;
+
 		if (typeof version === "string") {
 			version = new semver.SemVer(version, { loose: true });
 		}
@@ -57,9 +59,11 @@ export class VersionedData<T> {
 			data = this._versionCache[1];
 		} else {
 			data = this._defaultEvolution;
+
 			for (const [range, mappings] of this._evolutions) {
 				if (version.satisfies(range)) {
 					data = mappings;
+
 					break;
 				}
 			}

@@ -60,9 +60,11 @@ export class DiscoveredLogFileNode extends BaseNode {
 			this.recent
 		) {
 			const recent = storage.getRecentFiles();
+
 			const filtered = recent.filter(
 				(it) => !UriEqualer.equals(it, this.uri),
 			);
+
 			if (filtered.length !== recent.length) {
 				emitters.willChangeRecentLogs();
 				await storage.setRecentFiles(filtered);

@@ -49,28 +49,40 @@ export class ICHoverProvider implements HoverProvider {
 		if (!openedLog) return;
 
 		let hoverCache = this._perFileHoverCache.get(document.uri);
+
 		if (hoverCache) {
 			const entry = from(hoverCache.findAllContaining(position)).first();
+
 			if (entry) return entry[1];
 		}
 
 		const uri = unwrapScriptSource(document.uri).uri;
+
 		if (!uri) return;
 
 		const file = getCanonicalUri(uri);
+
 		const line = position.line + 1;
+
 		const startLine = line - LINE_RANGE;
+
 		const endLine = line + LINE_RANGE;
+
 		const containsPosition = (entry: Entry) =>
 			entryContainsPosition(entry, file, startLine, endLine, position);
+
 		const ics = openedLog.files.get(file)?.ics.filter(containsPosition);
+
 		if (ics?.length) {
 			let range: Range | undefined;
+
 			const messages: MarkdownString[] = [];
+
 			for (const entry of ics) {
 				const worst = from(entry.updates).maxBy(
 					(update) => update.newState,
 				);
+
 				if (worst) {
 					const icRange = entry.pickReferenceLocation(file).range;
 					range = range?.intersection(icRange) ?? icRange;
@@ -83,8 +95,10 @@ export class ICHoverProvider implements HoverProvider {
 					this._perFileHoverCache.set(document.uri, hoverCache);
 				}
 				range ??= new Range(position, position);
+
 				const hover = new Hover(messages, range);
 				hoverCache.set(range, hover);
+
 				return hover;
 			}
 		}
@@ -99,18 +113,25 @@ function getDescriptionForIcState(state: IcState) {
 	switch (state) {
 		case IcState.NO_FEEDBACK:
 			return "No Feedback";
+
 		case IcState.UNINITIALIZED:
 			return "Uninitialized";
+
 		case IcState.PREMONOMORPHIC:
 			return "Premonomorphic";
+
 		case IcState.MONOMORPHIC:
 			return "Monomorphic";
+
 		case IcState.POLYMORPHIC:
 			return "Polymorphic";
+
 		case IcState.RECOMPUTE_HANDLER:
 			return "Recompute Handler";
+
 		case IcState.MEGAMORPHIC:
 			return "Megamorphic";
+
 		case IcState.GENERIC:
 			return "Generic";
 	}
@@ -118,21 +139,29 @@ function getDescriptionForIcState(state: IcState) {
 
 function formatSummaryForIcEntryUpdate(update: IcEntryUpdate) {
 	const stateName = getDescriptionForIcState(update.newState);
+
 	switch (update.type) {
 		case "StoreIC":
 			return `${stateName} assignment to property '${update.key}'.`;
+
 		case "LoadIC":
 			return `${stateName} read from property '${update.key}'.`;
+
 		case "KeyedStoreIC":
 			return `${stateName} assignment to element [${update.key}].`;
+
 		case "KeyedLoadIC":
 			return `${stateName} read from element [${update.key}].`;
+
 		case "StoreGlobalIC":
 			return `${stateName} assignment to global '${update.key}'.`;
+
 		case "LoadGlobalIC":
 			return `${stateName} read from global '${update.key}'.`;
+
 		case "StoreInArrayLiteralIC":
 			return `${stateName} assignment to array literal element [${update.key}].`;
+
 		default:
 			return `${stateName} ${update.type} for '${update.key}'.`;
 	}
@@ -140,12 +169,15 @@ function formatSummaryForIcEntryUpdate(update: IcEntryUpdate) {
 
 function getLastPropertySource(map: MapEntry) {
 	const source = map.getMapSource();
+
 	if (source) {
 		const pos = source.filePosition.range.start;
+
 		const uri = getScriptSourceUri(
 			source.filePosition.uri,
 			openedLog?.sources,
 		);
+
 		return uri
 			? markdown.trusted` | [${source.functionName}](${uri.with({ fragment: `${pos.line + 1},${pos.character + 1}` })})`
 			: markdown.trusted` ${source.functionName}`;
@@ -161,6 +193,7 @@ function* getHoverMessageForIc(
 	const mapIds = entry.updates
 		.map((update) => update.mapId.toString())
 		.filter(isDefined);
+
 	const referenceLocation = entry.pickReferenceLocation(file);
 
 	yield markdown.code("text")`${formatSummaryForIcEntryUpdate(update)}`;

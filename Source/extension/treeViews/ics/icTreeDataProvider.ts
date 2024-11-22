@@ -128,20 +128,28 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 			switch (key?.symbolKind) {
 				case SymbolKind.Function:
 					return new ThemeIcon("symbol-function");
+
 				case SymbolKind.Class:
 					return new ThemeIcon("symbol-class");
+
 				case SymbolKind.Namespace:
 					return new ThemeIcon("symbol-namespace");
+
 				case SymbolKind.Enum:
 					return new ThemeIcon("symbol-enum");
+
 				case SymbolKind.Method:
 					return new ThemeIcon("symbol-method");
+
 				case SymbolKind.Property:
 					return new ThemeIcon("symbol-property");
+
 				case SymbolKind.Field:
 					return new ThemeIcon("symbol-field");
+
 				case SymbolKind.Constructor:
 					return new ThemeIcon("symbol-constructor");
+
 				default:
 					return new ThemeIcon("symbol-misc");
 			}
@@ -157,6 +165,7 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 		tooltip: (key, elements, grandparent) => {
 			if (key) {
 				const lines: MarkdownString[] = [];
+
 				const relativeTo = this.log && {
 					log: this.log,
 					ignoreIfBasename: true,
@@ -205,6 +214,7 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 				return;
 
 			const uri = getScriptSourceUri(key.location.uri, this.log?.sources);
+
 			return (
 				uri && {
 					title: "",
@@ -344,23 +354,30 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 		const showStateMegamorphic =
 			this.showICStates.size === 0 ||
 			this.showICStates.has(constants.ShowICStates.Megamorphic);
+
 		const showStatePolymorphic =
 			this.showICStates.size === 0 ||
 			this.showICStates.has(constants.ShowICStates.Polymorphic);
+
 		const showStateMonomorphic =
 			this.showICStates.size === 0 ||
 			this.showICStates.has(constants.ShowICStates.Monomorphic);
+
 		const showStateOther =
 			this.showICStates.size === 0 ||
 			this.showICStates.has(constants.ShowICStates.Other);
+
 		return q.where(({ ic }) => {
 			switch (ic.getWorstIcState()) {
 				case IcState.MEGAMORPHIC:
 					return showStateMegamorphic;
+
 				case IcState.POLYMORPHIC:
 					return showStatePolymorphic;
+
 				case IcState.MONOMORPHIC:
 					return showStateMonomorphic;
+
 				default:
 					return showStateOther;
 			}
@@ -374,6 +391,7 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 					.orderBy((node) => node.file, UriComparer)
 					.thenByDescending((node) => node.state)
 					.thenByDescending((node) => node.hitCount);
+
 			case constants.SortICs.ByState:
 				return q
 					.orderByDescending((node) => node.state)
@@ -390,6 +408,7 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 					this._groupByFunction,
 					this._groupByState,
 				]);
+
 			case constants.SortICs.ByState:
 				return GroupingNode.groupBy(q.toArray(), [
 					this._groupByState,

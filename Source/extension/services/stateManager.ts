@@ -19,6 +19,7 @@ export function setCurrentProfileViewNodeSnapshot(
 				currentProfileViewNodeSnapshot,
 			);
 		currentProfileViewNodeSnapshot = snapshot;
+
 		if (activated)
 			emitters.didChangeCurrentProfileViewNodeSnapshot(
 				currentProfileViewNodeSnapshot,
@@ -28,6 +29,7 @@ export function setCurrentProfileViewNodeSnapshot(
 
 export function activateStateManager(context: ExtensionContext) {
 	activated = true;
+
 	return Disposable.from(
 		new Disposable(() => {
 			currentProfileViewNodeSnapshot = undefined;

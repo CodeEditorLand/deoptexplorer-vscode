@@ -36,6 +36,7 @@ export enum MappingOrder {
 
 export class SourceLocation extends Location {
 	name: string | undefined;
+
 	constructor(uri: Uri, rangeOrPosition: Range | Position, name?: string) {
 		super(uri, rangeOrPosition);
 		this.name = name;
@@ -81,6 +82,7 @@ export class SourceMap {
 
 	toGeneratedLocation(value: Location, bias?: SourceMapBias) {
 		const range = this.toGeneratedRange(value, bias);
+
 		return range && new Location(this.generatedUri, range);
 	}
 
@@ -94,6 +96,7 @@ export class SourceMap {
 
 	toAllGeneratedLocations(value: Location, collapse?: "start" | "end") {
 		const result: Location[] = [];
+
 		for (const position of this.toAllGeneratedPositions(value, collapse)) {
 			result.push(new Location(this.generatedUri, position));
 		}
@@ -105,6 +108,7 @@ export class SourceMap {
 		collapse: "start" | "end" = "start",
 	) {
 		const position = value.range[collapse];
+
 		return this._positionToGeneratedPositions(
 			value.uri.toString(),
 			position,
@@ -113,6 +117,7 @@ export class SourceMap {
 
 	sourceContentFor(source: string) {
 		const result = this._sourceMap.sourceContentFor(source, true);
+
 		return typeof result === "string" ? result : undefined;
 	}
 
@@ -125,11 +130,13 @@ export class SourceMap {
 		thisArg: T,
 		order?: MappingOrder,
 	): void;
+
 	forEachMapping(
 		cb: (mapping: SourceMapping) => void,
 		thisArg?: any,
 		order?: MappingOrder,
 	): void;
+
 	forEachMapping(
 		cb: (mapping: SourceMapping) => void,
 		thisArg?: any,
@@ -140,24 +147,30 @@ export class SourceMap {
 				const baseMapping = isValidMappingItem(mapping)
 					? mapping
 					: undefined;
+
 				if (!baseMapping) return;
+
 				const generatedPosition = PositionConverters.toVSCodePosition({
 					line: baseMapping.generatedLine,
 					column: baseMapping.generatedColumn,
 				});
+
 				const generatedLocation = new Location(
 					this.generatedUri,
 					generatedPosition,
 				);
+
 				if (typeof baseMapping.source === "string") {
 					const sourceUri = resolveUri(
 						this._sourceMapUri,
 						ensureRelativePathIsDotted(baseMapping.source),
 					);
+
 					const sourcePosition = PositionConverters.toVSCodePosition({
 						line: baseMapping.originalLine,
 						column: baseMapping.originalColumn,
 					});
+
 					const sourceLocation = new SourceLocation(
 						sourceUri,
 						sourcePosition,
@@ -194,8 +207,10 @@ export class SourceMap {
 		assert(isValidSourceMapFindPosition(generatedEnd));
 
 		const mappedStart = this._sourceMap.originalPositionFor(generatedStart);
+
 		if (mappedStart && isValidSourceMapMappedPosition(mappedStart)) {
 			const mappedEnd = this._sourceMap.originalPositionFor(generatedEnd);
+
 			if (
 				mappedEnd &&
 				isValidSourceMapMappedPosition(mappedEnd) &&
@@ -203,11 +218,14 @@ export class SourceMap {
 			) {
 				const sourceStart =
 					PositionConverters.toVSCodePosition(mappedStart);
+
 				const sourceEnd =
 					PositionConverters.toVSCodePosition(mappedEnd);
+
 				const sourceRange = sourceStart.isBeforeOrEqual(sourceEnd)
 					? new Range(sourceStart, sourceEnd)
 					: new Range(sourceEnd, sourceStart);
+
 				return new SourceLocation(
 					resolveUri(this._sourceMapUri, mappedStart.source),
 					sourceRange,
@@ -232,6 +250,7 @@ export class SourceMap {
 
 		const mappedPosition =
 			this._sourceMap.originalPositionFor(generatedPosition);
+
 		if (mappedPosition && isValidSourceMapMappedPosition(mappedPosition)) {
 			return new SourceLocation(
 				resolveUri(this._sourceMapUri, mappedPosition.source),
@@ -264,18 +283,23 @@ export class SourceMap {
 		assert(isValidSourceMapSourceFindPosition(sourceEnd));
 
 		const mappedStart = this._sourceMap.generatedPositionFor(sourceStart);
+
 		if (mappedStart && isValidSourceMapPosition(mappedStart)) {
 			const mappedEnd = this._sourceMap.generatedPositionFor(sourceEnd);
+
 			if (mappedEnd && isValidSourceMapPosition(mappedEnd)) {
 				const generatedStart =
 					PositionConverters.toVSCodePosition(mappedStart);
+
 				const generatedEnd =
 					PositionConverters.toVSCodePosition(mappedEnd);
+
 				const generatedRange = generatedStart.isBeforeOrEqual(
 					generatedEnd,
 				)
 					? new Range(generatedStart, generatedEnd)
 					: new Range(generatedEnd, generatedStart);
+
 				return generatedRange;
 			}
 		}
@@ -292,13 +316,16 @@ export class SourceMap {
 			bias,
 		};
 		assert(isValidSourceMapSourceFindPosition(sourcePosition));
+
 		const lineRange = this._sourceMap.generatedPositionFor(sourcePosition);
+
 		if (lineRange) {
 			if (isValidSourceMapLineRange(lineRange)) {
 				return LineRangeConverters.toVSCodeRange(lineRange);
 			}
 			if (isValidSourceMapPosition(lineRange)) {
 				const pos = PositionConverters.toVSCodePosition(lineRange);
+
 				return new Range(pos, pos);
 			}
 		}
@@ -310,9 +337,12 @@ export class SourceMap {
 			...PositionConverters.toSourceMapPosition(position),
 		};
 		assert(isValidSourceMapMappedPosition(sourcePosition));
+
 		const generatedPositions =
 			this._sourceMap.allGeneratedPositionsFor(sourcePosition);
+
 		const result: Position[] = [];
+
 		for (const generatedPosition of generatedPositions) {
 			if (isValidSourceMapPosition(generatedPosition)) {
 				result.push(
@@ -335,9 +365,13 @@ export function extractSourceMappingURL(content: string, file: Uri) {
 	// NOTE: copied from source-map-support, see the third party license notice above.
 	const re =
 		/(?:\/\/[@#][\s]*sourceMappingURL=([^\s'"]+)[\s]*$)|(?:\/\*[@#][\s]*sourceMappingURL=([^\s*'"]+)[\s]*(?:\*\/)[\s]*$)/gm;
+
 	let lastMatch, match;
+
 	while ((match = re.exec(content))) lastMatch = match;
+
 	const sourceMappingURL = lastMatch?.[1] || lastMatch?.[2];
+
 	return sourceMappingURL ? resolveUri(file, sourceMappingURL) : undefined;
 }
 
@@ -349,8 +383,11 @@ export function getInlineSourceMapData(
 ): string | undefined {
 	if (sourceMappingURL.scheme !== "data" || sourceMappingURL.authority)
 		return undefined;
+
 	const match = sourceMapDataUrlRegExp.exec(sourceMappingURL.path);
+
 	if (!match?.groups) return undefined;
+
 	return Buffer.from(match.groups.data, "base64").toString();
 }
 
@@ -479,11 +516,13 @@ namespace PositionConverters {
 			column: position.character,
 		};
 		assert(isValidSourceMapPosition(result));
+
 		return result;
 	}
 
 	export function toVSCodePosition(position: source_map.Position): Position {
 		assert(isValidSourceMapPosition(position));
+
 		return new Position(position.line - 1, position.column);
 	}
 }
@@ -491,18 +530,23 @@ namespace PositionConverters {
 namespace LineRangeConverters {
 	export function toSourceMapLineRange(range: Range): source_map.LineRange {
 		assert(range.start.line === range.end.line);
+
 		const result: source_map.LineRange = {
 			...PositionConverters.toSourceMapPosition(range.start),
 			lastColumn: range.end.character,
 		};
 		assert(isValidSourceMapLineRange(result));
+
 		return result;
 	}
 
 	export function toVSCodeRange(range: source_map.LineRange): Range {
 		assert(isValidSourceMapLineRange(range));
+
 		const start = PositionConverters.toVSCodePosition(range);
+
 		const end = start.with({ character: range.lastColumn });
+
 		return new Range(start, end);
 	}
 }

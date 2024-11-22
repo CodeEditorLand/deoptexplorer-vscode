@@ -15,9 +15,11 @@ import { renderLinkToFile } from "../utils";
 
 export function renderFunctionsByTotalTime(log: LogFile, topCount: number) {
 	const callTree = log.profile.getTopDownProfile();
+
 	const viewBuilder = new ViewBuilder(
 		log.profile.averageSampleDuration.inMillisecondsF(),
 	);
+
 	const view = viewBuilder.buildView(callTree, ProfileShowMode.Flat);
 
 	return html`

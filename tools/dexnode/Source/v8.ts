@@ -20,19 +20,25 @@ function prepareDeopts(
 	cleanupSteps: CleanupCallback[],
 ) {
 	if (!argv.deopts) return;
+
 	switch (version) {
 		case 9:
 			flags.push("--log-deopt");
+
 			break;
+
 		case 8:
 			flags.push("--trace-deopt");
+
 			break;
 	}
 
 	if (!argv._.includes("--redirect-code-traces")) {
 		flags.push("--redirect-code-traces");
+
 		try {
 			const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), "dexnode-"));
+
 			const asmfile = path.join(tmpdir, "code.asm");
 			flags.push(`--redirect-code-traces-to=${asmfile}`);
 			cleanupSteps.push(() =>
@@ -44,24 +50,32 @@ function prepareDeopts(
 
 function prepareICs(argv: Options, version: V8Version, flags: string[]) {
 	if (!argv.ics) return;
+
 	switch (version) {
 		case 9:
 			flags.push("--log-ic");
+
 			break;
+
 		case 8:
 			flags.push("--trace-ic");
+
 			break;
 	}
 }
 
 function prepareMaps(argv: Options, version: V8Version, flags: string[]) {
 	if (!argv.maps) return;
+
 	switch (version) {
 		case 9:
 			flags.push("--log-maps", "--log-maps-details");
+
 			break;
+
 		case 8:
 			flags.push("--trace-maps", "--trace-maps-details");
+
 			break;
 	}
 }
@@ -79,6 +93,7 @@ function prepareProfile(argv: Options, flags: string[]) {
 function prepareOut(argv: Options, flags: string[]) {
 	if (!argv.out) return;
 	flags.push(`--logfile=${path.resolve(argv.out)}`);
+
 	if (argv.host.flags & HostFlags.UseNoLogfilePerIsolate) {
 		flags.push("--no-logfile-per-isolate");
 	}
@@ -89,6 +104,7 @@ export function prepareV8Flags(argv: Options, v8version: string) {
 		v8version === "latest"
 			? "latest"
 			: /^\d+\.\d+\.\d+/i.exec(v8version)?.[0];
+
 	const version =
 		v8 === undefined
 			? 0
@@ -106,6 +122,7 @@ export function prepareV8Flags(argv: Options, v8version: string) {
 		);
 
 	const flags: string[] = [];
+
 	const cleanup: CleanupCallback[] = [];
 	prepareDeopts(argv, version, flags, cleanup);
 	prepareICs(argv, version, flags);
@@ -113,5 +130,6 @@ export function prepareV8Flags(argv: Options, v8version: string) {
 	prepareSources(argv, flags);
 	prepareProfile(argv, flags);
 	prepareOut(argv, flags);
+
 	return { flags, cleanup };
 }

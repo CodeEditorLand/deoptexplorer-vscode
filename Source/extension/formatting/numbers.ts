@@ -91,15 +91,21 @@ export const formatGigabytesHighPrecision = new Intl.NumberFormat("en-US", {
 
 export function formatMemory(size: number) {
 	if (size < 1024) return formatBytes(size);
+
 	if (size < 1024 * 1024) return formatKilobytes(size / 1024);
+
 	if (size < 1024 * 1024 * 1024) return formatMegabytes(size / (1024 * 1024));
+
 	return formatGigabytes(size / (1024 * 1024 * 1024));
 }
 
 export function formatMemoryHighPrecision(size: number) {
 	if (size < 1024) return formatBytes(size);
+
 	if (size < 1024 * 1024) return formatKilobytes(size / 1024);
+
 	if (size < 1024 * 1024 * 1024)
 		return formatMegabytesHighPrecision(size / (1024 * 1024));
+
 	return formatGigabytesHighPrecision(size / (1024 * 1024 * 1024));
 }

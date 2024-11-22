@@ -32,6 +32,7 @@ export class ICDecorations {
 
 	constructor() {
 		const stack = new VSDisposableStack();
+
 		try {
 			this._noFeedbackIcDecorationType = stack.use(
 				createDecorationType("noFeedbackIc"),
@@ -85,6 +86,7 @@ export class ICDecorations {
 		if (this._showDecorations !== value) {
 			this._hide();
 			this._showDecorations = value;
+
 			if (this._showDecorations !== "none") {
 				this._show();
 			}
@@ -112,13 +114,18 @@ export class ICDecorations {
 
 	private _show() {
 		if (!openedLog) return;
+
 		for (const editor of getTextEditors(this._showDecorations)) {
 			const uri = unwrapScriptSource(editor.document.uri).uri;
+
 			if (!uri) continue;
 
 			const fileUri = getCanonicalUri(uri);
+
 			const entries = openedLog.files.get(fileUri);
+
 			const ics = entries?.ics;
+
 			if (!ics?.length) return;
 
 			if (ics.length > this._maxDecorations) {
@@ -173,18 +180,25 @@ export class ICDecorations {
 		switch (state) {
 			case IcState.NO_FEEDBACK:
 				return this._noFeedbackIcDecorationType;
+
 			case IcState.UNINITIALIZED:
 				return this._uninitializedIcDecorationType;
+
 			case IcState.PREMONOMORPHIC:
 				return this._premonomorphicIcDecorationType;
+
 			case IcState.MONOMORPHIC:
 				return this._monomorphicIcDecorationType;
+
 			case IcState.RECOMPUTE_HANDLER:
 				return this._recomputeHandlerIcDecorationType;
+
 			case IcState.POLYMORPHIC:
 				return this._polymorphicIcDecorationType;
+
 			case IcState.MEGAMORPHIC:
 				return this._megamorphicIcDecorationType;
+
 			case IcState.GENERIC:
 				return this._genericIcDecorationType;
 		}
@@ -203,5 +217,6 @@ export class ICDecorations {
 export function activateICDecorations(context: ExtensionContext) {
 	const stack = new VSDisposableStack();
 	stack.use(new ICDecorations());
+
 	return stack;
 }

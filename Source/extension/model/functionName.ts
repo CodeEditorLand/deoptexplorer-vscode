@@ -26,8 +26,10 @@ import { isPathOrUriString, pathOrUriStringToUri } from "../vscode/uri";
 
 const functionFileRegExp =
 	/^(?:(?<type>\w+): (?<state>[~*])?)?(?<nameAndLocation>.*)$/;
+
 const uriOrPathStartRegExp =
 	/(?:[\\/](?:[a-z](?:[:|]|%3a|%7c)[\\/]?)|[a-z](?:[:|]|%3a|%7c)[\\/]?)|[a-z][-+.a-z0-9]*:/iy;
+
 const cppFunctionNameRegExp = /^\w+::/y;
 
 export class FunctionName {
@@ -40,6 +42,7 @@ export class FunctionName {
 
 	static fromCodeEntry(entry: CodeEntry) {
 		const name = entry.getRawName();
+
 		return FunctionName.parse(name);
 	}
 
@@ -54,9 +57,12 @@ export class FunctionName {
 				return new FunctionName(text, /*location*/ undefined);
 		}
 		const match = functionFileRegExp.exec(text);
+
 		if (match?.groups) {
 			const { type, state } = match.groups;
+
 			const out_prefixLength = ref.out<number>();
+
 			let nameAndLocation = match.groups.nameAndLocation;
 
 			// nameAndLocation can be one of several things based on
@@ -69,6 +75,7 @@ export class FunctionName {
 				nameAndLocation,
 				out_prefixLength,
 			);
+
 			if (range) {
 				nameAndLocation = nameAndLocation.slice(
 					0,
@@ -77,27 +84,33 @@ export class FunctionName {
 			}
 
 			let name: string | undefined;
+
 			let pathname: string | undefined;
+
 			for (
 				let i = nameAndLocation.lastIndexOf(" ");
 				i >= 0;
 				i = i === 0 ? -1 : nameAndLocation.lastIndexOf(" ", i - 1)
 			) {
 				cppFunctionNameRegExp.lastIndex = i + 1;
+
 				if (cppFunctionNameRegExp.test(nameAndLocation)) {
 					continue;
 				}
 
 				uriOrPathStartRegExp.lastIndex = i + 1;
+
 				if (uriOrPathStartRegExp.test(nameAndLocation)) {
 					pathname = nameAndLocation.slice(i + 1);
 					name = nameAndLocation.slice(0, i);
+
 					break;
 				}
 			}
 
 			if (name === undefined) {
 				const lastSpace = nameAndLocation.lastIndexOf(" ");
+
 				if (lastSpace >= 0) {
 					pathname = nameAndLocation.slice(lastSpace + 1);
 					name = nameAndLocation.slice(0, lastSpace);
@@ -106,10 +119,12 @@ export class FunctionName {
 
 			if (name === undefined) {
 				cppFunctionNameRegExp.lastIndex = 0;
+
 				if (cppFunctionNameRegExp.test(nameAndLocation)) {
 					name = nameAndLocation;
 				} else {
 					uriOrPathStartRegExp.lastIndex = 0;
+
 					if (uriOrPathStartRegExp.test(nameAndLocation)) {
 						pathname = nameAndLocation;
 						name = path.basename(pathname);
@@ -120,8 +135,10 @@ export class FunctionName {
 			}
 
 			let location: Location | undefined;
+
 			if (range || pathname) {
 				range ??= new Range(new Position(0, 0), new Position(0, 0));
+
 				const uri = !pathname
 					? Uri.parse("missing:", /*strict*/ true)
 					: isPathOrUriString(pathname)
@@ -142,10 +159,14 @@ export class FunctionName {
 		}
 
 		const out_prefixLength = ref.out<number>();
+
 		const range = tryParseTrailingRange(text, out_prefixLength);
+
 		if (range) {
 			const uriString = text.slice(0, out_prefixLength.value);
+
 			const uri = getCanonicalUri(pathOrUriStringToUri(uriString));
+
 			return new FunctionName(
 				uriBasename(uri),
 				new Location(uri, range),
@@ -175,6 +196,7 @@ export class FunctionName {
 
 	toString() {
 		let s = this.name;
+
 		if (this.type) {
 			const state =
 				this.state === FunctionState.Interpreted

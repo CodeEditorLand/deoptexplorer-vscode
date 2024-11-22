@@ -103,6 +103,7 @@ export function activateEventsService(context: ExtensionContext) {
 	const obj = createEvents();
 	events = obj.events;
 	emitters = obj.emitters;
+
 	return obj.disposable;
 }
 
@@ -118,8 +119,11 @@ function EVENTMAP<A extends Record<string, EventEmitter<any>>>(
 	map: A,
 ): EVENTMAP<A> {
 	const events: Record<string, EventEmitter<any>["event"]> = {};
+
 	const emitters: Record<string, EventEmitter<any>["fire"]> = {};
+
 	const disposables: Disposable[] = [];
+
 	for (const [key, emitter] of Object.entries(map)) {
 		events[`on${key.slice(0, 1).toUpperCase()}${key.slice(1)}`] =
 			emitter.event;

@@ -10,13 +10,17 @@ import { isUriString } from "./uri";
 export function isFileSystemLocation(file: string | Uri | URL) {
 	if (file instanceof Uri)
 		return file.scheme === "file" || file.scheme === "vscode-remote";
+
 	if (file instanceof URL)
 		return file.protocol === "file:" || file.protocol === "vscode-remote:";
+
 	if (typeof file !== "string") return false;
+
 	if (isUriString(file))
 		return (
 			file.startsWith("file://") || file.startsWith("vscode-remote://")
 		);
+
 	return path.isAbsolute(file);
 }
 
@@ -64,6 +68,7 @@ export function toFileSystemPath(file: string | Uri): string {
 		file = file.fsPath;
 	} else if (isUriString(file)) {
 		const url = new URL(file);
+
 		if (url.protocol === "file:") file = fileURLToPath(file);
 	}
 	return isDosPath(file)
@@ -75,9 +80,13 @@ const relativePathRegExp = /^\.\.?($|[\\/])/;
 
 export function ensureRelativePathIsDotted(file: string) {
 	if (isUriString(file)) return file;
+
 	if (path.isAbsolute(file)) return file;
+
 	if (relativePathRegExp.test(file)) return file;
+
 	if (file === "") return ".";
+
 	return `./${file}`;
 }
 

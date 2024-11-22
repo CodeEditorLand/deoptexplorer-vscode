@@ -14,6 +14,7 @@ import { RangeMap as RangeMapUsingSplayTreeWithComparer } from "./rangeMap/range
 interface RangeMapLike<T> {
 	get size(): number;
 	has(range: vscode.Range): boolean;
+
 	get(key: vscode.Range): T | undefined;
 	findAllContaining(
 		positionOrRange: vscode.Position | vscode.Range,
@@ -32,9 +33,11 @@ interface RangeMapLike<T> {
 	findLeastIntersecting(
 		positionOrRange: vscode.Position | vscode.Range,
 	): [vscode.Range, T] | undefined;
+
 	set(key: vscode.Range, value: T): this;
 	delete(key: vscode.Range): boolean;
 	clear(): void;
+
 	forEach(
 		cb: (value: T, key: vscode.Range, map: RangeMapLike<T>) => void,
 		thisArg?: any,
@@ -47,9 +50,13 @@ interface RangeMapLike<T> {
 
 describe("rangeMap", () => {
 	const count = 1000;
+
 	const collapseChance = 0.2;
+
 	const getPercent = 0.2;
+
 	const missPercent = 0.05;
+
 	const findAllRangePercent = 0.3;
 
 	const implementations: {
@@ -98,6 +105,7 @@ describe("rangeMap", () => {
 
 		benchmark.each(implementations)("$name", ({ RangeMap }) => {
 			const map = new RangeMap<number>();
+
 			for (let i = 0; i < entries.length; i++) {
 				map.set(entries[i][0], entries[i][1]);
 			}
@@ -106,11 +114,13 @@ describe("rangeMap", () => {
 
 	describe(`get() of ${count} elements w/${(missPercent * 100).toFixed(1)}% miss`, () => {
 		let entries: (readonly [vscode.Range, number])[];
+
 		let selectedKeys: vscode.Range[];
 
 		afterAll(() => {
 			entries = undefined!;
 			selectedKeys = undefined!;
+
 			for (const implementation of implementations) {
 				implementation.rangeMap = undefined!;
 			}
@@ -123,8 +133,10 @@ describe("rangeMap", () => {
 					(i) => [randomRange({ collapseChance }), i] as const,
 				),
 			];
+
 			for (const implementation of implementations) {
 				const map = new implementation.RangeMap<number>();
+
 				for (let i = 0; i < entries.length; i++) {
 					map.set(entries[i][0], entries[i][1]);
 				}
@@ -150,6 +162,7 @@ describe("rangeMap", () => {
 
 	describe(`findAllContaining() ${(findAllRangePercent * 100).toFixed(1)}% of ${count} elements w/${(missPercent * 100).toFixed(1)}% miss`, () => {
 		let entries: (readonly [vscode.Range, number])[];
+
 		let ranges: vscode.Range[];
 
 		beforeAll(() => {
@@ -162,6 +175,7 @@ describe("rangeMap", () => {
 				.thenBy((range) => range.end.character)
 				.map((range, i) => [range, i] as const)
 				.toArray();
+
 			const rangeCount =
 				Math.floor(count * findAllRangePercent) +
 				Math.floor(count * missPercent);
@@ -169,13 +183,18 @@ describe("rangeMap", () => {
 				generate(rangeCount, () => {
 					if (randomBoolean(missPercent))
 						return randomRange({ collapseChance });
+
 					const start = randomElement(entries)[0];
+
 					const end = randomElement(entries)[0];
+
 					return start.union(end);
 				}),
 			).toArray();
+
 			for (const implementation of implementations) {
 				const map = new implementation.RangeMap<number>();
+
 				for (let i = 0; i < entries.length; i++) {
 					map.set(entries[i][0], entries[i][1]);
 				}
@@ -186,6 +205,7 @@ describe("rangeMap", () => {
 		afterAll(() => {
 			entries = undefined!;
 			ranges = undefined!;
+
 			for (const implementation of implementations) {
 				implementation.rangeMap = undefined!;
 			}
@@ -198,6 +218,7 @@ describe("rangeMap", () => {
 			"$name",
 			({ rangeMap }) => {
 				let i = 0;
+
 				for (const _ of rangeMap.findAllContaining(
 					randomElement(ranges),
 				)) {

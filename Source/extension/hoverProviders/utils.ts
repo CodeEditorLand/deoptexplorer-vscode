@@ -13,7 +13,9 @@ export function entryContainsPosition(
 	position: Position,
 ) {
 	const kind = entry.getLocationKind(file);
+
 	const location = entry.getLocation(kind);
+
 	return (
 		location &&
 		location.range.start.line >= startLine &&

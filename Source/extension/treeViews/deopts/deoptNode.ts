@@ -71,23 +71,28 @@ export class DeoptNode extends BaseNode {
 		// Deopt entries are labeled by the bailout reason for their worst bailout type, or `"(no reason given)"` if
 		// no reason was provided.
 		const worstBailoutType = this.worstBailoutType;
+
 		const worstBailouts = from(this.deopt.updates)
 			.where((update) => update.bailoutType === worstBailoutType)
 			.toArray();
+
 		const deoptReason =
 			from(worstBailouts)
 				.reverse()
 				.select((update) => update.deoptReason)
 				.first((reason) => reason.length > 0) ?? "(no reason given)";
+
 		return deoptReason;
 	}
 
 	private getCommand(): TypeSafeCommand | undefined {
 		if (!this.deopt.referenceLocation) return undefined;
+
 		const uri = getScriptSourceUri(
 			this.deopt.referenceLocation.uri,
 			this.provider.log?.sources,
 		);
+
 		return (
 			uri && {
 				title: "Go to Deopt",
@@ -105,10 +110,12 @@ export class DeoptNode extends BaseNode {
 
 	protected override createTreeItem() {
 		const label = this.formatLabel();
+
 		const relativeTo = this.provider.log && {
 			log: this.provider.log,
 			ignoreIfBasename: true,
 		};
+
 		const description =
 			formatLocation(this.deopt.referenceLocation, {
 				as: "file",
@@ -116,6 +123,7 @@ export class DeoptNode extends BaseNode {
 				include: "position",
 				relativeTo,
 			}) || "(unknown)";
+
 		return createTreeItem(label, TreeItemCollapsibleState.None, {
 			contextValue: "",
 			description: description,
@@ -130,7 +138,9 @@ export class DeoptNode extends BaseNode {
 		const bailouts: MarkdownString[] = [];
 
 		let lastBailoutType: DeoptimizeKind | undefined;
+
 		let lastDeoptReason: string | undefined;
+
 		for (const update of this.deopt.updates) {
 			// if this is the first update, track it and continue
 			if (
@@ -139,6 +149,7 @@ export class DeoptNode extends BaseNode {
 			) {
 				lastBailoutType = update.bailoutType;
 				lastDeoptReason = update.deoptReason;
+
 				continue;
 			}
 
@@ -149,6 +160,7 @@ export class DeoptNode extends BaseNode {
 				);
 				lastBailoutType = update.bailoutType;
 				lastDeoptReason = update.deoptReason;
+
 				break;
 			}
 
@@ -160,6 +172,7 @@ export class DeoptNode extends BaseNode {
 					);
 				}
 				lastDeoptReason = update.deoptReason;
+
 				break;
 			}
 		}

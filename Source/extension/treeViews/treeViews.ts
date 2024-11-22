@@ -23,8 +23,10 @@ import { ProfileTree } from "./profile/profileTree";
 
 export async function activateTreeViewService(context: ExtensionContext) {
 	const stack = new VSDisposableStack();
+
 	try {
 		const pickerProvider = new PickerTreeDataProvider();
+
 		const pickerView = stack.use(
 			window.createTreeView(constants.treeviews.pick, {
 				treeDataProvider: pickerProvider,
@@ -42,10 +44,15 @@ export async function activateTreeViewService(context: ExtensionContext) {
 		);
 
 		const icsTree = stack.use(new IcsTree());
+
 		const deoptsTree = stack.use(new DeoptsTree());
+
 		const functionsTree = stack.use(new FunctionsTree());
+
 		const mapsTree = stack.use(new MapsTree());
+
 		const profileTree = stack.use(new ProfileTree());
+
 		const lineTickTree = stack.use(new LineTickTree());
 
 		stack.use(
@@ -125,6 +132,7 @@ export async function activateTreeViewService(context: ExtensionContext) {
 		stack.use(
 			events.onWillOpenLogFile(async () => {
 				pickerWatcher.stopWatching();
+
 				functionsTree.closeLog();
 				icsTree.closeLog();
 				deoptsTree.closeLog();
@@ -141,6 +149,7 @@ export async function activateTreeViewService(context: ExtensionContext) {
 		stack.use(
 			events.onDidOpenLogFile(async ({ uri, log }) => {
 				pickerWatcher.stopWatching();
+
 				functionsTree.openLog(uri, log);
 				icsTree.openLog(uri, log);
 				deoptsTree.openLog(uri, log);
@@ -158,6 +167,7 @@ export async function activateTreeViewService(context: ExtensionContext) {
 			events.onDidCloseLogFile(async () => {
 				pickerWatcher.startWatching();
 				pickerProvider.invalidate();
+
 				functionsTree.closeLog();
 				icsTree.closeLog();
 				deoptsTree.closeLog();
@@ -179,6 +189,7 @@ export async function activateTreeViewService(context: ExtensionContext) {
 				},
 			),
 		);
+
 		return stack.move();
 	} finally {
 		stack.dispose();

@@ -45,14 +45,17 @@ function tryRealpath(file: string) {
  */
 function getCanonicalPath(file: string): CanonicalPath {
 	let canonicalPath = canonicalPathCache?.get(file);
+
 	if (canonicalPath !== undefined) {
 		return canonicalPath;
 	}
 
 	const realPath = tryRealpath(file) ?? file;
+
 	const reducedPath = reducePath(realPath);
 	canonicalPath = normalizePathPosix(reducedPath) as CanonicalPath;
 	canonicalPathCache?.set(file, canonicalPath);
+
 	return canonicalPath;
 }
 
@@ -62,6 +65,7 @@ function getCanonicalPath(file: string): CanonicalPath {
 export function getCanonicalUri(uri: Uri) {
 	if (uri.scheme === "file") {
 		const fsPath = getCanonicalPath(uri.fsPath);
+
 		return (
 			fsPath !== normalizePathPosix(uri.fsPath) ? Uri.file(fsPath) : uri
 		) as CanonicalUri;
@@ -71,6 +75,7 @@ export function getCanonicalUri(uri: Uri) {
 
 export function getCanonicalLocation(location: Location) {
 	const uri = getCanonicalUri(location.uri);
+
 	return (
 		uri === location.uri ? location : new Location(uri, location.range)
 	) as CanonicalLocation;
@@ -80,12 +85,14 @@ export function* walkUpContainingDirectories(file: Uri) {
 	if (!isFileSystemLocation(file)) return;
 
 	let directory = resolveUri(file, ".");
+
 	while (true) {
 		yield getCanonicalUri(directory);
 
 		if (directory.path === "/" || directory.path === "") break;
 
 		const parent = resolveUri(directory, "../");
+
 		if (directory.path === parent.path) break;
 		directory = parent;
 	}
@@ -93,9 +100,11 @@ export function* walkUpContainingDirectories(file: Uri) {
 
 export function activateCanonicalPaths(context: ExtensionContext) {
 	canonicalPathCache = new Map();
+
 	const stack = new VSDisposableStack();
 	stack.defer(() => {
 		canonicalPathCache = undefined!;
 	});
+
 	return stack;
 }

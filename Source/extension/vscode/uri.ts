@@ -47,8 +47,11 @@ export function fileUriToPath(
 ): string;
 export function fileUriToPath(uri: Uri | string, canonicalize?: boolean) {
 	if (typeof uri === "string") uri = Uri.parse(uri, /*strict*/ true);
+
 	if (uri.scheme !== "file") throw new TypeError("Uri is not a file: uri");
+
 	if (canonicalize) uri = getCanonicalUri(uri);
+
 	return !canonicalize && isWindows && isDosPath(uri.fsPath)
 		? normalizePathWindows(uri.fsPath)
 		: normalizePathPosix(uri.fsPath);
@@ -70,6 +73,7 @@ export function pathToFileUri(file: string, canonicalize: true): CanonicalUri;
 export function pathToFileUri(file: string, canonicalize?: boolean): Uri;
 export function pathToFileUri(file: string, canonicalize?: boolean) {
 	const uri = Uri.file(normalizePathPosix(file));
+
 	return canonicalize ? getCanonicalUri(uri) : uri;
 }
 
@@ -103,8 +107,10 @@ export function pathOrUriStringToUri(text: string, canonicalize?: boolean) {
 		return canonicalize
 			? getCanonicalUri(Uri.parse(text, /*strict*/ true))
 			: Uri.parse(text, /*strict*/ true);
+
 	if (fsAbsolutePathStartRegExp.test(text))
 		return canonicalize ? getCanonicalUri(Uri.file(text)) : Uri.file(text);
+
 	throw new TypeError(
 		`Expected argument to be an absolute path or URI: '${text}'`,
 	);
@@ -123,6 +129,7 @@ export function uriToPathOrUriString(uri: Uri, canonicalize?: boolean) {
 		return normalizePathPosix(
 			(canonicalize ? getCanonicalUri(uri) : uri).fsPath,
 		);
+
 	return (canonicalize ? resolveUri(uri) : uri).toString();
 }
 
@@ -149,8 +156,10 @@ export function formatUri(
 	}
 
 	const asFile = as === "file" && uri.scheme === "file";
+
 	if (relativeTo instanceof Uri) {
 		const fragment = relativeUriFragment(relativeTo, uri);
+
 		return asFile && isWindows ? fragment.replaceAll("/", "\\") : fragment;
 	}
 
@@ -158,6 +167,7 @@ export function formatUri(
 		const fragment = relativeTo.log.tryGetRelativeUriFragment(uri, {
 			ignoreIfBasename: relativeTo.ignoreIfBasename,
 		});
+
 		if (fragment) {
 			return asFile && isWindows
 				? fragment.replaceAll("/", "\\")
@@ -192,11 +202,13 @@ export function formatUriMarkdown(
 	}: FormatUriMarkdownOptions = {},
 ) {
 	const md = trusted ? markdown.trusted : markdown;
+
 	if (!uri) {
 		return md``;
 	}
 
 	label ??= formatUri(uri, { as, skipEncoding, relativeTo });
+
 	if (
 		schemes.deny?.includes(uri.scheme) ||
 		(schemes.allow && !schemes.allow.includes(uri.scheme))
@@ -205,11 +217,13 @@ export function formatUriMarkdown(
 	}
 
 	const linkUri = linkSources ? getScriptSourceUri(uri, linkSources) : uri;
+
 	if (!linkUri) {
 		return md`${label}`;
 	}
 
 	const link = formatUri(linkUri, { as: "uri" });
 	title ??= formatUri(uri, { as: "file", skipEncoding: true });
+
 	return md`[${label}](${link}${title ? md` "${title}"` : ""})`;
 }

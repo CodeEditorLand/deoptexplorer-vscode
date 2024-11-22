@@ -60,11 +60,13 @@ export class CppEntriesProvider {
 		await this.loadSymbols(libName, libStart, libEnd, progress, token);
 
 		let lastUnknownSize: FuncInfo | undefined;
+
 		let lastAdded: FuncInfo | undefined;
 
 		function inRange(funcInfo: FuncInfo, start: Address, end: Address) {
 			assert(end !== undefined);
 			assert(funcInfo.end !== undefined);
+
 			return funcInfo.start >= start && funcInfo.end <= end;
 		}
 
@@ -76,6 +78,7 @@ export class CppEntriesProvider {
 			if (lastUnknownSize && lastUnknownSize.start < funcInfo.start) {
 				// Try to update lastUnknownSize based on new entries start position.
 				lastUnknownSize.end = funcInfo.start;
+
 				if (
 					(!lastAdded ||
 						!inRange(
@@ -113,6 +116,7 @@ export class CppEntriesProvider {
 
 		while (true) {
 			let funcInfo = this.parseNextLine();
+
 			if (funcInfo === null) {
 				continue;
 			} else if (funcInfo === false) {
@@ -179,8 +183,10 @@ export class UnixCppEntriesProvider extends CppEntriesProvider {
 
 	protected loadSymbols(libName: string) {
 		this.parsePos = 0;
+
 		if (!workspace.isTrusted) {
 			this.symbols = ["", ""];
+
 			return;
 		}
 
@@ -213,21 +219,27 @@ export class UnixCppEntriesProvider extends CppEntriesProvider {
 			return false;
 		}
 		var lineEndPos = this.symbols[0].indexOf("\n", this.parsePos);
+
 		if (lineEndPos == -1) {
 			this.symbols.shift();
 			this.parsePos = 0;
+
 			return this.parseNextLine();
 		}
 
 		var line = this.symbols[0].substring(this.parsePos, lineEndPos);
 		this.parsePos = lineEndPos + 1;
+
 		var fields = line.match(this.FUNC_RE);
+
 		var funcInfo = null;
+
 		if (fields) {
 			funcInfo = {
 				name: fields[3],
 				start: parseAddress(fields[1]),
 			} as FuncInfo;
+
 			if (fields[2]) {
 				funcInfo.size = parseInt(fields[2], 16);
 			}
@@ -245,10 +257,12 @@ export class MacCppEntriesProvider extends UnixCppEntriesProvider {
 
 	protected loadSymbols(libName: string) {
 		this.parsePos = 0;
+
 		if (this.targetRootFS) libName = this.targetRootFS + libName;
 
 		if (!workspace.isTrusted) {
 			this.symbols = ["", ""];
+
 			return;
 		}
 
@@ -312,12 +326,16 @@ export class WindowsCppEntriesProvider extends CppEntriesProvider {
 		token: CancellationToken | undefined,
 	) {
 		libName = this.targetRootFS + libName;
+
 		const fileNameFields = libName.match(
 			WindowsCppEntriesProvider.FILENAME_RE,
 		);
+
 		if (!fileNameFields) return;
+
 		const mapFileName = `${fileNameFields[1]}.map`;
 		this.moduleType_ = fileNameFields[2].toLowerCase();
+
 		try {
 			this.symbols = fs.readFileSync(mapFileName, "utf8");
 		} catch (e) {
@@ -328,6 +346,7 @@ export class WindowsCppEntriesProvider extends CppEntriesProvider {
 
 	protected parseNextLine() {
 		const lineEndPos = this.symbols.indexOf("\r\n", this.parsePos);
+
 		if (lineEndPos == -1) {
 			return false;
 		}
@@ -340,8 +359,10 @@ export class WindowsCppEntriesProvider extends CppEntriesProvider {
 		const imageBaseFields = line.match(
 			WindowsCppEntriesProvider.IMAGE_BASE_RE,
 		);
+
 		if (imageBaseFields) {
 			const imageBase = parseInt(imageBaseFields[1], 16);
+
 			if (
 				(this.moduleType_ == "exe") !=
 				(imageBase == WindowsCppEntriesProvider.EXE_IMAGE_BASE)
@@ -351,6 +372,7 @@ export class WindowsCppEntriesProvider extends CppEntriesProvider {
 		}
 
 		const fields = line.match(WindowsCppEntriesProvider.FUNC_RE);
+
 		return fields
 			? {
 					name: this.unmangleName(fields[1]),
@@ -370,9 +392,12 @@ export class WindowsCppEntriesProvider extends CppEntriesProvider {
 	protected unmangleName(name: string) {
 		// Empty or non-mangled name.
 		if (name.length < 1 || name.charAt(0) != "?") return name;
+
 		const nameEndPos = name.indexOf("@@");
+
 		const components = name.substring(1, nameEndPos).split("@");
 		components.reverse();
+
 		return components.join("::");
 	}
 }
@@ -385,8 +410,10 @@ export function getCppEntriesProvider(options: CppEntriesProviderOptions) {
 	switch (os.platform()) {
 		case "win32":
 			return new WindowsCppEntriesProvider(options);
+
 		case "darwin":
 			return new MacCppEntriesProvider(options);
+
 		default:
 			return new UnixCppEntriesProvider(options);
 	}

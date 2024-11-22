@@ -4,7 +4,9 @@
 import { Range, satisfies, SemVer } from "semver";
 
 const emptyArray: readonly string[] = Object.freeze([]);
+
 const maxArray: readonly string[] = Object.freeze([]);
+
 const minArray: readonly string[] = Object.freeze([]);
 
 /**
@@ -45,6 +47,7 @@ export class V8Version {
 
 	compare(version: string | Readonly<SemVer> | V8Version) {
 		let extra: readonly string[] | undefined;
+
 		if (version instanceof V8Version) {
 			extra = version._extra;
 			version = version.semver;
@@ -52,32 +55,46 @@ export class V8Version {
 			extra = emptyArray;
 		}
 		const result = this.semver.compare(version);
+
 		if (result) return result;
+
 		if (this._extra === extra) return 0;
+
 		if (this._extra === maxArray) return +1;
+
 		if (this._extra === minArray) return -1;
+
 		if (extra === maxArray) return -1;
+
 		if (extra === minArray) return +1;
+
 		for (let i = 0; i < this._extra.length && i < extra.length; i++) {
 			const left = this._extra[i];
+
 			const right = extra[i];
+
 			if (left < right) return -1;
+
 			if (left > right) return +1;
 		}
 		if (this._extra.length < extra.length) return -1;
+
 		if (this._extra.length > extra.length) return +1;
+
 		return 0;
 	}
 
 	toFullString() {
 		if (!this._fullString) {
 			let s = this.toString();
+
 			if (this._extra === maxArray) {
 				s += "+max";
 			} else if (this._extra === minArray) {
 				s += "+min";
 			} else if (this._extra.length) {
 				const components: string[] = [];
+
 				for (const component of this._extra) {
 					components.push(
 						component.startsWith("-") ? component : `.${component}`,

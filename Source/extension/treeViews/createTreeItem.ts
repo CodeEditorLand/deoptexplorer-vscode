@@ -54,6 +54,7 @@ export function createTreeItem(
 	}: TypeSafeTreeItemOptions = {},
 ) {
 	let item: TreeItem;
+
 	if (labelOrResourceUri instanceof Uri) {
 		item = new TreeItem(labelOrResourceUri, state);
 		item.label = label;
@@ -67,5 +68,6 @@ export function createTreeItem(
 	item.description = description;
 	item.contextValue = contextValue;
 	item.command = command;
+
 	return item;
 }

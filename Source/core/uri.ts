@@ -15,38 +15,53 @@ import { RegisteredSerializer, registerKnownSerializer } from "./serializer";
  */
 export function ensureUriTrailingDirectorySeparator(uri: Uri): Uri {
 	const path = ensureTrailingDirectorySeparator(uri.path);
+
 	return uri.path === path
 		? uri
 		: uri.with({ path, query: "", fragment: "" });
 }
 
 const isWindows = process.platform === "win32";
+
 const uriPathStartRegExp =
 	/^(?:[\\/](?:[a-z](?:[:|]|%3a|%7c)[\\/]?)?|[a-z](?:[:|]|%3a|%7c)[\\/]?)/i;
+
 const uriSlashesRegExp = /[\\/]/g;
+
 const uriPartDosRootRegExp = /^[a-z](?:[:|]|%3a|%7c)$/i;
+
 const uriPartSingleDotRegExp = /^(?:\.|%2e)$/i;
+
 const uriPartDoubleDotRegExp = /^(?:\.|%2e){2}$/i;
+
 const uriNonNormalizedSegmentRegExp =
 	/(?:^|[\\/])(?:\.|%2e){1,2}(?:$|[\\/])|\\/i;
+
 const uriNormalizedRootRegExp =
 	/^\/(?![a-z](?:[:|]|%3[aA]|%7[cC])|[A-Z](?:[|]|%3[aA]|%7[cC]))(?:[A-Z]:\/)?/;
 
 type PathParts = [root: string, ...rest: string[]];
 
 const EMPTY_PATH: PathParts = [""];
+
 const POSIX_ROOT_PATH: PathParts = ["/"];
+
 const EMPTY_URI = Uri.parse("unused:", /*strict*/ true);
+
 const BACKSLASH = "\\".charCodeAt(0);
+
 const SLASH = "/".charCodeAt(0);
+
 const COLON = ":".charCodeAt(0);
 
 export function splitUriPath(path: string): PathParts {
 	if (path === "") return EMPTY_PATH;
+
 	if (path === "/" || path === "\\") return POSIX_ROOT_PATH;
 
 	// If path is not missing, it must start with a path separator or a DOS drive root.
 	let root = uriPathStartRegExp.exec(path)?.[0];
+
 	if (!root) {
 		throw new SyntaxError(
 			"Expected path to start with '/', '\\', or a DOS drive letter (i.e., 'C:')",
@@ -55,8 +70,10 @@ export function splitUriPath(path: string): PathParts {
 
 	// If the first segment is a DOS drive root, clean up the path and make it the root
 	const rootLength = root.length;
+
 	if (rootLength > 1) {
 		const ch = root.charCodeAt(0);
+
 		const driveLetter = root.charCodeAt(
 			ch === SLASH || ch === BACKSLASH ? 1 : 0,
 		);
@@ -70,13 +87,17 @@ export function splitUriPath(path: string): PathParts {
 
 	// Split on any unencoded slash ('\' or '/')
 	if (rootLength === path.length) return [root];
+
 	return [root, ...path.slice(rootLength).split(uriSlashesRegExp)];
 }
 
 function joinPathParts(path: PathParts) {
 	if (path === EMPTY_PATH) return "";
+
 	if (path === POSIX_ROOT_PATH) return "/";
+
 	const [root, ...parts] = path;
+
 	return root + parts.join("/");
 }
 
@@ -91,14 +112,18 @@ function reducePathParts(path: PathParts): PathParts {
 
 	let part: string | undefined; // Keep track of the last part to ensure a trailing '/' if necessary (see below).
 	let resolvedPath: string[] | undefined;
+
 	let lastPartWasDotOrDotDot = false;
+
 	for (let i = 1; i < path.length; i++) {
 		part = path[i];
+
 		if (uriPartDoubleDotRegExp.test(part)) {
 			// for '..', shorten the path
 			lastPartWasDotOrDotDot = true;
 			resolvedPath ??= path.slice(1, i);
 			resolvedPath.pop();
+
 			continue;
 		}
 
@@ -106,6 +131,7 @@ function reducePathParts(path: PathParts): PathParts {
 			// for '.', skip the part
 			lastPartWasDotOrDotDot = true;
 			resolvedPath ??= path.slice(1, i);
+
 			continue;
 		}
 
@@ -132,9 +158,13 @@ function reducePathParts(path: PathParts): PathParts {
 
 function isReducedPathFast(path: string) {
 	if (path === "" || path === "/") return true;
+
 	const root = uriPathStartRegExp.exec(path)?.[0];
+
 	if (!root) return true;
+
 	if (!root.startsWith("/")) return false;
+
 	if (root.length > 1) {
 		if (
 			root.length !== 4 ||
@@ -164,6 +194,7 @@ export function reducePath(path: string): string {
 export function resolveUri(base: Uri, ...parts: (string | Uri)[]) {
 	let { authority, path, query, fragment } = base;
 	path = reducePath(path);
+
 	for (let part of parts) {
 		if (typeof part === "string" && isUriString(part)) {
 			// parse qualified URI strings into `Uri` objects.
@@ -175,6 +206,7 @@ export function resolveUri(base: Uri, ...parts: (string | Uri)[]) {
 			base = part;
 			({ authority, path, query, fragment } = base);
 			path = reducePath(path);
+
 			continue;
 		}
 
@@ -185,6 +217,7 @@ export function resolveUri(base: Uri, ...parts: (string | Uri)[]) {
 			query: uriQuery,
 			fragment: uriFragment,
 		} = Uri.parse(`scheme:${part}`, /*strict*/ true);
+
 		if (part.startsWith("//")) {
 			// If the part contains an authority, overwrite the authority, path, query, and fragment
 			authority = uriAuthority;
@@ -230,8 +263,11 @@ function formatUriFragment(
 	fragment: string,
 ) {
 	if (from === "fragment" && !fragment) from = "query";
+
 	if (from === "query" && !query) from = "path";
+
 	let base = "dummy:";
+
 	if (from !== "authority") {
 		if (from !== "path" || path.startsWith("/") || path.startsWith("\\")) {
 			authority = "dummy";
@@ -242,6 +278,7 @@ function formatUriFragment(
 		if (from !== "path") {
 			path = "/";
 			base += "/";
+
 			if (from !== "query") {
 				query = "";
 			}
@@ -255,9 +292,12 @@ function formatUriFragment(
 
 function relativePathParts(from: PathParts, to: PathParts): PathParts {
 	let start: number;
+
 	for (start = 0; start < from.length && start < to.length; start++) {
 		const fromPart = from[start];
+
 		const toPart = to[start];
+
 		if (fromPart !== toPart) break;
 	}
 
@@ -268,8 +308,11 @@ function relativePathParts(from: PathParts, to: PathParts): PathParts {
 
 	// we cannot walk back more steps than the root
 	const components = to.slice(start);
+
 	const maxSteps = from.length - start - 1;
+
 	const relative: string[] = [];
+
 	for (; start < from.length && relative.length < maxSteps; start++) {
 		relative.push("..");
 	}
@@ -283,6 +326,7 @@ export function relativeUriFragment(from: Uri, to: Uri) {
 	// normalize both arguments
 	from = resolveUri(from);
 	to = resolveUri(to);
+
 	if (to.scheme !== from.scheme) {
 		// if the scheme doesn't match then the fragment must be absolute.
 		return to.toString();
@@ -307,6 +351,7 @@ export function relativeUriFragment(from: Uri, to: Uri) {
 			splitUriPath(from.path),
 			splitUriPath(to.path),
 		);
+
 		return formatUriFragment(
 			"path",
 			"",
@@ -339,6 +384,7 @@ export function uriExtname(uri: Uri) {
 }
 
 const fsAbsolutePathStartRegExp = /^(?:[\\/]|[a-z]:)/i;
+
 const uriStartRegExp = /^[a-z][-+.a-z0-9]*:/i;
 
 /**
@@ -366,7 +412,9 @@ export function isUriString(text: string) {
 
 export function computeCommonBaseDirectory(files: Iterable<Uri>) {
 	let scheme: string | undefined;
+
 	let authority: string | undefined;
+
 	let pathParts: PathParts | undefined;
 	next: for (let file of files) {
 		if (scheme === undefined) {
@@ -386,6 +434,7 @@ export function computeCommonBaseDirectory(files: Iterable<Uri>) {
 		}
 
 		let parts = splitUriPath(file.path);
+
 		if (!isReducedPathFast(file.path)) {
 			parts = reducePathParts(parts);
 		}
@@ -397,10 +446,12 @@ export function computeCommonBaseDirectory(files: Iterable<Uri>) {
 
 		if (pathParts === undefined) {
 			pathParts = parts;
+
 			continue;
 		}
 
 		const commonLength = Math.min(pathParts.length, parts.length);
+
 		for (let i = 0; i < commonLength; i++) {
 			if (
 				decodeURIComponent(parts[i]) !==
@@ -410,6 +461,7 @@ export function computeCommonBaseDirectory(files: Iterable<Uri>) {
 					return undefined;
 				}
 				pathParts.length = i;
+
 				continue next;
 			}
 		}
@@ -428,11 +480,13 @@ export function computeCommonBaseDirectory(files: Iterable<Uri>) {
 	}
 
 	const path = joinPathParts(pathParts);
+
 	const base = EMPTY_URI.with({
 		scheme,
 		authority,
 		path: path.endsWith("/") ? path : path + "/",
 	});
+
 	return base;
 }
 
@@ -466,6 +520,7 @@ export const UriSerializer = registerKnownSerializer("Uri", {
 
 export function isJsxFile(uri: Uri) {
 	const extname = uriExtname(uri);
+
 	switch (extname) {
 		case ".jsx":
 		case ".cjsx":
@@ -477,11 +532,13 @@ export function isJsxFile(uri: Uri) {
 
 export function isJavaScriptFile(uri: Uri, excludeJsx = false) {
 	const extname = uriExtname(uri);
+
 	switch (extname) {
 		case ".js":
 		case ".cjs":
 		case ".mjs":
 			return true;
+
 		case ".jsx":
 		case ".cjsx":
 		case ".mjsx":
@@ -492,6 +549,7 @@ export function isJavaScriptFile(uri: Uri, excludeJsx = false) {
 
 export function isTsxFile(uri: Uri) {
 	const extname = uriExtname(uri);
+
 	switch (extname) {
 		case ".tsx":
 			return true;
@@ -501,9 +559,11 @@ export function isTsxFile(uri: Uri) {
 
 export function isTypeScriptFile(uri: Uri, excludeTsx = false) {
 	const extname = uriExtname(uri);
+
 	switch (extname) {
 		case ".ts":
 			return true;
+
 		case ".tsx":
 			return !excludeTsx;
 	}

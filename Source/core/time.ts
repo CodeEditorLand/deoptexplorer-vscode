@@ -7,12 +7,19 @@ import { Decimal } from "decimal.js-light";
 import { assertNever } from "./assert";
 
 const ZERO = BigInt(0) as 0n;
+
 const ONE = BigInt(1) as 1n;
+
 const MICROSECONDS_PER_NANOSECOND = BigInt(1_000) as 1_000n;
+
 const MILLISECONDS_PER_NANOSECOND = BigInt(1_000_000) as 1_000_000n;
+
 const SECONDS_PER_NANOSECOND = BigInt(1_000_000_000) as 1_000_000_000n;
+
 const MINUTES_PER_NANOSECOND = BigInt(60_000_000_000) as 60_000_000_000n;
+
 const HOURS_PER_NANOSECOND = BigInt(360_000_000_000) as 360_000_000_000n;
+
 const DAYS_PER_NANOSECOND = BigInt(8_640_000_000_000) as 8_640_000_000_000n;
 
 type Scale =
@@ -28,18 +35,25 @@ function getNanosecondScale(scale: Scale) {
 	switch (scale) {
 		case "nanoseconds":
 			return ONE;
+
 		case "microseconds":
 			return MICROSECONDS_PER_NANOSECOND;
+
 		case "milliseconds":
 			return MILLISECONDS_PER_NANOSECOND;
+
 		case "seconds":
 			return SECONDS_PER_NANOSECOND;
+
 		case "minutes":
 			return MINUTES_PER_NANOSECOND;
+
 		case "hours":
 			return HOURS_PER_NANOSECOND;
+
 		case "days":
 			return DAYS_PER_NANOSECOND;
+
 		default:
 			assertNever(scale);
 	}
@@ -47,11 +61,16 @@ function getNanosecondScale(scale: Scale) {
 
 function getNanosecondsFromDecimal(value: Decimal, scale: Scale): bigint {
 	const negative = value.isNegative();
+
 	const abs = value.abs();
+
 	const whole = abs.toDecimalPlaces(0, Decimal.ROUND_FLOOR);
+
 	let nanoseconds = BigInt(whole.toString()) * getNanosecondScale(scale);
+
 	if (scale !== "nanoseconds") {
 		const fraction = abs.minus(whole);
+
 		if (!fraction.isZero()) {
 			const newScale =
 				scale === "days"
@@ -67,6 +86,7 @@ function getNanosecondsFromDecimal(value: Decimal, scale: Scale): bigint {
 									: scale === "microseconds"
 										? "nanoseconds"
 										: assertNever(scale);
+
 			const operand =
 				scale === "days"
 					? 24
@@ -92,6 +112,7 @@ function getNanosecondsFromDecimal(value: Decimal, scale: Scale): bigint {
 
 function getNanosecondsFromFloat(value: number, scale: Scale) {
 	if (!isFinite(value)) throw new TypeError("Expected a finite number value");
+
 	return getNanosecondsFromDecimal(new Decimal(value), scale);
 }
 
@@ -107,10 +128,15 @@ function getNanoseconds(value: string | number | bigint, scale: Scale) {
 
 function getNumber(value: bigint, scale: bigint) {
 	const negative = value < ZERO;
+
 	const abs = negative ? -value : value;
+
 	const whole = Number(abs / scale);
+
 	const fraction = Number(abs % scale) / Number(scale);
+
 	const num = whole + fraction;
+
 	return negative ? -num : num;
 }
 
@@ -247,6 +273,7 @@ export class TimeDelta {
 			this._delta > BigInt(Number.MAX_SAFE_INTEGER)
 		)
 			throw new RangeError();
+
 		return Number(this._delta);
 	}
 
@@ -262,10 +289,15 @@ export class TimeDelta {
 	 */
 	inMicrosecondsRoundedUp() {
 		const negative = this._delta < ZERO;
+
 		const abs = negative ? -this._delta : this._delta;
+
 		const whole = Number(abs / MICROSECONDS_PER_NANOSECOND);
+
 		const rem = Number(abs % MICROSECONDS_PER_NANOSECOND);
+
 		const ms = negative ? -whole : whole;
+
 		return rem ? ms + 1 : ms;
 	}
 
@@ -288,10 +320,15 @@ export class TimeDelta {
 	 */
 	inMillisecondsRoundedUp() {
 		const negative = this._delta < ZERO;
+
 		const abs = negative ? -this._delta : this._delta;
+
 		const whole = Number(abs / MILLISECONDS_PER_NANOSECOND);
+
 		const rem = Number(abs % MILLISECONDS_PER_NANOSECOND);
+
 		const ms = negative ? -whole : whole;
+
 		return rem ? ms + 1 : ms;
 	}
 
@@ -375,6 +412,7 @@ export class TimeDelta {
 
 	divide(value: bigint | number) {
 		if (BigInt(value) === BigInt(0)) return new TimeDelta(BigInt(0));
+
 		return new TimeDelta(this._delta / BigInt(value));
 	}
 

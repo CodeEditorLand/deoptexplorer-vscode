@@ -25,6 +25,7 @@ export class SourcePositionInfo {
 		public script: Script | null = null,
 	) {
 		const name = shared.functionName;
+
 		if (
 			script &&
 			sourcePosition.isJavaScript &&

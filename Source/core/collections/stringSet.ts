@@ -22,6 +22,7 @@ export class StringSet<T> {
 
 	add(value: T) {
 		this._map.set(this._toKey(value), value);
+
 		return this;
 	}
 
@@ -61,6 +62,7 @@ export class StringSet<T> {
 export interface ReadonlyStringSet<T> {
 	get size(): number;
 	has(value: T): boolean;
+
 	forEach(
 		cb: (value: T, key: T, map: ReadonlyStringSet<T>) => void,
 		thisArg?: any,

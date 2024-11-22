@@ -29,14 +29,17 @@ export class LocationMap<T> {
 	 */
 	has(key: Location) {
 		const uriString = key.uri.toString();
+
 		const {
 			start: { line: startLine, character: startCharacter },
 			end: { line: endLine, character: endCharacter },
 		} = key.range;
+
 		const entry = this._files
 			.get(uriString)
 			?.get(startLine)
 			?.get(startCharacter);
+
 		if (entry instanceof Map) {
 			return entry.get(endLine)?.has(endCharacter) ?? false;
 		} else if (Array.isArray(entry)) {
@@ -50,14 +53,17 @@ export class LocationMap<T> {
 	 */
 	get(key: Location) {
 		const uriString = key.uri.toString();
+
 		const {
 			start: { line: startLine, character: startCharacter },
 			end: { line: endLine, character: endCharacter },
 		} = key.range;
+
 		const entry = this._files
 			.get(uriString)
 			?.get(startLine)
 			?.get(startCharacter);
+
 		if (entry instanceof Map) {
 			return entry.get(endLine)?.get(endCharacter)?.[1];
 		} else if (Array.isArray(entry) && key.range.isEmpty) {
@@ -70,25 +76,31 @@ export class LocationMap<T> {
 	 */
 	set(key: Location, value: T) {
 		const uriString = key.uri.toString();
+
 		const {
 			start: { line: startLine, character: startCharacter },
 			end: { line: endLine, character: endCharacter },
 		} = key.range;
 
 		let startLines = this._files.get(uriString);
+
 		if (!startLines) this._files.set(uriString, (startLines = new Map()));
 
 		let startCharacters = startLines.get(startLine);
+
 		if (!startCharacters)
 			startLines.set(startLine, (startCharacters = new Map()));
 
 		let endLines = startCharacters.get(startCharacter);
+
 		let endCharacters;
+
 		if (!endLines) {
 			// if we have an empty range, set it as the sole value at this step.
 			if (key.range.isEmpty) {
 				startCharacters.set(startCharacter, [key, value]);
 				this._size++;
+
 				return this;
 			}
 
@@ -97,6 +109,7 @@ export class LocationMap<T> {
 			// we previously set an empty range. If the range is empty, just update the value.
 			if (key.range.isEmpty) {
 				endLines[1] = value;
+
 				return this;
 			}
 
@@ -106,7 +119,9 @@ export class LocationMap<T> {
 
 			const { line: existingEndLine, character: existingEndCharacter } =
 				existingEntry[0].range.end;
+
 			let existingEndCharacters = endLines.get(existingEndLine);
+
 			if (!existingEndCharacters)
 				endLines.set(
 					existingEndLine,
@@ -122,9 +137,11 @@ export class LocationMap<T> {
 		}
 
 		if (!endCharacters) endCharacters = endLines.get(endLine);
+
 		if (!endCharacters) endLines.set(endLine, (endCharacters = new Map()));
 
 		let entry = endCharacters.get(endCharacter);
+
 		if (!entry) {
 			this._size++;
 			endCharacters.set(endCharacter, [key, value]);
@@ -141,18 +158,22 @@ export class LocationMap<T> {
 	 */
 	delete(key: Location) {
 		const uriString = key.uri.toString();
+
 		const {
 			start: { line: startLine, character: startCharacter },
 			end: { line: endLine, character: endCharacter },
 		} = key.range;
 
 		const startLines = this._files.get(uriString);
+
 		if (!startLines) return false;
 
 		const startCharacters = startLines.get(startLine);
+
 		if (!startCharacters) return false;
 
 		const endLines = startCharacters.get(startCharacter);
+
 		if (!endLines) return false;
 
 		if (Array.isArray(endLines)) {
@@ -161,8 +182,10 @@ export class LocationMap<T> {
 			if (key.range.isEmpty) {
 				this._size--;
 				startCharacters.delete(startCharacter);
+
 				if (startCharacters.size === 0) {
 					startLines.delete(startLine);
+
 					if (startLines.size === 0) {
 						this._files.delete(uriString);
 					}
@@ -173,16 +196,21 @@ export class LocationMap<T> {
 		}
 
 		const endCharacters = endLines.get(endLine);
+
 		if (!endCharacters) return false;
 
 		if (endCharacters.delete(endCharacter)) {
 			this._size--;
+
 			if (endCharacters.size === 0) {
 				endLines.delete(endLine);
+
 				if (endLines.size === 0) {
 					startCharacters.delete(startCharacter);
+
 					if (startCharacters.size === 0) {
 						startLines.delete(startLine);
+
 						if (startLines.size === 0) {
 							this._files.delete(uriString);
 						}

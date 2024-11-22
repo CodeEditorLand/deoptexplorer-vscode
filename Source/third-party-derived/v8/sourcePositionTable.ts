@@ -39,6 +39,7 @@ export class SourcePositionTable {
 		const element = this._pcOffsetsToLines_.length
 			? this._pcOffsetsToLines_[this._pcOffsetsToLines_.length - 1]
 			: undefined;
+
 		if (element?.pcOffset === pcOffset) {
 			return;
 		}
@@ -46,6 +47,7 @@ export class SourcePositionTable {
 		// Check that we are inserting in ascending order, so that the vector remains
 		// sorted.
 		assert(!element || element.pcOffset < pcOffset);
+
 		if (
 			!element ||
 			element.lineNumber !== line ||
@@ -60,32 +62,42 @@ export class SourcePositionTable {
 	// https://github.com/v8/v8/blob/6bbf2dfa5b3bde9a40527268741b739f7d7e4bd0/src/profiler/profile-generator.cc#L45
 	getSourceLineNumber(pcOffset: Address): number {
 		assert(pcOffset >= 0);
+
 		if (!this._pcOffsetsToLines_.length) return kNoLineNumberInfo;
+
 		let i = binarySearchKey(
 			this._pcOffsetsToLines_,
 			pcOffset,
 			(_) => _.pcOffset,
 			Comparer.defaultComparer,
 		);
+
 		if (i < 0) i = ~i;
+
 		if (i > 0) i--;
 		assert(i >= 0 && i < this._pcOffsetsToLines_.length);
+
 		return this._pcOffsetsToLines_[i].lineNumber;
 	}
 
 	// https://github.com/v8/v8/blob/6bbf2dfa5b3bde9a40527268741b739f7d7e4bd0/src/profiler/profile-generator.cc#L56
 	getInliningId(pcOffset: Address): number {
 		assert(pcOffset >= 0);
+
 		if (!this._pcOffsetsToLines_.length) return kNotInlined;
+
 		let i = binarySearchKey(
 			this._pcOffsetsToLines_,
 			pcOffset,
 			(_) => _.pcOffset,
 			Comparer.defaultComparer,
 		);
+
 		if (i < 0) i = ~i;
+
 		if (i > 0) i--;
 		assert(i >= 0 && i < this._pcOffsetsToLines_.length);
+
 		return this._pcOffsetsToLines_[i].inliningId;
 	}
 }

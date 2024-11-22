@@ -60,18 +60,25 @@ export class FunctionNode extends BaseNode {
 		switch (this.func?.symbolKind) {
 			case SymbolKind.Function:
 				return new ThemeIcon("symbol-function");
+
 			case SymbolKind.Class:
 				return new ThemeIcon("symbol-class");
+
 			case SymbolKind.Namespace:
 				return new ThemeIcon("symbol-namespace");
+
 			case SymbolKind.Enum:
 				return new ThemeIcon("symbol-enum");
+
 			case SymbolKind.Method:
 				return new ThemeIcon("symbol-method");
+
 			case SymbolKind.Property:
 				return new ThemeIcon("symbol-property");
+
 			case SymbolKind.Field:
 				return new ThemeIcon("symbol-field");
+
 			case SymbolKind.Constructor:
 				return new ThemeIcon("symbol-constructor");
 		}
@@ -79,10 +86,12 @@ export class FunctionNode extends BaseNode {
 
 	private getCommand(): TypeSafeCommand | undefined {
 		if (!this.functionReference?.location) return undefined;
+
 		const uri = getScriptSourceUri(
 			this.functionReference.location.uri,
 			this.provider.log?.sources,
 		);
+
 		return (
 			uri && {
 				title: "Go to Function",
@@ -100,10 +109,12 @@ export class FunctionNode extends BaseNode {
 
 	protected override createTreeItem() {
 		const label = this.formatLabel();
+
 		const relativeTo = this.provider.log && {
 			log: this.provider.log,
 			ignoreIfBasename: true,
 		};
+
 		const description = formatLocation(this.func.referenceLocation, {
 			as: "file",
 			skipEncoding: true,

@@ -45,14 +45,18 @@ export const UNKNOWN_LOCATION = new Location(UNKNOWN_URI, new Position(0, 0));
  */
 export function parseLocation(text: string, strict?: boolean) {
 	const out_prefixLength = ref.out<number>();
+
 	const range = tryParseTrailingRange(text, out_prefixLength);
+
 	if (range) {
 		const uriString = text.slice(0, out_prefixLength.value);
+
 		const uri = strict
 			? Uri.parse(uriString, /*strict*/ true)
 			: isPathOrUriString(uriString)
 				? pathOrUriStringToUri(uriString)
 				: UNKNOWN_URI.with({ path: encodeURIComponent(uriString) });
+
 		return new Location(uri, range);
 	}
 
@@ -61,6 +65,7 @@ export function parseLocation(text: string, strict?: boolean) {
 		: isPathOrUriString(text)
 			? pathOrUriStringToUri(text)
 			: UNKNOWN_URI.with({ path: encodeURIComponent(text) });
+
 	return new Location(uri, new Position(0, 0));
 }
 
@@ -91,9 +96,12 @@ export function formatLocation(
 	}: FormatLocationOptions = {},
 ) {
 	if (!location) return "";
+
 	let text = formatUri(location.uri, { as, skipEncoding, relativeTo });
+
 	if (include !== "none") {
 		const extname = uriExtname(location.uri);
+
 		if (
 			!(
 				/^\.?(exe|dll|so|dylib)$/i.test(extname) &&
@@ -140,6 +148,7 @@ export function formatLocationMarkdown(
 	}: FormatLocationMarkdownOptions = {},
 ) {
 	const md = trusted ? markdown.trusted : markdown;
+
 	if (!location) {
 		return md``;
 	}
@@ -154,6 +163,7 @@ export function formatLocationMarkdown(
 		include: labelInclude,
 		relativeTo,
 	});
+
 	if (
 		schemes.deny?.includes(location.uri.scheme) ||
 		(schemes.allow && !schemes.allow.includes(location.uri.scheme))
@@ -164,12 +174,14 @@ export function formatLocationMarkdown(
 	const linkLocation = linkSources
 		? getScriptSourceLocation(location, linkSources)
 		: location;
+
 	if (!linkLocation) {
 		return md`${label}`;
 	}
 
 	const linkInclude =
 		typeof include === "object" ? (include.link ?? labelInclude) : include;
+
 	const link =
 		linkInclude === "none"
 			? formatLocation(linkLocation, { as: "uri", include: linkInclude })
@@ -191,6 +203,7 @@ export function formatLocationMarkdown(
 		skipEncoding: true,
 		include: titleInclude,
 	});
+
 	return md`[${label}](${link}${title ? md` "${title}"` : ""})`;
 }
 

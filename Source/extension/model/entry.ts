@@ -86,13 +86,16 @@ export abstract class EntryBase {
 
 	getLocation(kind: LocationKind) {
 		this.resolveLocations();
+
 		if (kind === "source") return this.filePosition;
+
 		if (kind === "generated") return this.generatedFilePosition;
 		assertNever(kind);
 	}
 
 	getScript() {
 		const location = this.getLocation("generated");
+
 		if (location) {
 			return this._sources?.getScript(location.uri);
 		}
@@ -100,6 +103,7 @@ export abstract class EntryBase {
 
 	getScriptId() {
 		const location = this.getLocation("generated");
+
 		if (location) {
 			return this._sources?.getScriptId(location.uri);
 		}
@@ -107,6 +111,7 @@ export abstract class EntryBase {
 
 	getSourceText(kind: LocationKind) {
 		const location = this.getLocation(kind);
+
 		if (location) {
 			return this._sources?.getExistingContent(location.uri);
 		}
@@ -114,6 +119,7 @@ export abstract class EntryBase {
 
 	getLineMap(kind: LocationKind) {
 		const location = this.getLocation(kind);
+
 		if (location) {
 			return this._sources?.getExistingLineMap(location.uri);
 		}
@@ -121,21 +127,26 @@ export abstract class EntryBase {
 
 	getSourceMap() {
 		const location = this.getLocation("generated");
+
 		if (location) {
 			const sourceMap = this._sources?.getExistingSourceMap(location.uri);
+
 			return sourceMap === "no-sourcemap" ? undefined : sourceMap;
 		}
 	}
 
 	getSourceFile(kind: LocationKind) {
 		const location = this.getLocation(kind);
+
 		if (location) {
 			return this._sources?.getExistingSourceFile(location.uri);
 		}
 	}
 
 	getLocationKind(file: Uri, exact?: false): LocationKind;
+
 	getLocationKind(file: Uri, exact?: boolean): LocationKind | undefined;
+
 	getLocationKind(file: Uri, exact?: boolean) {
 		return equateNullable(this.filePosition?.uri, file, UriEqualer)
 			? "source"
@@ -154,6 +165,7 @@ export abstract class EntryBase {
 	 */
 	pickLocation(file: Uri, exact?: boolean) {
 		const kind = this.getLocationKind(file, exact);
+
 		return kind !== undefined ? this.getLocation(kind) : undefined;
 	}
 }
@@ -187,6 +199,7 @@ export abstract class ReferenceableEntryBase extends EntryBase {
 	 */
 	get referenceLocation() {
 		this.resolveLocations();
+
 		return this._referenceLocation;
 	}
 	set referenceLocation(value) {
@@ -201,6 +214,7 @@ export abstract class ReferenceableEntryBase extends EntryBase {
 	 */
 	get generatedReferenceLocation() {
 		this.resolveLocations();
+
 		return this._generatedReferenceLocation;
 	}
 	set generatedReferenceLocation(value) {
@@ -208,7 +222,9 @@ export abstract class ReferenceableEntryBase extends EntryBase {
 	}
 
 	getLocation(kind: "source"): Location;
+
 	getLocation(kind: LocationKind): Location | undefined;
+
 	getLocation(kind: LocationKind): Location | undefined {
 		return super.getLocation(kind);
 	}
@@ -227,16 +243,20 @@ export abstract class ReferenceableEntryBase extends EntryBase {
 	}
 
 	getReferenceLocation(kind: "source"): Location;
+
 	getReferenceLocation(kind: LocationKind): Location | undefined;
+
 	getReferenceLocation(kind: LocationKind): Location | undefined {
 		switch (kind) {
 			case "source":
 				return this.referenceLocation ?? this.filePosition;
+
 			case "generated":
 				return (
 					this.generatedReferenceLocation ??
 					this.generatedFilePosition
 				);
+
 			default:
 				assertNever(kind);
 		}
@@ -252,6 +272,7 @@ export abstract class ReferenceableEntryBase extends EntryBase {
 	pickReferenceLocation(uri: Uri, exact?: boolean): Location | undefined;
 	pickReferenceLocation(uri: Uri, exact?: boolean) {
 		const kind = this.getLocationKind(uri, exact);
+
 		return kind !== undefined ? this.getReferenceLocation(kind) : undefined;
 	}
 }

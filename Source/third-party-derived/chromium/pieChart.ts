@@ -25,6 +25,7 @@ export interface PieOptions {
 	size: number;
 	cspStyleHashesOut?: string[];
 	cutout?: boolean | number | string | Cutout;
+
 	formatter?: (value: number) => string;
 	legend?: boolean;
 }
@@ -38,6 +39,7 @@ function style(s: HtmlString, hashesOut?: string[]) {
 	hashesOut?.push(
 		`'sha256-${createHash("sha256").update(s.toString()).digest().toString("base64")}'`,
 	);
+
 	return s;
 }
 
@@ -69,10 +71,12 @@ export function pieChart(slices: readonly Slice[], options: PieOptions) {
 					: defaultCutout;
 
 	let lastAngle = -Math.PI / 2;
+
 	const ref_lastAngle = ref(
 		() => lastAngle,
 		(_) => (lastAngle = _),
 	);
+
 	const total = sum(slices, (e) => e.value);
 
 	return html`
@@ -173,21 +177,34 @@ function getPathStringForSlice(
 	slice: Slice,
 ) {
 	const value = slice.value;
+
 	let sliceAngle = (value / total) * 2 * Math.PI;
+
 	if (!isFinite(sliceAngle)) {
 		return;
 	}
 	sliceAngle = Math.min(sliceAngle, 2 * Math.PI * 0.9999);
+
 	const x1 = Math.cos(ref_lastAngle.value);
+
 	const y1 = Math.sin(ref_lastAngle.value);
 	ref_lastAngle.value += sliceAngle;
+
 	const x2 = Math.cos(ref_lastAngle.value);
+
 	const y2 = Math.sin(ref_lastAngle.value);
+
 	const r2 = cutout ? cutout.radius : 0;
+
 	const x3 = x2 * r2;
+
 	const y3 = y2 * r2;
+
 	const x4 = x1 * r2;
+
 	const y4 = y1 * r2;
+
 	const largeArc = sliceAngle > Math.PI ? 1 : 0;
+
 	return `M ${x1} ${y1} A 1 1 0 ${largeArc} 1 ${x2} ${y2} L ${x3} ${y3} A ${r2} ${r2} 0 ${largeArc} 0 ${x4} ${y4} Z`;
 }

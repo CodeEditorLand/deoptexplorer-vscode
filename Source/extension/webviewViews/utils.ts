@@ -22,6 +22,7 @@ export function renderLinkToFile(
 	if (!location) return content;
 
 	const uri = getScriptSourceUri(location.uri, options.linkSources);
+
 	if (!uri) return content;
 
 	return html`<a

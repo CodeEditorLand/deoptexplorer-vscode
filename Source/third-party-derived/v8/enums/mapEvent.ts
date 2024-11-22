@@ -28,18 +28,25 @@ export function parseMapEvent(text: string) {
 	switch (text.toLowerCase()) {
 		case "initialmap":
 			return MapEvent.InitialMap;
+
 		case "normalize":
 			return MapEvent.Normalize;
+
 		case "normalizecached":
 			return MapEvent.NormalizeCached;
+
 		case "transition":
 			return MapEvent.Transition;
+
 		case "replacedescriptors":
 			return MapEvent.ReplaceDescriptors;
+
 		case "slowtofast":
 			return MapEvent.SlowToFast;
+
 		case "deprecate":
 			return MapEvent.Deprecate;
+
 		default:
 			assert(false, `Unrecognized map event '${text}'.`);
 	}

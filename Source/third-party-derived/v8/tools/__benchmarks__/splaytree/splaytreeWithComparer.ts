@@ -54,6 +54,7 @@ export class SplayTree<K, V> {
 			typeof comparer === "function"
 				? comparer
 				: (a, b) => comparer.compare(a, b);
+
 		const sentinel = new Node<any, any>(undefined, undefined);
 		sentinel["tree_"] = this;
 		sentinel["prev_"] = sentinel;
@@ -63,7 +64,9 @@ export class SplayTree<K, V> {
 
 	clear() {
 		this.root_ = null;
+
 		let next: SplayTree.Node<K, V> | null = null;
+
 		for (let node = this.head_["next_"]; node !== null; node = next) {
 			next = node["next_"];
 			node["tree_"] = null;
@@ -101,17 +104,21 @@ export class SplayTree<K, V> {
 			this.tail_["next_"] = node;
 			this.tail_ = node;
 			this.root_ = node;
+
 			return;
 		}
 		// Splay on the key to move the last node on the search path for
 		// the key to the root of the tree.
 		this.splay_(key);
+
 		const cmp = this.compare_(key, this.root_.key);
+
 		if (cmp === 0) {
 			return;
 		}
 		const node = new Node<K, V>(key, value);
 		node["tree_"] = this;
+
 		if (cmp > 0) {
 			node["left_"] = this.root_;
 			node["right_"] = this.root_["right_"];
@@ -120,6 +127,7 @@ export class SplayTree<K, V> {
 			node["prev_"] = this.root_;
 			node["next_"] = node["prev_"]["next_"];
 			node["prev_"]["next_"] = node;
+
 			if (!node["next_"]) {
 				this.tail_ = node;
 			} else {
@@ -152,10 +160,12 @@ export class SplayTree<K, V> {
 			return null;
 		}
 		this.splay_(key);
+
 		if (this.compare_(this.root_.key, key) !== 0) {
 			return null;
 		}
 		const removed = this.root_;
+
 		if (!this.root_["left_"]) {
 			this.root_ = this.root_["right_"];
 		} else {
@@ -169,7 +179,9 @@ export class SplayTree<K, V> {
 		}
 		removed["left_"] = null;
 		removed["right_"] = null;
+
 		if (!removed["prev_"]) throw new Error("Illegal state");
+
 		if (removed["next_"]) {
 			removed["next_"]["prev_"] = removed["prev_"];
 		} else {
@@ -180,6 +192,7 @@ export class SplayTree<K, V> {
 		removed["next_"] = removed["prev_"];
 		removed["prev_"] = null;
 		removed["tree_"] = null;
+
 		return removed;
 	}
 
@@ -195,6 +208,7 @@ export class SplayTree<K, V> {
 			return null;
 		}
 		this.splay_(key);
+
 		return this.compare_(key, this.root_.key) === 0 ? this.root_ : null;
 	}
 
@@ -209,6 +223,7 @@ export class SplayTree<K, V> {
 			return this.head_.next;
 		}
 		let current = startNode;
+
 		if (current["tree_"] !== this) {
 			throw new Error("Wrong tree");
 		}
@@ -229,6 +244,7 @@ export class SplayTree<K, V> {
 			return this.head_ !== this.tail_ ? this.tail_ : null;
 		}
 		let current = startNode;
+
 		if (current["tree_"] !== this) {
 			throw new Error("Wrong tree");
 		}
@@ -289,6 +305,7 @@ export class SplayTree<K, V> {
 	exportKeysAndValues() {
 		let result: [K, V][] = [];
 		this.traverse_((node) => result.push([node.key, node.value]));
+
 		return result;
 	}
 
@@ -298,6 +315,7 @@ export class SplayTree<K, V> {
 	exportValues() {
 		let result: V[] = [];
 		this.traverse_((node) => result.push(node.value));
+
 		return result;
 	}
 
@@ -321,13 +339,19 @@ export class SplayTree<K, V> {
 		// will hold the R tree of the algorithm.  Using a dummy node, left
 		// and right will always be nodes and we avoid special cases.
 		let dummy: SplayTree.Node<K, V>;
+
 		let left: SplayTree.Node<K, V>;
+
 		let right: SplayTree.Node<K, V>;
 		dummy = left = right = new Node<K, V>(null!, null!);
+
 		let current = this.root_;
+
 		const compare = this.compare_;
+
 		while (true) {
 			const cmp = compare(key, current.key);
+
 			if (cmp < 0) {
 				if (!current["left_"]) {
 					break;
@@ -338,6 +362,7 @@ export class SplayTree<K, V> {
 					current["left_"] = tmp["right_"];
 					tmp["right_"] = current;
 					current = tmp;
+
 					if (!current["left_"]) {
 						break;
 					}
@@ -356,6 +381,7 @@ export class SplayTree<K, V> {
 					current["right_"] = tmp["left_"];
 					tmp["left_"] = current;
 					current = tmp;
+
 					if (!current["right_"]) {
 						break;
 					}
@@ -384,8 +410,10 @@ export class SplayTree<K, V> {
 	 */
 	private traverse_(f: (node: SplayTree.Node<K, V>) => void) {
 		let nodesToVisit = [this.root_];
+
 		while (nodesToVisit.length > 0) {
 			var node = nodesToVisit.shift();
+
 			if (node === null || node === undefined) {
 				continue;
 			}
@@ -401,6 +429,7 @@ export class SplayTree<K, V> {
 		}
 		if (reverse) {
 			startNode ??= this.tail_ !== this.head_ ? this.tail_ : null;
+
 			for (
 				let current = startNode;
 				current !== null;
@@ -410,6 +439,7 @@ export class SplayTree<K, V> {
 			}
 		} else {
 			startNode ??= this.head_.next;
+
 			for (let current = startNode; current; current = current.next) {
 				yield current.key;
 			}
@@ -422,6 +452,7 @@ export class SplayTree<K, V> {
 		}
 		if (reverse) {
 			startNode ??= this.tail_ !== this.head_ ? this.tail_ : null;
+
 			for (
 				let current = startNode;
 				current !== null;
@@ -431,6 +462,7 @@ export class SplayTree<K, V> {
 			}
 		} else {
 			startNode ??= this.head_.next;
+
 			for (let current = startNode; current; current = current.next) {
 				yield current.value;
 			}
@@ -443,6 +475,7 @@ export class SplayTree<K, V> {
 		}
 		if (reverse) {
 			startNode ??= this.tail_ !== this.head_ ? this.tail_ : null;
+
 			for (
 				let current = startNode;
 				current !== null;
@@ -452,6 +485,7 @@ export class SplayTree<K, V> {
 			}
 		} else {
 			startNode ??= this.head_.next;
+
 			for (let current = startNode; current; current = current.next) {
 				yield [current.key, current.value] as [K, V];
 			}
@@ -525,6 +559,7 @@ function getNext<K, V>(node: SplayTree.Node<K, V> | null) {
 	while (node) {
 		const skipNext = !node["prev_"];
 		node = node["next_"];
+
 		if (skipNext) {
 			continue;
 		}
@@ -536,8 +571,10 @@ function getNext<K, V>(node: SplayTree.Node<K, V> | null) {
 function getPrev<K, V>(node: SplayTree.Node<K, V> | null) {
 	while (node) {
 		const prev = node["prev_"];
+
 		if (!prev) {
 			node = getNext(node);
+
 			continue;
 		}
 		if (prev === prev["prev_"]) {

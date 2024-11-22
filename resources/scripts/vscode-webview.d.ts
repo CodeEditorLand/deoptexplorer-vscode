@@ -2,7 +2,9 @@
 
 interface VsCodeApi {
 	postMessage(msg: unknown): void;
+
 	getState(): Record<string, unknown>;
+
 	setState(state: Record<string, unknown>): Record<string, unknown>;
 }
 

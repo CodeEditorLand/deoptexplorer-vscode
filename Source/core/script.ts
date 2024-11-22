@@ -24,6 +24,7 @@ export class Script {
 	// line numbers in v8 are 1-based, line numbers in VSCode are 0-based
 	getV8LineNumber(offset: number) {
 		const position = this.lineMap.positionAt(offset);
+
 		return position.line + 1;
 	}
 }

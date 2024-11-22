@@ -98,9 +98,13 @@ export interface ProfileOptions {
 
 const IC_RE =
 	/^(LoadGlobalIC: )|(Handler: )|(?:CallIC|LoadIC|StoreIC)|(?:Builtin: (?:Keyed)?(?:Load|Store)IC_)/;
+
 const BYTECODES_RE = /^(BytecodeHandler: )/;
+
 const BUILTINS_RE = /^(Builtin: )/;
+
 const STUBS_RE = /^(Stub: )/;
+
 const NATIVES_RE = /\.(exe|dll)$/i;
 
 /**
@@ -137,11 +141,15 @@ export class Profile {
 
 	constructor(options: ProfileOptions = {}) {
 		if (options.excludeIc) this.skipThisFunctionRegExps_.push(IC_RE);
+
 		if (options.excludeBytecodes)
 			this.skipThisFunctionRegExps_.push(BYTECODES_RE);
+
 		if (options.excludeBuiltins)
 			this.skipThisFunctionRegExps_.push(BUILTINS_RE);
+
 		if (options.excludeStubs) this.skipThisFunctionRegExps_.push(STUBS_RE);
+
 		if (options.excludeNatives)
 			this.skipThisFunctionRegExps_.push(NATIVES_RE);
 		this.codeMap_ = options.codeMap ?? new CodeMap();
@@ -231,12 +239,14 @@ export class Profile {
 	 */
 	addLibrary(name: string, startAddr: Address, endAddr: Address) {
 		this.throwIfFinalized_();
+
 		let entry = new CodeEntry(
 			Number(endAddr - startAddr),
 			name,
 			"SHARED_LIB",
 		);
 		this.codeMap_.addLibrary(startAddr, entry);
+
 		return entry;
 	}
 
@@ -249,8 +259,10 @@ export class Profile {
 	 */
 	addStaticCode(name: string, startAddr: Address, endAddr: Address) {
 		this.throwIfFinalized_();
+
 		let entry = new CodeEntry(Number(endAddr - startAddr), name, "CPP");
 		this.codeMap_.addStaticCode(startAddr, entry);
+
 		return entry;
 	}
 
@@ -270,8 +282,10 @@ export class Profile {
 		size: number,
 	) {
 		this.throwIfFinalized_();
+
 		let entry = new DynamicCodeEntry(this.sources_, size, type, name);
 		this.codeMap_.addCode(start, entry);
+
 		return entry;
 	}
 
@@ -298,6 +312,7 @@ export class Profile {
 		// As code and functions are in the same address space,
 		// it is safe to put them in a single code map.
 		let func = this.codeMap_.findDynamicEntryByStartAddress(funcAddr);
+
 		if (!func) {
 			func = new SharedFunctionCodeEntry(this.sources_, name);
 			this.codeMap_.addCode(funcAddr, func);
@@ -306,6 +321,7 @@ export class Profile {
 			func.name = name;
 		}
 		let entry = this.codeMap_.findDynamicEntryByStartAddress(start);
+
 		if (entry) {
 			if (
 				entry.size === size &&
@@ -354,18 +370,24 @@ export class Profile {
 		inlinedFunctions: string,
 	) {
 		this.throwIfFinalized_();
+
 		const entry =
 			this.codeMap_.findDynamicEntryByStartAddress(startAddress);
+
 		if (!entry) return;
 
 		const script = this.sources_.getScriptById(scriptId);
+
 		if (!script) {
 			// The script was not part of the trace, so try loading it from the file system.
 			const { filePosition: location } = entry.functionName;
+
 			const uri = location && getCanonicalUri(location.uri);
+
 			if (uri) {
 				return tryReadFileAsync(uri).then((text) => {
 					let script: Script | undefined;
+
 					if (text !== undefined) {
 						script = new Script(scriptId, uri, text);
 						this.sources_.addScript(script);
@@ -417,11 +439,15 @@ export class Profile {
 		entry.func.filePosition ??= entry.filePosition;
 
 		const line_table = new SourcePositionTable();
+
 		const inline_stacks = new Map<number, ProfileStackTrace>();
+
 		const cached_inline_entries = new Map<string, DynamicFuncCodeEntry>();
+
 		const source_positions = [
 			...sourcePositionTableIterator(sourcePositions),
 		];
+
 		const deopt_data = DeoptimizationData.deserialize(
 			inliningPositions,
 			inlinedFunctions,
@@ -432,6 +458,7 @@ export class Profile {
 		for (const it of source_positions) {
 			let { codeOffset: code_offset, sourcePosition: source_position } =
 				it;
+
 			let { scriptOffset, inliningId: inlining_id } = source_position;
 
 			if (inlining_id === kNotInlined) {
@@ -452,12 +479,14 @@ export class Profile {
 				line_table.setPosition(code_offset, line_number, inlining_id);
 
 				let inline_stack: ProfileStackTrace = [];
+
 				for (const pos_info of stack) {
 					if (
 						pos_info.sourcePosition.scriptOffset ===
 						kNoSourcePosition
 					)
 						continue;
+
 					if (!pos_info.script) continue;
 
 					let line_number = pos_info.script.getV8LineNumber(
@@ -476,7 +505,9 @@ export class Profile {
 					);
 
 					let cache_key = `(${entry.type})(${pos_info.shared.getName()})(${pos_info.script.scriptId})(${pos_info.sourcePosition.scriptOffset})(${pos_info.sourcePosition.inliningId})`;
+
 					let inline_entry = cached_inline_entries.get(cache_key);
+
 					if (!inline_entry) {
 						inline_entry = new DynamicFuncCodeEntry(
 							this.sources_,
@@ -516,6 +547,7 @@ export class Profile {
 	 */
 	moveCode(from: Address, to: Address) {
 		this.throwIfFinalized_();
+
 		try {
 			this.codeMap_.moveCode(from, to);
 		} catch (e) {
@@ -531,6 +563,7 @@ export class Profile {
 	 */
 	moveFunc(from: Address, to: Address) {
 		this.throwIfFinalized_();
+
 		if (this.codeMap_.findDynamicEntryByStartAddress(from)) {
 			this.codeMap_.moveCode(from, to);
 		}
@@ -543,6 +576,7 @@ export class Profile {
 	 */
 	deleteCode(start: Address) {
 		this.throwIfFinalized_();
+
 		try {
 			this.codeMap_.deleteCode(start);
 		} catch (e) {
@@ -568,40 +602,56 @@ export class Profile {
 	 */
 	recordTick(sample: TickSample) {
 		this.throwIfFinalized_();
+
 		if (
 			!this.start_time_ ||
 			this.start_time_.compareTo(sample.timestamp) > 0
 		)
 			this.start_time_ = sample.timestamp;
+
 		if (!this.end_time_ || this.end_time_.compareTo(sample.timestamp) < 0)
 			this.end_time_ = sample.timestamp;
 		this.duration_ = undefined;
 		this.averageSampleDuration_ = undefined;
+
 		const { stack_trace, src_line } = this.symbolizeTickSample_(sample);
+
 		const node = this.topDownTree_.addPathFromEnd(stack_trace, src_line);
 		this.samples_.push(new SampleInfo(node, sample.timestamp, src_line));
+
 		switch (node.entry) {
 			case CodeEntry.root_entry():
 				break;
+
 			case CodeEntry.program_entry():
 				this.programWeight_++;
+
 				break;
+
 			case CodeEntry.gc_entry():
 				this.gcWeight_++;
+
 				break;
+
 			case CodeEntry.idle_entry():
 				this.idleWeight_++;
+
 				break;
+
 			default:
 				this.functionWeight_++;
+
 				break;
 		}
 	}
 
 	private symbolizeTickSample_(sample: TickSample): SymbolizedSample {
 		const stack_trace: ProfileStackTrace = [];
+
 		let last_seen_c_function = "";
+
 		let look_for_first_c_function = false;
+
 		let frame_id = 0;
 
 		const pushEntry = (frame: CodeEntryAndLineNumber) => {
@@ -616,6 +666,7 @@ export class Profile {
 			line_number: number,
 		) => {
 			const this_frame_id = frame_id++;
+
 			if (entry) {
 				if (
 					this_frame_id === 0 &&
@@ -648,7 +699,9 @@ export class Profile {
 		// for a JS function. Then, the detected source line is passed to
 		// ProfileNode to increase the tick count for this source line.
 		let src_line = kNoLineNumberInfo;
+
 		let src_line_not_found = true;
+
 		if (sample.pc) {
 			if (
 				sample.has_external_callback &&
@@ -666,11 +719,14 @@ export class Profile {
 				);
 			} else {
 				let attributed_pc = sample.pc as Address;
+
 				let pc_entry_instruction_start = kNullAddress;
+
 				const ref_pc_entry_instruction_start = ref(
 					() => pc_entry_instruction_start,
 					(_) => (pc_entry_instruction_start = _),
 				);
+
 				let pc_entry = this.findEntry(
 					attributed_pc,
 					ref_pc_entry_instruction_start,
@@ -694,11 +750,13 @@ export class Profile {
 				if (pc_entry) {
 					let pc_offset = attributed_pc - pc_entry_instruction_start;
 					src_line = pc_entry.getSourceLine(pc_offset);
+
 					if (src_line === kNoLineNumberInfo) {
 						src_line = pc_entry.line_number;
 					}
 					src_line_not_found = false;
 					pushFrame(attributed_pc, pc_entry, src_line);
+
 					if (
 						pc_entry.type === "Builtin" &&
 						(pc_entry.name === "FunctionPrototypeApply" ||
@@ -723,22 +781,29 @@ export class Profile {
 
 			for (let i = 0; i < sample.frame_count; i++) {
 				let stack_pos = sample.stack[i];
+
 				let instruction_start = kNullAddress;
+
 				const ref_instruction_start = ref(
 					() => instruction_start,
 					(_) => (instruction_start = _),
 				);
+
 				let entry = this.findEntry(stack_pos, ref_instruction_start);
 				// if (entry?.type === "SHARED_LIB" && entry.name.includes("node.exe")) debugger;
+
 				let line_number = kNoLineNumberInfo;
+
 				if (entry) {
 					// Find out if the entry has an inlining stack associated.
 					let pc_offset = stack_pos - instruction_start;
 					// TODO(petermarshall): pc_offset can still be negative in some cases.
 					let inline_stack = entry.getInlineStack(pc_offset);
+
 					if (inline_stack) {
 						let most_inlined_frame_line_number =
 							entry.getSourceLine(pc_offset);
+
 						for (const entry of inline_stack) {
 							pushEntry(entry);
 						}
@@ -750,6 +815,7 @@ export class Profile {
 						// TODO(petermarshall): Remove this and use a tree with a node per
 						// inlining_id.
 						assert(inline_stack.length);
+
 						let index = stack_trace.length - inline_stack.length;
 						stack_trace[index].line_number =
 							most_inlined_frame_line_number;
@@ -758,6 +824,7 @@ export class Profile {
 					// the first JS caller.
 					if (src_line_not_found) {
 						src_line = entry.getSourceLine(pc_offset);
+
 						if (src_line === kNoLineNumberInfo) {
 							src_line = entry.line_number;
 						}
@@ -790,6 +857,7 @@ export class Profile {
 		switch (state) {
 			case VmState.GarbageCollector:
 				return CodeEntry.gc_entry();
+
 			case VmState.ScriptExecution:
 			case VmState.Parser:
 			case VmState.Compiler:
@@ -798,8 +866,10 @@ export class Profile {
 			case VmState.Other:
 			case VmState.External:
 				return CodeEntry.program_entry();
+
 			case VmState.Idle:
 				return CodeEntry.idle_entry();
+
 			default:
 				return assertNever(state);
 		}
@@ -820,13 +890,17 @@ export class Profile {
 	 */
 	getTopDownProfile() {
 		this.throwIfNotFinalized_();
+
 		return this.topDownTree_;
 	}
 
 	getCEntryProfile() {
 		this.throwIfNotFinalized_();
+
 		let result = [new CEntryNode("TOTAL", 0)];
+
 		let total_ticks = 0;
+
 		for (var f in this.c_entries_) {
 			let ticks = this.c_entries_[f];
 			total_ticks += ticks;
@@ -836,15 +910,19 @@ export class Profile {
 		result.sort(function (n1, n2) {
 			return n2.ticks - n1.ticks || (n2.name < n1.name ? -1 : 1);
 		});
+
 		return result;
 	}
 
 	getProfileView(showAs: ProfileShowMode, filters?: ViewFilterOptions) {
 		const topDown = this.getTopDownProfile();
+
 		const viewBuilder = new ViewBuilder(
 			this.averageSampleDuration.inMillisecondsF(),
 		);
+
 		const viewFilter = new ViewFilter(filters);
+
 		return viewBuilder.buildView(viewFilter.applyFilter(topDown), showAs);
 	}
 
@@ -891,20 +969,24 @@ export class Profile {
 	 */
 	private cleanUpFuncEntries() {
 		let entries = this.codeMap_.getAllDynamicEntriesWithAddresses();
+
 		for (let i = 0, l = entries.length; i < l; ++i) {
 			const entry = entries[i][1];
+
 			if (entry instanceof SharedFunctionCodeEntry) {
 				entry.used = false;
 			}
 		}
 		for (let i = 0, l = entries.length; i < l; ++i) {
 			const entry = entries[i][1];
+
 			if (entry?.isJSFunction?.()) {
 				entry.func.used = true;
 			}
 		}
 		for (let i = 0, l = entries.length; i < l; ++i) {
 			const entry = entries[i][1];
+
 			if (entry instanceof SharedFunctionCodeEntry && !entry.used) {
 				this.codeMap_.deleteCode(entries[i][0]);
 			}
@@ -922,19 +1004,28 @@ export class Profile {
 		// with the preceeding sample.
 
 		const samples = this.samples_;
+
 		const samplesCount = samples.length;
+
 		if (samplesCount < 3) return;
+
 		let prevNode = samples[0].node;
+
 		let prevLine = samples[0].line;
+
 		let node = samples[1].node;
+
 		let line = samples[1].line;
+
 		for (
 			let sampleIndex = 1;
 			sampleIndex < samplesCount - 1;
 			sampleIndex++
 		) {
 			const nextNode = samples[sampleIndex + 1].node;
+
 			const nextLine = samples[sampleIndex + 1].line;
+
 			if (
 				node.entry === CodeEntry.program_entry() &&
 				!isSystemNode(prevNode) &&
@@ -968,18 +1059,22 @@ export class Profile {
 
 	getScripts(): Script[] {
 		this.throwIfNotFinalized_();
+
 		return [...this.sources_.scripts()];
 	}
 
 	getJSONProfile(): JsonProfile {
 		this.throwIfNotFinalized_();
+
 		const nodes: JsonProfileNode[] = [];
 		flattenJsonProfileNodes(this.topDownTree_.getRoot(), nodes);
 
 		const samples: number[] = [];
+
 		const timeDeltas: number[] = [];
 
 		let lastTime = this.startTime.sinceOrigin().inMicroseconds();
+
 		for (const sample of this.samples_) {
 			samples.push(sample.node.id);
 
@@ -1000,6 +1095,7 @@ export class Profile {
 
 function flattenJsonProfileNodes(node: CallTreeNode, nodes: JsonProfileNode[]) {
 	nodes.push(buildJsonProfileNode(node));
+
 	for (const child of node.childNodes()) {
 		flattenJsonProfileNodes(child, nodes);
 	}
@@ -1021,6 +1117,7 @@ function buildJsonProfileNode(node: CallTreeNode): JsonProfileNode {
 	};
 
 	let children: number[] | undefined;
+
 	for (const child of node.childNodes()) {
 		children ??= [];
 		children.push(child.id);
@@ -1031,11 +1128,13 @@ function buildJsonProfileNode(node: CallTreeNode): JsonProfileNode {
 	}
 
 	const bailout_reason = node.entry.bailout_reason;
+
 	if (bailout_reason && bailout_reason !== "no reason") {
 		profileNode.deoptReason = bailout_reason;
 	}
 
 	const positionTicks = buildJsonProfilePositionTicks(node);
+
 	if (positionTicks) {
 		profileNode.positionTicks = positionTicks;
 	}
@@ -1047,7 +1146,9 @@ function buildJsonProfilePositionTicks(
 	node: CallTreeNode,
 ): JsonProfilePositionTickInfo[] | undefined {
 	const lineTicks = node.getLineTicks();
+
 	if (lineTicks.length === 0) return undefined;
+
 	return lineTicks.map(({ line, hitCount: hit_count }) => ({
 		line,
 		ticks: hit_count,

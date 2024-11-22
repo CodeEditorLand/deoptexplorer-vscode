@@ -52,26 +52,37 @@ export class FunctionStateHoverProvider implements HoverProvider {
 		if (!openedLog) return;
 
 		let hoverCache = this._perFileHoverCache.get(document.uri);
+
 		if (hoverCache) {
 			const entry = from(hoverCache.findAllContaining(position)).first();
+
 			if (entry) return entry[1];
 		}
 
 		const uri = unwrapScriptSource(document.uri).uri;
+
 		if (!uri) return;
 
 		const file = getCanonicalUri(uri);
+
 		const line = position.line + 1;
+
 		const startLine = line - LINE_RANGE;
+
 		const endLine = line + LINE_RANGE;
+
 		const containsPosition = (entry: Entry) =>
 			entryContainsPosition(entry, file, startLine, endLine, position);
+
 		const functions = openedLog.files
 			.get(file)
 			?.functions.filter(containsPosition);
+
 		if (functions?.length) {
 			let range: Range | undefined;
+
 			const messages: MarkdownString[] = [];
+
 			for (const entry of functions) {
 				const functionRange = entry.pickReferenceLocation(file).range;
 				range = range?.intersection(functionRange) ?? functionRange;
@@ -83,8 +94,10 @@ export class FunctionStateHoverProvider implements HoverProvider {
 					this._perFileHoverCache.set(document.uri, hoverCache);
 				}
 				range ??= new Range(position, position);
+
 				const hover = new Hover(messages, range);
 				hoverCache.set(range, hover);
+
 				return hover;
 			}
 		}
@@ -100,17 +113,23 @@ function formatSummaryForFunctionState(
 	optimizeCount: number,
 ) {
 	if (state === undefined) return "Unknown";
+
 	if (isCompiledFunctionState(state)) return "Compiled";
+
 	if (isInterpretedFunctionState(state)) return "Optimizable";
+
 	if (isOptimizedFunctionState(state))
 		return optimizeCount > 1 ? "Reoptimized" : "Optimized";
 }
 
 function* getHoverMessageForFunctionEntry(entry: FunctionEntry, file: Uri) {
 	let state: FunctionState | undefined = undefined;
+
 	let optimizeCount = 0;
+
 	for (const update of entry.updates) {
 		state = update.state;
+
 		if (isOptimizedFunctionState(state)) {
 			optimizeCount++;
 		}
@@ -119,6 +138,7 @@ function* getHoverMessageForFunctionEntry(entry: FunctionEntry, file: Uri) {
 	yield markdown.code(
 		"text",
 	)`${formatSummaryForFunctionState(state, optimizeCount)}`;
+
 	yield markdown.table(
 		[
 			{ text: "Timestamp", align: "right" },
@@ -133,5 +153,6 @@ function* getHoverMessageForFunctionEntry(entry: FunctionEntry, file: Uri) {
 				/* State */ formatFunctionState(update.state),
 			]),
 	);
+
 	yield markdown.trusted`[Detailed history](${new CommandUri(constants.commands.functions.showFunctionHistory, [entry.filePosition])})`;
 }

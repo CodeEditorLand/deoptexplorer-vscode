@@ -68,6 +68,7 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 	resumeUpdates() {
 		if (this._updatesSuspended) {
 			this._updatesSuspended--;
+
 			if (this._updatesSuspended === 0) {
 				if (this._updateRequested) {
 					this._updateRequested = false;
@@ -93,6 +94,7 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 	 */
 	getChildren(element?: BaseNode | undefined): ProviderResult<BaseNode[]> {
 		if (element) return element.children;
+
 		return this._ensureRoots();
 	}
 
@@ -145,6 +147,7 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 		this._resolvedRoots = undefined;
 		this._cancelSource?.cancel();
 		this._cancelSource = undefined;
+
 		if (this._updatesSuspended) {
 			this._updateRequested = true;
 		} else {
@@ -168,7 +171,9 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 	private _startEnsureRoots(factory: RootNodeFactory) {
 		this._cancelSource?.cancel();
 		this._cancelSource = new CancellationTokenSource();
+
 		const result = factory(this._cancelSource.token);
+
 		return isAsyncIterable(result) ? toArrayAsync(result) : result;
 	}
 
@@ -181,6 +186,7 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 		);
 		this._cancelSource?.dispose();
 		this._cancelSource = undefined;
+
 		return this._resolvedRoots;
 	}
 }

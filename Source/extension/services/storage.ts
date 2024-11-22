@@ -8,17 +8,29 @@ import { Disposable, ExtensionContext, Uri } from "vscode";
 import * as constants from "../constants";
 
 let currentContext: ExtensionContext | undefined;
+
 let recentFiles: Uri[] | undefined;
+
 let showJustMyCode = constants.kDefaultShowJustMyCode;
+
 let showNativeCodeProfileNodes = constants.kDefaultShowNativeCodeProfileNodes;
+
 let showNodeJsProfileNodes = constants.kDefaultShowNodeJsProfileNodes;
+
 let showNodeModulesProfileNodes = constants.kDefaultShowNodeModulesProfileNodes;
+
 let sortICs = constants.kDefaultSortICs;
+
 let showICStates = constants.kDefaultShowICStates;
+
 let groupDeopts = constants.kDefaultGroupDeopts;
+
 let sortDeopts = constants.kDefaultSortDeopts;
+
 let groupMaps = constants.kDefaultGroupMaps;
+
 let showMaps = constants.kDefaultShowMaps;
+
 let sortMaps = constants.kDefaultMapSortMode;
 
 export function getRecentFiles() {

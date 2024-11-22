@@ -52,6 +52,7 @@ export interface ParserObject {
 	parser: ((s: string) => unknown) | typeof parseString | typeof parseInt32;
 	optional?: boolean;
 	rest?: boolean;
+
 	default?: () => unknown;
 }
 
@@ -113,6 +114,7 @@ export class LogReader {
 		this.dispatchTable_ = dispatchTable;
 		this.timedRange_ = timedRange;
 		this.pairwiseTimedRange_ = pairwiseTimedRange;
+
 		if (pairwiseTimedRange) {
 			this.timedRange_ = true;
 		}
@@ -154,6 +156,7 @@ export class LogReader {
 	): Promise<void> {
 		if (!this.timedRange_) {
 			await this.processLogLine_(line, token);
+
 			return;
 		}
 		if (line.startsWith("current-time")) {
@@ -189,10 +192,14 @@ export class LogReader {
 	 */
 	processStack(pc: Address, func: Address, stack: string[]): Address[] {
 		const fullStack = func ? [pc, func] : [pc];
+
 		let prevFrame = pc;
+
 		for (let i = 0, n = stack.length; i < n; ++i) {
 			const frame = stack[i];
+
 			const firstChar = frame.charAt(0);
+
 			if (firstChar == "+" || firstChar == "-") {
 				// An offset from the previous frame.
 				prevFrame += parseAddress(frame);
@@ -228,11 +235,13 @@ export class LogReader {
 	) {
 		// Obtain the dispatch.
 		const commandName = fields.shift();
+
 		if (commandName === undefined) {
 			return;
 		}
 
 		const dispatch = this.dispatchTable_[commandName];
+
 		if (
 			dispatch === undefined ||
 			dispatch === null ||
@@ -243,33 +252,44 @@ export class LogReader {
 
 		// Parse fields.
 		let parsedFields: unknown[] = [];
+
 		let sawOptional = false;
+
 		let sawVarArgs = false;
+
 		for (
 			let parserIndex = 0, fieldIndex = 0;
 			parserIndex < dispatch.parsers.length;
 			parserIndex++, fieldIndex++
 		) {
 			let parser = dispatch.parsers[parserIndex];
+
 			let optional = false;
+
 			let varArgs = false;
+
 			let defaultValue: (() => unknown) | undefined;
+
 			if (typeof parser === "object") {
 				varArgs = !!parser.rest;
 				optional = varArgs || !!parser.optional;
+
 				defaultValue = parser.default;
 				parser = parser.parser;
 			} else if (parser === parseVarArgs) {
 				parser = parseString;
+
 				varArgs = true;
 				optional = true;
 			} else if (parser === commandNameArg) {
 				parsedFields.push(commandName);
 				fieldIndex--;
+
 				continue;
 			} else if (parser === cancelTokenArg) {
 				parsedFields.push(token);
 				fieldIndex--;
+
 				continue;
 			}
 
@@ -283,6 +303,7 @@ export class LogReader {
 
 			if (optional) {
 				sawOptional = true;
+
 				if (!varArgs && fieldIndex >= fields.length) {
 					if (defaultValue) {
 						for (let j = parsedFields.length; j < fieldIndex; j++) {
@@ -306,7 +327,9 @@ export class LogReader {
 				parsedFields.push([]);
 			} else {
 				const restFields = fields.slice(fieldIndex);
+
 				const parsedRestFields: unknown[] = [];
+
 				for (const field of restFields) {
 					parsedRestFields.push(this.parseField_(field, parser));
 				}
@@ -328,8 +351,10 @@ export class LogReader {
 		switch (parser) {
 			case parseString:
 				return field;
+
 			case parseInt32:
 				return parseInt(field, 10);
+
 			default:
 				if (typeof parser == "function") {
 					return parser(field);

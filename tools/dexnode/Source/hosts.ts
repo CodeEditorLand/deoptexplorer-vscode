@@ -45,6 +45,7 @@ async function* getExecPathCandidates(host: Host) {
 				regKey.key,
 				regKey.value,
 			);
+
 			if (candidate) {
 				yield candidate;
 			}
@@ -52,6 +53,7 @@ async function* getExecPathCandidates(host: Host) {
 	}
 
 	const execPaths = host.paths?.[process.platform] ?? host.paths?.linux;
+
 	if (execPaths) {
 		yield* execPaths;
 	}
@@ -64,6 +66,7 @@ export async function getHostExecPath(host: Host) {
 
 	for await (const candidate of getExecPathCandidates(host)) {
 		const execPath = which(candidate);
+
 		if (execPath) {
 			return execPath;
 		}
@@ -72,20 +75,26 @@ export async function getHostExecPath(host: Host) {
 
 export function getHostExecArgs(argv: Options, v8Flags: string[]) {
 	const args: string[] = [];
+
 	switch (argv.host.flags & HostFlags.ArgumentsMask) {
 		case HostFlags.ChromiumArguments:
 			args.push("--no-sandbox");
 			args.push(`--js-flags=${v8Flags.join(",")}`);
 			args.push(...argv._);
+
 			break;
+
 		case HostFlags.DenoArguments:
 			args.push("run");
 			args.push(`--v8-flags=${v8Flags.join(",")}`);
 			args.push(...argv._);
+
 			break;
+
 		case HostFlags.NodeJSArguments:
 			args.push(...v8Flags);
 			args.push(...argv._);
+
 			break;
 	}
 	return args;

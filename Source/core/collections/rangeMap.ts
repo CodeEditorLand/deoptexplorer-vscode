@@ -27,6 +27,7 @@ export class RangeMap<T> {
 
 	set(range: Range, value: T) {
 		const entry = this._ranges.find(range);
+
 		if (entry !== null) {
 			entry.value = value;
 		} else {
@@ -80,12 +81,14 @@ export class RangeMap<T> {
 
 		// Since all entries must contain the range, all entry starts must occur on or before the range start
 		let next: SplayTree.Node<Range, T> | null = null;
+
 		for (
 			let node = this._ranges.findMin();
 			node;
 			node = next ?? node.next, next = null
 		) {
 			const key = node.key;
+
 			if (key.start.isAfter(start)) {
 				break;
 			}
@@ -93,6 +96,7 @@ export class RangeMap<T> {
 				next = this._ranges.findLeastGreaterThan(
 					key.with(key.start, key.start),
 				);
+
 				if (next === node) {
 					next = null;
 				}
@@ -123,6 +127,7 @@ export class RangeMap<T> {
 
 		// Since all entries must contain the range, all entry starts must occur on or before the range start
 		const max = this._ranges.findGreatestLessThan(range);
+
 		if (max) {
 			if (max.key.contains(range)) {
 				return [max.key, max.value];
@@ -138,6 +143,7 @@ export class RangeMap<T> {
 
 		// Since all entries must be contained within the range, all entry starts must occur on or after the range start
 		const min = this._ranges.findGreatestLessThan(range);
+
 		for (let node = min; node; node = node.next) {
 			if (node.key.start.isAfter(end)) {
 				break;

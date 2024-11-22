@@ -126,6 +126,7 @@ export class ImmutableEnumSet<T extends string | number> {
 		}
 
 		const result = new ImmutableEnumSet(union(this._set, other._set));
+
 		return result._set.size === this._set.size
 			? this
 			: result._set.size === other._set.size
@@ -151,6 +152,7 @@ export class ImmutableEnumSet<T extends string | number> {
 		}
 
 		const result = new ImmutableEnumSet(intersect(this._set, other._set));
+
 		return result._set.size === this._set.size
 			? this
 			: result._set.size === other._set.size
@@ -198,6 +200,7 @@ export class ImmutableEnumSet<T extends string | number> {
 	 */
 	hash() {
 		let hc = 0;
+
 		for (const value of this._getOrderedSet()) {
 			hc = Equaler.combineHashes(hc, Equaler.defaultEqualer.hash(value));
 		}
@@ -249,6 +252,7 @@ export class ImmutableEnumSet<T extends string | number> {
 
 		this._set = new Set(orderBy(this._set, identity));
 		this._ordered = true;
+
 		return this._set;
 	}
 }

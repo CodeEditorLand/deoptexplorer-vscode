@@ -25,7 +25,9 @@ export class RangeMap<T> {
 
 	has(range: Range) {
 		const { start, end } = range;
+
 		const entry = findPosition(this._ranges, start)?.value;
+
 		if (isCollapsed(entry)) {
 			return range.isEmpty;
 		}
@@ -37,7 +39,9 @@ export class RangeMap<T> {
 
 	get(key: Range) {
 		const { start, end } = key;
+
 		const entry = findPosition(this._ranges, start)?.value;
+
 		if (isCollapsed(entry)) {
 			if (key.isEmpty) {
 				return entry[1];
@@ -71,6 +75,7 @@ export class RangeMap<T> {
 				}
 				if (isCollapsed(startCharacter.value)) {
 					const [key, value] = startCharacter.value;
+
 					if (key.contains(range)) {
 						yield [key, value];
 					}
@@ -83,6 +88,7 @@ export class RangeMap<T> {
 							leastCharacterGreaterThan(endLine, end),
 						)) {
 							const [key, value] = endCharacter.value;
+
 							if (key.contains(range)) {
 								yield [key, value];
 							}
@@ -122,6 +128,7 @@ export class RangeMap<T> {
 			)) {
 				if (isCollapsed(startCharacter.value)) {
 					const [key, value] = startCharacter.value;
+
 					if (key.contains(range)) {
 						return [key, value];
 					}
@@ -134,6 +141,7 @@ export class RangeMap<T> {
 							leastCharacterGreaterThan(endLine, end),
 						)) {
 							const [key, value] = endCharacter.value;
+
 							if (key.contains(range)) {
 								return [key, value];
 							}
@@ -165,6 +173,7 @@ export class RangeMap<T> {
 				}
 				if (isCollapsed(startCharacter.value)) {
 					const [key, value] = startCharacter.value;
+
 					if (range.contains(key)) {
 						yield [key, value];
 					}
@@ -179,6 +188,7 @@ export class RangeMap<T> {
 							break;
 						}
 						const endCharacters = endLine.value;
+
 						for (const endCharacter of iterateAscending(
 							least(endCharacters),
 						)) {
@@ -186,6 +196,7 @@ export class RangeMap<T> {
 								break endLoop;
 							}
 							const [key, value] = endCharacter.value;
+
 							if (range.contains(key)) {
 								yield [key, value];
 							}
@@ -222,6 +233,7 @@ export class RangeMap<T> {
 				break;
 			}
 			const startCharacters = startLine.value;
+
 			for (const startCharacter of iterateAscending(
 				least(startCharacters),
 			)) {
@@ -230,12 +242,14 @@ export class RangeMap<T> {
 				}
 				if (isCollapsed(startCharacter.value)) {
 					const [key, value] = startCharacter.value;
+
 					if (intersects(key, range)) {
 						yield [key, value];
 					}
 				} else {
 					// Since all entries must intersect with the range, all entry ends must occur on or after the range start
 					const endLines = startCharacter.value;
+
 					for (const endLine of iterateAscending(
 						leastLineGreaterThan(endLines, start),
 					)) {
@@ -243,6 +257,7 @@ export class RangeMap<T> {
 							leastCharacterGreaterThan(endLine, start),
 						)) {
 							const [key, value] = endCharacter.value;
+
 							if (intersects(key, range)) {
 								yield [key, value];
 							}
@@ -266,15 +281,19 @@ export class RangeMap<T> {
 
 	set(key: Range, value: T) {
 		const { start, end } = key;
+
 		const startCharacters = ensureLine(this._ranges, start);
 
 		let endLines = startCharacters.find(start.character)?.value;
+
 		let endCharacters: CharacterTree<[Range, T]> | undefined;
+
 		if (!endLines) {
 			// if we have an empty range, set it as the sole value at this step.
 			if (key.isEmpty) {
 				startCharacters.insert(start.character, [key, value]);
 				this._size++;
+
 				return this;
 			}
 
@@ -286,6 +305,7 @@ export class RangeMap<T> {
 			// we previously set an empty range. If the range is empty, just update the value.
 			if (key.isEmpty) {
 				endLines[1] = value;
+
 				return this;
 			}
 
@@ -297,6 +317,7 @@ export class RangeMap<T> {
 			);
 
 			const existingEnd = existingEntry[0].end;
+
 			const existingEndCharacters = ensureLine(
 				endLines,
 				existingEntry[0].end,
@@ -311,7 +332,9 @@ export class RangeMap<T> {
 		}
 
 		endCharacters ??= ensureLine(endLines, end);
+
 		let entry = endCharacters.find(end.character)?.value;
+
 		if (!entry) {
 			this._size++;
 			endCharacters.insert(end.character, [key, value]);
@@ -326,9 +349,11 @@ export class RangeMap<T> {
 		const { start, end } = key;
 
 		const startCharacters = this._ranges.find(start.line)?.value;
+
 		if (!startCharacters) return false;
 
 		const endLines = startCharacters.find(start.character)?.value;
+
 		if (!endLines) return false;
 
 		if (isCollapsed(endLines)) {
@@ -337,6 +362,7 @@ export class RangeMap<T> {
 			if (key.isEmpty) {
 				this._size--;
 				startCharacters.remove(start.character);
+
 				if (startCharacters.isEmpty()) {
 					this._ranges.remove(start.line);
 				}
@@ -346,15 +372,19 @@ export class RangeMap<T> {
 		}
 
 		const endCharacters = endLines.find(end.line)?.value;
+
 		if (!endCharacters) return false;
 
 		if (endCharacters.find(end.character)) {
 			endCharacters.remove(end.character);
 			this._size--;
+
 			if (endCharacters.isEmpty()) {
 				endLines.remove(end.line);
+
 				if (endLines.isEmpty()) {
 					startCharacters.remove(start.character);
+
 					if (startCharacters.isEmpty()) {
 						this._ranges.remove(start.line);
 					}
@@ -388,6 +418,7 @@ export class RangeMap<T> {
 			)) {
 				if (isCollapsed(endLines)) {
 					const [key] = endLines;
+
 					yield key;
 				} else {
 					for (const { value: endCharacters } of iterateAscending(
@@ -413,6 +444,7 @@ export class RangeMap<T> {
 			)) {
 				if (isCollapsed(endLines)) {
 					const [, value] = endLines;
+
 					yield value;
 				} else {
 					for (const { value: endCharacters } of iterateAscending(
@@ -438,6 +470,7 @@ export class RangeMap<T> {
 			)) {
 				if (isCollapsed(endLines)) {
 					const [key, value] = endLines;
+
 					yield [key, value];
 				} else {
 					for (const { value: endCharacters } of iterateAscending(
@@ -471,7 +504,9 @@ function findPosition<T>(tree: LineTree<T>, position: Position) {
 
 function ensureLine<T>(tree: LineTree<T>, position: Position) {
 	let characters = tree.find(position.line)?.value;
+
 	if (!characters) tree.insert(position.line, (characters = new SplayTree()));
+
 	return characters;
 }
 
@@ -554,6 +589,7 @@ function* iterateDescending<T>(
 ): Generator<SplayTree.Node<number, T>, void> {
 	if (node) {
 		yield node;
+
 		yield* iterateWorker(node.left, true);
 	}
 }
@@ -566,6 +602,7 @@ function* iterateAscending<T>(
 ): Generator<SplayTree.Node<number, T>, void> {
 	if (node) {
 		yield node;
+
 		yield* iterateWorker(node.right, false);
 	}
 }
@@ -579,7 +616,9 @@ function* iterateWorker<T>(
 ): Generator<SplayTree.Node<number, T>, void> {
 	if (node) {
 		yield* iterateWorker(descending ? node.right : node.left, descending);
+
 		yield node;
+
 		yield* iterateWorker(descending ? node.left : node.right, descending);
 	}
 }

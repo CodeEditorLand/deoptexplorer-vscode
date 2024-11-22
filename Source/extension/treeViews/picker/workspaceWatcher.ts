@@ -20,6 +20,7 @@ export class WorkspaceWatcher {
 
 	startWatching() {
 		if (this.watching) return;
+
 		if (workspace.workspaceFolders) {
 			for (const workspaceFolder of workspace.workspaceFolders) {
 				this.watchFolder(workspaceFolder);
@@ -29,6 +30,7 @@ export class WorkspaceWatcher {
 		this.workspaceFoldersChangedSubscription =
 			workspace.onDidChangeWorkspaceFolders((e) => {
 				this.provider.invalidate();
+
 				for (const workspaceFolder of e.added) {
 					this.watchFolder(workspaceFolder);
 				}
@@ -40,6 +42,7 @@ export class WorkspaceWatcher {
 
 	stopWatching() {
 		if (!this.watching) return;
+
 		for (const watcher of this.watchers.values()) {
 			watcher.dispose();
 		}
@@ -54,7 +57,9 @@ export class WorkspaceWatcher {
 
 	private watchFolder(workspaceFolder: WorkspaceFolder) {
 		const key = workspaceFolder.uri.toString();
+
 		if (this.watchers.has(key)) return;
+
 		const watcher = workspace.createFileSystemWatcher(
 			new RelativePattern(workspaceFolder, `*v8.log`),
 		);
@@ -72,7 +77,9 @@ export class WorkspaceWatcher {
 
 	private unwatchFolder(workspaceFolder: WorkspaceFolder) {
 		const key = workspaceFolder.uri.toString();
+
 		const watcher = this.watchers.get(key);
+
 		if (watcher) {
 			watcher.dispose();
 			this.watchers.delete(key);

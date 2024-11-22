@@ -46,6 +46,7 @@ export class RecentLogFilesNode extends BaseNode {
 
 	protected async getChildren(): Promise<Iterable<BaseNode>> {
 		const recentFiles = storage.getRecentFiles();
+
 		if (recentFiles.length === 0) {
 			return [];
 		} else {
@@ -56,6 +57,7 @@ export class RecentLogFilesNode extends BaseNode {
 					),
 				),
 			);
+
 			return from(recentFiles)
 				.zip(stats, (file, stat) => ({ file, stat }))
 				.where(

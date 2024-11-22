@@ -115,6 +115,7 @@ export class CodeMap {
 	 */
 	moveCode(from: Address, to: Address) {
 		let removedNode = this.dynamics_.remove(from);
+
 		if (!removedNode) throw new Error("Key not found");
 		this.deleteAllCoveredNodes_(
 			this.dynamics_,
@@ -171,12 +172,17 @@ export class CodeMap {
 		end: Address,
 	) {
 		let to_delete: Address[] = [];
+
 		let addr: Address = end - toAddress(1);
+
 		while (addr >= start) {
 			let node = tree.findGreatestLessThan(addr);
+
 			if (!node) break;
+
 			let start2 = node.key,
 				end2 = start2 + toAddress(node.value.size);
+
 			if (start2 < end && start < end2) to_delete.push(start2);
 			addr = start2 - toAddress(1);
 		}
@@ -193,6 +199,7 @@ export class CodeMap {
 
 	private findInTree_(tree: SplayTree<Address, CodeEntry>, addr: Address) {
 		let node = tree.findGreatestLessThan(addr);
+
 		return node && this.isAddressBelongsTo_(addr, node) ? node : null;
 	}
 
@@ -205,19 +212,25 @@ export class CodeMap {
 	 */
 	findEntry(addr: Address, out_instruction_start?: Reference<Address>) {
 		let pageAddr = Number(addr / toAddress(CodeMap.PAGE_SIZE)) | 0;
+
 		if (pageAddr in this.pages_) {
 			// Static code entries can contain "holes" of unnamed code.
 			// In this case, the whole library is assigned to this address.
 			let result = this.findInTree_(this.statics_, addr);
+
 			if (!result) {
 				result = this.findInTree_(this.libraries_, addr);
+
 				if (!result) return null;
 			}
 			if (out_instruction_start) out_instruction_start.value = result.key;
+
 			return result.value;
 		}
 		let min = this.dynamics_.findMin();
+
 		let max = this.dynamics_.findMax();
+
 		if (
 			min !== null &&
 			max !== null &&
@@ -225,15 +238,18 @@ export class CodeMap {
 			addr >= min.key
 		) {
 			let dynaEntry = this.findInTree_(this.dynamics_, addr);
+
 			if (dynaEntry == null) return null;
 			// Dedupe entry name.
 			let entry = dynaEntry.value;
+
 			if (!entry["nameUpdated_"]) {
 				entry.name = this.dynamicsNameGen_.getName(entry.name);
 				entry["nameUpdated_"] = true;
 			}
 			if (out_instruction_start)
 				out_instruction_start.value = dynaEntry.key;
+
 			return entry;
 		}
 		return null;
@@ -246,6 +262,7 @@ export class CodeMap {
 	 */
 	findDynamicEntryByStartAddress(addr: Address) {
 		let node = this.dynamics_.find(addr);
+
 		return node ? node.value : null;
 	}
 
@@ -291,9 +308,11 @@ class NameGenerator {
 	getName(name: string) {
 		if (!(name in this.knownNames_)) {
 			this.knownNames_[name] = 0;
+
 			return name;
 		}
 		let count = ++this.knownNames_[name];
+
 		return name + " {" + count + "}";
 	}
 }

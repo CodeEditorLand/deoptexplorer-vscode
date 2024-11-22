@@ -77,6 +77,7 @@ IcEntry.prototype.kind = "ic";
  */
 export class IcEntryUpdate {
 	functionEntry?: FunctionEntry;
+
 	constructor(
 		public timestamp: TimeTicks,
 		public type: IcType,

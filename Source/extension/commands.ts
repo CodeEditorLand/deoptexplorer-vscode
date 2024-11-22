@@ -161,14 +161,17 @@ export function activateCommands(context: ExtensionContext) {
 			constants.commands.log.open,
 			async (uri?: Uri) => {
 				cancelPendingOperations();
+
 				const lock = await openMutex.lock(
 					cancellationTokenToCancelable(diskOperationToken),
 				);
+
 				try {
 					await openLogFile(uri);
 				} catch (e) {
 					closeLogFile();
 					log(e);
+
 					throw e;
 				} finally {
 					lock.unlock();
@@ -179,16 +182,20 @@ export function activateCommands(context: ExtensionContext) {
 		// Reload the current V8 Log
 		typeSafeRegisterCommand(constants.commands.log.reload, async () => {
 			const file = openedFile;
+
 			if (!file) return;
 			cancelPendingOperations();
+
 			const lock = await openMutex.lock(
 				cancellationTokenToCancelable(diskOperationToken),
 			);
+
 			try {
 				await openLogFile(file);
 			} catch (e) {
 				closeLogFile();
 				log(e);
+
 				throw e;
 			} finally {
 				lock.unlock();
@@ -247,6 +254,7 @@ export function activateCommands(context: ExtensionContext) {
 			(filePosition) => {
 				const entry =
 					openedLog?.findFunctionEntryByFilePosition(filePosition);
+
 				if (entry) {
 					showFunctionHistory(entry);
 				}
@@ -696,16 +704,19 @@ export function activateCommands(context: ExtensionContext) {
 						path.dirname(file),
 						path.basename(file, ".log") + ".cpuprofile",
 					);
+
 					const result = await window.showSaveDialog({
 						defaultUri: Uri.file(file),
 						filters: {
 							"CPU Profiles": ["cpuprofile", "json"],
 						},
 					});
+
 					if (result) {
 						let rawProfile = openedLog.profile.getJSONProfile();
 						// rawProfile = ProfileTrimmer.trimProfile(openedLog.rawProfile, { trimUnused: true });
 						// rawProfile = SourceMapper.mapProfile(rawProfile);
+
 						let s = "";
 						s += `{\n`;
 						s += `  "startTime": ${JSON.stringify(rawProfile.startTime)},\n`;

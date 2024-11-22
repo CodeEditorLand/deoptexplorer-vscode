@@ -71,6 +71,7 @@ export async function setLogStatus(value: LogStatus) {
 			emitters.willLogStatusChange();
 		}
 		logStatus = value;
+
 		if (currentContext) {
 			await setContext(contextKeys.logStatus, value);
 			emitters.didLogStatusChange(value);
@@ -84,6 +85,7 @@ export async function setSortICs(value: SortICs) {
 			emitters.willSortICsChange();
 		}
 		sortICs = value;
+
 		if (currentContext) {
 			await Promise.all([
 				storage.setSortICs(value),
@@ -100,6 +102,7 @@ export async function setShowICStates(value: ImmutableEnumSet<ShowICStates>) {
 			emitters.willShowICStatesChange();
 		}
 		showICStates = value;
+
 		if (currentContext) {
 			await Promise.all([
 				storage.setShowICStates(value),
@@ -132,6 +135,7 @@ export async function setSortDeopts(value: SortDeopts) {
 			emitters.willSortDeoptsChange();
 		}
 		sortDeopts = value;
+
 		if (currentContext) {
 			await Promise.all([
 				storage.setSortDeopts(value),
@@ -148,6 +152,7 @@ export async function setGroupDeopts(value: ImmutableEnumSet<GroupDeopts>) {
 			emitters.willGroupDeoptsChange();
 		}
 		groupDeopts = value;
+
 		if (currentContext) {
 			await Promise.all([
 				storage.setGroupDeopts(value),
@@ -175,6 +180,7 @@ export async function setSortMaps(value: MapSortMode) {
 			emitters.willSortMapsChange();
 		}
 		sortMaps = value;
+
 		if (currentContext) {
 			await Promise.all([
 				storage.setSortMaps(value),
@@ -191,6 +197,7 @@ export async function setGroupMaps(value: ImmutableEnumSet<GroupMaps>) {
 			emitters.willGroupMapsChange();
 		}
 		groupMaps = value;
+
 		if (currentContext) {
 			await Promise.all([
 				storage.setGroupMaps(value),
@@ -214,6 +221,7 @@ export async function setShowMaps(value: ImmutableEnumSet<ShowMaps>) {
 			emitters.willShowMapsChange();
 		}
 		showMaps = value;
+
 		if (currentContext) {
 			await Promise.all([
 				storage.setShowMaps(value),
@@ -241,6 +249,7 @@ export async function setSortProfile(value: ProfileSortMode) {
 			emitters.willSortProfileChange();
 		}
 		sortProfile = value;
+
 		if (currentContext) {
 			await setContext(contextKeys.sortProfile, value);
 			emitters.didSortProfileChange(value);
@@ -254,6 +263,7 @@ export async function setShowProfile(value: ProfileShowMode) {
 			emitters.willShowProfileChange();
 		}
 		showProfile = value;
+
 		if (currentContext) {
 			await setContext(contextKeys.showProfile, value);
 			emitters.didShowProfileChange(value);
@@ -267,6 +277,7 @@ export async function setShowProfileJustMyCode(value: boolean) {
 			emitters.willShowProfileJustMyCodeChange();
 		}
 		showJustMyCode = value;
+
 		if (currentContext) {
 			await Promise.all([
 				storage.setShowJustMyCode(value),
@@ -283,6 +294,7 @@ export async function setShowNativeCodeProfileNodes(value: boolean) {
 			emitters.willShowNativeCodeProfileNodesChange();
 		}
 		showNativeCodeProfileNodes = value;
+
 		if (currentContext) {
 			await setContext(contextKeys.showNativeCodeProfileNodes, value);
 			emitters.didShowNativeCodeProfileNodesChange(value);
@@ -296,6 +308,7 @@ export async function setShowNodeJsProfileNodes(value: boolean) {
 			emitters.willShowNodeJsProfileNodesChange();
 		}
 		showNodeJsProfileNodes = value;
+
 		if (currentContext) {
 			await setContext(contextKeys.showNodeJsProfileNodes, value);
 			emitters.didShowNodeJsProfileNodesChange(value);
@@ -309,6 +322,7 @@ export async function setShowNodeModulesProfileNodes(value: boolean) {
 			emitters.willShowNodeModulesProfileNodesChange();
 		}
 		showNodeModulesProfileNodes = value;
+
 		if (currentContext) {
 			await setContext(contextKeys.showNodeModulesProfileNodes, value);
 			emitters.didShowNodeModulesProfileNodesChange(value);
@@ -324,6 +338,7 @@ export async function setShowDecorations(
 			emitters.willShowDecorationsChange();
 		}
 		showDecorations = value;
+
 		if (currentContext) {
 			await Promise.all([
 				setContext(
@@ -358,6 +373,7 @@ export async function setShowLineTicks(value: boolean) {
 			emitters.willShowLineTicksChange();
 		}
 		showLineTicks = value;
+
 		if (currentContext) {
 			await setContext(contextKeys.showLineTicks, value);
 			emitters.didShowLineTicksChange(value);
@@ -466,6 +482,7 @@ export async function activateContextService(context: ExtensionContext) {
 		),
 		setContext(contextKeys.showLineTicks, showLineTicks),
 	]);
+
 	return new Disposable(() => {
 		logStatus = kDefaultLogStatus;
 		sortICs = kDefaultSortICs;

@@ -41,14 +41,17 @@ export class DeoptEntryNode extends EntryNode<DeoptEntry> {
 		const worstBailoutType = from(this.entry.updates)
 			.select((update) => update.bailoutType)
 			.min(DeoptimizeKindComparer.compare);
+
 		const worstBailouts = from(this.entry.updates)
 			.where((update) => update.bailoutType === worstBailoutType)
 			.toArray();
+
 		const deoptReason =
 			from(worstBailouts)
 				.reverse()
 				.select((update) => update.deoptReason)
 				.first((reason) => reason.length > 0) ?? "(unknown)";
+
 		return deoptReason;
 	}
 
@@ -63,7 +66,9 @@ export class DeoptEntryNode extends EntryNode<DeoptEntry> {
 		const bailouts: MarkdownString[] = [];
 
 		let lastBailoutType: DeoptimizeKind | undefined;
+
 		let lastDeoptReason: string | undefined;
+
 		for (const update of this.entry.updates) {
 			// if this is the first update, track it and continue
 			if (
@@ -72,6 +77,7 @@ export class DeoptEntryNode extends EntryNode<DeoptEntry> {
 			) {
 				lastBailoutType = update.bailoutType;
 				lastDeoptReason = update.deoptReason;
+
 				continue;
 			}
 
@@ -82,6 +88,7 @@ export class DeoptEntryNode extends EntryNode<DeoptEntry> {
 				);
 				lastBailoutType = update.bailoutType;
 				lastDeoptReason = update.deoptReason;
+
 				break;
 			}
 
@@ -93,6 +100,7 @@ export class DeoptEntryNode extends EntryNode<DeoptEntry> {
 					);
 				}
 				lastDeoptReason = update.deoptReason;
+
 				break;
 			}
 		}

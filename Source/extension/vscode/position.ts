@@ -33,9 +33,12 @@ export function formatPosition(
 	{ include = "full", prefix = true }: FormatPositionOptions = {},
 ) {
 	if (!position) return "";
+
 	let text = "";
+
 	if (!isNaN(position.line)) {
 		text += `${prefix ? ":" : ""}${position.line + 1}`;
+
 		if (include === "full") {
 			if (!isNaN(position.character)) {
 				text += `:${position.character + 1}`;

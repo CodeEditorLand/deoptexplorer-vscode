@@ -17,10 +17,13 @@ import {
 interface LocationMapLike<T> {
 	get size(): number;
 	has(key: vscode.Location): boolean;
+
 	get(key: vscode.Location): T | undefined;
+
 	set(key: vscode.Location, value: T): this;
 	delete(key: vscode.Location): boolean;
 	clear(): void;
+
 	forEach(
 		cb: (
 			value: T,
@@ -37,9 +40,13 @@ interface LocationMapLike<T> {
 
 describe("locationMap", () => {
 	const rangeCount = 1000;
+
 	const uriCount = 50;
+
 	const collapsedRangePopulation = 0.2;
+
 	const totalPopulation = 0.2;
+
 	const missPopulation = 0.05;
 
 	const implementations: {
@@ -96,6 +103,7 @@ describe("locationMap", () => {
 
 		benchmark.each(implementations)("$name", ({ LocationMap }) => {
 			const map = new LocationMap<number>();
+
 			for (let i = 0; i < entries.length; i++) {
 				map.set(entries[i][0], entries[i][1]);
 			}
@@ -104,11 +112,13 @@ describe("locationMap", () => {
 
 	describe(`get() ${(totalPopulation * 100).toFixed(1)}% of ${rangeCount} elements w/${(missPopulation * 100).toFixed(1)}% miss`, () => {
 		let entries: (readonly [vscode.Location, number])[];
+
 		let keys: vscode.Location[];
 
 		afterAll(() => {
 			entries = undefined!;
 			keys = undefined!;
+
 			for (const implementation of implementations) {
 				implementation.locationMap = undefined!;
 			}
@@ -129,9 +139,11 @@ describe("locationMap", () => {
 						] as const,
 				),
 			];
+
 			for (const implementation of implementations) {
 				implementation.locationMap =
 					new implementation.LocationMap<number>();
+
 				for (let i = 0; i < entries.length; i++) {
 					implementation.locationMap.set(
 						entries[i][0],

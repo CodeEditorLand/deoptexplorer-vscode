@@ -118,6 +118,7 @@ export class ProfileTree {
 				: this.provider.sortBy === constants.ProfileSortMode.ByTotalTime
 					? "Total Time"
 					: "Name";
+
 		if (this.treeView.description !== description) {
 			this.treeView.description = description;
 		}

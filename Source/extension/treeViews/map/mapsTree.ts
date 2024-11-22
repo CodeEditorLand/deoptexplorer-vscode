@@ -75,10 +75,13 @@ export class MapsTree implements Disposable {
 
 	private updateTreeViewHeader() {
 		const groupByArray: string[] = ["Constructor"];
+
 		if (this.provider.groupBy.has(constants.GroupMaps.ByFile))
 			groupByArray.push("File");
+
 		if (this.provider.groupBy.has(constants.GroupMaps.ByFunction))
 			groupByArray.push("Function");
+
 		const groupBy = groupByArray.join("/");
 
 		const sortBy =
@@ -93,10 +96,12 @@ export class MapsTree implements Disposable {
 				: ``;
 
 		const segments: string[] = [];
+
 		if (groupBy) segments.push(groupBy);
 		segments.push(`${sortBy}${filtered}`);
 
 		const description = `By ${segments.join(", ")}`;
+
 		if (this.treeView.description !== description) {
 			this.treeView.description = description;
 		}

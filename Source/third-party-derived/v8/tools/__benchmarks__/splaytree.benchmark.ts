@@ -8,6 +8,7 @@ import { SplayTree as SplayTreeWithComparator } from "./splaytree/splaytreeWithC
 const MAX_INT32 = 2 ** 31 - 1;
 describe("splaytree", () => {
 	const count = 1000;
+
 	const implementations = [
 		{ name: "SplayTree (current)", SplayTree },
 		{ name: "SplayTree (no comparer)", SplayTree: SplayTreeNoComparator },
@@ -45,6 +46,7 @@ describe("splaytree", () => {
 
 		benchmark.each(implementations)("$name", ({ SplayTree }) => {
 			const tree = new SplayTree<number, number>();
+
 			for (const [key, value] of entries) {
 				tree.insert(key, value);
 			}

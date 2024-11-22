@@ -155,8 +155,10 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 		switch (sortBy) {
 			case constants.ProfileSortMode.BySelfTime:
 				return this._bySelfTimeSorter;
+
 			case constants.ProfileSortMode.ByTotalTime:
 				return this._byTotalTimeSorter;
+
 			case constants.ProfileSortMode.ByName:
 				return this._byNameSorter;
 		}
@@ -199,17 +201,22 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 class HiddenProfileNode extends ProfileViewNode {
 	private _visibleChildren: ProfileViewNode[];
 	readonly hiddenNodes: readonly ProfileViewNode[];
+
 	constructor(
 		node: ProfileViewNode,
 		shouldHide: (node: ProfileViewNode) => boolean,
 	) {
 		let selfTime = 0;
+
 		let children: ProfileViewNode[] = [];
+
 		let hidden: ProfileViewNode[] = [];
+
 		const flatten = (node: ProfileViewNode) => {
 			if (node instanceof HiddenProfileNode || shouldHide(node)) {
 				selfTime += node.selfTime;
 				hidden.push(node);
+
 				for (const child of node.children) {
 					flatten(child);
 				}
@@ -218,6 +225,7 @@ class HiddenProfileNode extends ProfileViewNode {
 			}
 		};
 		flatten(node);
+
 		super(CodeEntry.hidden_entry(), node.totalTime, selfTime);
 		this._visibleChildren = children;
 		this.hiddenNodes = hidden;

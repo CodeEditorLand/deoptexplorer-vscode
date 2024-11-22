@@ -75,6 +75,7 @@ export class DeoptsTree implements Disposable {
 		//     this.provider.sortBy === constants.SortDeopts.ByCount ? "Count" :
 		//     "Location";
 		// const description = groupBy ? `By ${groupBy}, ${sortBy}` : `By ${sortBy}`;
+
 		const description =
 			this.provider.sortBy === constants.SortDeopts.ByLocation
 				? `By File/Function/Kind, Location`

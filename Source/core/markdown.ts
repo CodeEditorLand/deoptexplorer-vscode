@@ -63,6 +63,7 @@ export namespace markdown {
 		array: TemplateStringsArray,
 		...args: any[]
 	): MarkdownString;
+
 	export function code(
 		language?: string | TemplateStringsArray,
 		...args: any[]
@@ -110,6 +111,7 @@ export namespace markdown {
 			array: TemplateStringsArray,
 			...args: any[]
 		): MarkdownString;
+
 		export function trusted(
 			language?: string | TemplateStringsArray,
 			...args: any[]
@@ -166,10 +168,12 @@ export namespace markdown {
 		export function code(
 			language?: string,
 		): (array: TemplateStringsArray, ...args: any[]) => MarkdownString;
+
 		export function code(
 			array: TemplateStringsArray,
 			...args: any[]
 		): MarkdownString;
+
 		export function code(
 			language?: string | TemplateStringsArray,
 			...args: any[]
@@ -238,34 +242,43 @@ export class MarkdownString extends BaseMarkdownString {
 	trust(isTrusted = true) {
 		if (this._isFrozen) throw new TypeError();
 		this.isTrusted = isTrusted;
+
 		return this;
 	}
 
 	appendText(value: string): MarkdownString {
 		if (this._isFrozen) throw new TypeError();
+
 		super.appendText(value);
+
 		return this;
 	}
 
 	appendMarkdown(value: string): MarkdownString {
 		if (this._isFrozen) throw new TypeError();
+
 		super.appendMarkdown(value);
+
 		return this;
 	}
 
 	appendCodeblock(value: string, language?: string): MarkdownString {
 		if (this._isFrozen) throw new TypeError();
+
 		super.appendCodeblock(value, language);
+
 		return this;
 	}
 
 	asFrozen() {
 		if (this._isFrozen) return this;
+
 		const copy = new MarkdownString(undefined, this.supportThemeIcons);
 		copy.isTrusted = this.isTrusted;
 		copy.appendMarkdown(this.value);
 		copy._isFrozen = true;
 		Object.freeze(copy);
+
 		return copy;
 	}
 
@@ -303,6 +316,7 @@ function appendArg(result: MarkdownString, arg: MarkdownValue) {
 				"Cannot mix markdown strings that support theme icons with ones that don't",
 			);
 			result.appendMarkdown(arg.value);
+
 			return;
 		}
 		if (Symbol.iterator in arg) {
@@ -324,6 +338,7 @@ function appendArg(result: MarkdownString, arg: MarkdownValue) {
 
 function interpolate(array: TemplateStringsArray, args: any[]) {
 	let result = array[0];
+
 	for (let i = 1; i < array.length; i++) {
 		result += `${args[i - 1]}${array[i]}`;
 	}
@@ -337,6 +352,7 @@ function makeMarkdown(
 ) {
 	const result = new MarkdownString(array[0], /*supportThemeIcons*/ true);
 	result.isTrusted = isTrusted;
+
 	for (let i = 1; i < array.length; i++) {
 		appendArg(result, args[i - 1]);
 		result.appendMarkdown(array[i]);
@@ -352,6 +368,7 @@ function makeMarkdownCode(
 ) {
 	const result = new MarkdownString(undefined, /*supportThemeIcons*/ true);
 	result.isTrusted = isTrusted;
+
 	return result.appendCodeblock(interpolate(array, args), language);
 }
 
@@ -371,6 +388,7 @@ function makeMarkdownEscaped(
 ) {
 	const result = new MarkdownString(undefined, /*supportThemeIcons*/ true);
 	result.isTrusted = isTrusted;
+
 	return result.appendText(interpolate(array, args));
 }
 
@@ -384,12 +402,16 @@ function makeMarkdownTable(
 		string | MarkdownString | MarkdownTableHeader | MarkdownTableCell,
 		MarkdownString
 	>();
+
 	const columnWidths: number[] = [];
+
 	const headerNames = headers.map(getMarkdownString);
+
 	const headerAlignments = headers.map(getAlignment);
 	computeWidths(headerNames);
 
 	const rowsArray: (string | MarkdownString | MarkdownTableCell)[][] = [];
+
 	for (const row of rows) {
 		const rowArray = [...row];
 		rowsArray.push(rowArray);
@@ -399,8 +421,10 @@ function makeMarkdownTable(
 	const writer = new MarkdownTextWriter(undefined, isTrusted);
 	writeRow(headerNames);
 	writer.writeMarkdown("|");
+
 	for (let i = 0; i < columnWidths.length; i++) {
 		const width = columnWidths[i];
+
 		const align =
 			i < headerAlignments.length ? headerAlignments[i] : "left";
 		writer.writeMarkdown(align !== "right" ? ":" : "-");
@@ -409,10 +433,12 @@ function makeMarkdownTable(
 		writer.writeMarkdown("|");
 	}
 	writer.writeLine();
+
 	for (const row of rowsArray) {
 		writeRow(row);
 	}
 	writer.writeLine();
+
 	return new MarkdownString(writer.toString(), /*supportThemeIcons*/ true);
 
 	function wrapUnsafe(cell: string) {
@@ -420,6 +446,7 @@ function makeMarkdownTable(
 			undefined,
 			/*supportThemeIcons*/ true,
 		).appendText(cell);
+
 		if (!html) {
 			// remove some unnecessary escapes for plain-text tables
 			const unescaped = new MarkdownString(
@@ -434,6 +461,7 @@ function makeMarkdownTable(
 			result = unescaped;
 		}
 		result.isTrusted = isTrusted;
+
 		return result;
 	}
 
@@ -441,6 +469,7 @@ function makeMarkdownTable(
 		cell: string | MarkdownString | MarkdownTableHeader | MarkdownTableCell,
 	) {
 		let result = markdownStringCache.get(cell);
+
 		if (result) return result;
 		result =
 			typeof cell === "string"
@@ -454,6 +483,7 @@ function makeMarkdownTable(
 							: assertNever(cell.text);
 		result = result.asFrozen();
 		markdownStringCache.set(cell, result);
+
 		return result;
 	}
 
@@ -508,14 +538,20 @@ function makeMarkdownTable(
 		)[],
 	) {
 		writer.writeMarkdown("|");
+
 		for (let i = 0; i < columnWidths.length; i++) {
 			const width = columnWidths[i];
+
 			const header = i < headers.length ? headers[i] : "";
+
 			const cell = i < row.length ? row[i] : "";
+
 			const markdownString = getMarkdownString(cell);
+
 			const align =
 				i < headerAlignments.length ? headerAlignments[i] : "left";
 			writer.writeMarkdown(" ");
+
 			const leftPad =
 				align === "left"
 					? 0
@@ -527,6 +563,7 @@ function makeMarkdownTable(
 									(width - markdownString.value.length) / 2,
 								),
 							);
+
 			const rightPad =
 				align === "left"
 					? Math.max(0, width - markdownString.value.length)
@@ -537,10 +574,12 @@ function makeMarkdownTable(
 								width - markdownString.value.length - leftPad,
 							);
 			writer.writeMarkdown("".padEnd(leftPad, " "));
+
 			getOnWrite(header)?.(
 				new Position(writer.line, writer.column),
 				markdownString.value,
 			);
+
 			getOnWrite(cell)?.(
 				new Position(writer.line, writer.column),
 				markdownString.value,

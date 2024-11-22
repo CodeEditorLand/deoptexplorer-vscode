@@ -97,6 +97,7 @@ export class CodeEntry extends EntryBase {
 		super(sources, /*filePosition*/ undefined);
 		this.used = undefined;
 		this.nameUpdated_ = false;
+
 		if (new.target === CodeEntry) {
 			this.finishInitialize();
 		}
@@ -117,6 +118,7 @@ export class CodeEntry extends EntryBase {
 			throw new TypeError(
 				"'finishInitialize' was not properly called by a subclass.",
 			);
+
 		return this._functionName;
 	}
 
@@ -165,8 +167,10 @@ export class CodeEntry extends EntryBase {
 	getInlineStack(pc_offset: Address) {
 		let inlining_id =
 			this.line_info?.getInliningId(pc_offset) ?? kNotInlined;
+
 		if (inlining_id === kNotInlined) return undefined;
 		assert(this.inline_stacks_);
+
 		return this.inline_stacks_.get(inlining_id);
 	}
 
@@ -239,6 +243,7 @@ export class CodeEntry extends EntryBase {
 
 	isSameFunctionAs(other: CodeEntry) {
 		if (this === other) return true;
+
 		if (this.scriptId !== kNoScriptId) {
 			return (
 				this.scriptId === other.scriptId &&
@@ -263,6 +268,7 @@ export class CodeEntry extends EntryBase {
 	hash() {
 		let hc = 0;
 		hc = Equaler.combineHashes(hc, hashNullable(this.type));
+
 		if (this.scriptId !== kNoScriptId) {
 			hc = Equaler.combineHashes(hc, hashNullable(this.scriptId));
 			hc = Equaler.combineHashes(hc, hashNullable(this.start_pos));
@@ -303,6 +309,7 @@ export class DynamicCodeEntry extends CodeEntry {
 		name: string,
 	) {
 		super(size, name, type, sources);
+
 		if (new.target === DynamicCodeEntry) {
 			this.finishInitialize();
 		}
@@ -387,6 +394,7 @@ export class DynamicFuncCodeEntry extends DynamicCodeEntry {
 	 */
 	getName() {
 		let name = this.func.getName();
+
 		return this.type + ": " + this.getState() + name;
 	}
 
@@ -431,6 +439,7 @@ export class SharedFunctionCodeEntry extends CodeEntry {
 	 */
 	getName() {
 		let name = this.name;
+
 		if (name.length === 0) {
 			name = "(anonymous)";
 		} else if (name.charAt(0) === " ") {

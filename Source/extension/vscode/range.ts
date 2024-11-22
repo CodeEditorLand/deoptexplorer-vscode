@@ -36,14 +36,19 @@ export function tryParseTrailingRange(
 	out_prefixLength?: Reference<number>,
 ) {
 	const match = trailingRangeRegExp.exec(text);
+
 	if (match?.groups) {
 		const { line, column, endLine, endColumn } = match.groups;
+
 		if (out_prefixLength) out_prefixLength.value = match.index;
+
 		const start = new Position(
 			Math.max(0, parseInt(line, 10) - 1),
 			column ? Math.max(0, parseInt(column, 10) - 1) : 0,
 		);
+
 		let endLineNumber: number;
+
 		const end = endLine
 			? new Position(
 					(endLineNumber = Math.max(0, parseInt(endLine, 10) - 1)),
@@ -54,6 +59,7 @@ export function tryParseTrailingRange(
 							: 0,
 				)
 			: start;
+
 		return new Range(start, end);
 	}
 }
@@ -81,13 +87,17 @@ const rangeRegExp =
  */
 export function tryParseRange(text: string) {
 	const match = rangeRegExp.exec(text);
+
 	if (match?.groups) {
 		const { line, column, endLine, endColumn } = match.groups;
+
 		let endLineNumber: number;
+
 		const start = new Position(
 			parseInt(line, 10),
 			column ? parseInt(column, 10) : 0,
 		);
+
 		const end = endLine
 			? new Position(
 					(endLineNumber = parseInt(endLine, 10)),
@@ -98,6 +108,7 @@ export function tryParseRange(text: string) {
 							: 0,
 				)
 			: start;
+
 		return new Range(start, end);
 	}
 }
@@ -123,7 +134,9 @@ export function tryParseRange(text: string) {
  */
 export function parseRange(text: string) {
 	const range = tryParseRange(text);
+
 	if (!range) throw new SyntaxError(`Invalid range: ${text}`);
+
 	return range;
 }
 
@@ -159,10 +172,14 @@ export function formatRange(
 	}: FormatRangeOptions = {},
 ) {
 	if (!range) return "";
+
 	let text = "";
+
 	const start = range.start;
+
 	if (!isNaN(start.line)) {
 		text += `${prefix ? ":" : ""}${start.line + 1}`;
+
 		if (
 			include === "range" ||
 			include === "position-or-range" ||
@@ -170,13 +187,16 @@ export function formatRange(
 		) {
 			if (!isNaN(start.character)) {
 				text += `${delimiter}${start.character + 1}`;
+
 				const end = range.end;
+
 				if (
 					include === "range" ||
 					(include === "position-or-range" && !end.isEqual(start))
 				) {
 					if (!isNaN(end.line)) {
 						text += `${delimiter}${end.line + 1}`;
+
 						if (!isNaN(end.character)) {
 							text += `${delimiter}${end.character + 1}`;
 						}

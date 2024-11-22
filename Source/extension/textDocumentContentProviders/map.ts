@@ -86,43 +86,55 @@ class MapDocumentContentProvider
 
 	private getDocumentContentAndLinks(uri: Uri): MapDocument | undefined {
 		const mapId = getMapIdFromMapUri(uri);
+
 		if (!mapId || !openedLog) {
 			return undefined;
 		}
 
 		const map = openedLog.maps.get(mapId);
+
 		if (!map) {
 			return undefined;
 		}
 
 		const startTime = openedLog.profile.startTime;
+
 		const documentLinks: DocumentLink[] = [];
+
 		const references = new RangeMap<MapId | MapReference>();
+
 		const declarations = new RangeMap<MapId | MapReference | MapProperty>();
 
 		const thisMapRef = MapReference.fromMapId(mapId, map);
+
 		let currentMapRef: MapReference | undefined = thisMapRef;
 
 		const seen = new StringSet<MapId>((id) => id.toString());
+
 		const history: MapEntryUpdate[] = [];
+
 		while (currentMapRef) {
 			// NOTE: Shouldn't be circular, but just in case...
 			if (seen.has(currentMapRef.mapId)) break;
 			seen.add(currentMapRef.mapId);
 
 			let nextMapRef: MapReference | undefined;
+
 			for (let i = currentMapRef.map.updates.length - 1; i >= 0; i--) {
 				const update = currentMapRef.map.updates[i];
+
 				if (
 					update.toMapId.address === currentMapRef.address &&
 					update.toMapId.index === currentMapRef.index &&
 					update.toMap === currentMapRef.map
 				) {
 					history.unshift(update);
+
 					const nextMap = update.fromMap;
 					nextMapRef =
 						nextMap &&
 						MapReference.fromMapId(update.fromMapId, nextMap);
+
 					break;
 				}
 			}
@@ -137,10 +149,14 @@ class MapDocumentContentProvider
 			declarations.set(range, thisMapRef);
 		});
 		writer.write(" ");
+
 		const constructorName = map.constructorName || map.mapType;
+
 		const baseMap = resolveBaseMap(map);
+
 		if (constructorName || baseMap) {
 			writer.write("extends ");
+
 			if (constructorName) {
 				writer.write(constructorName);
 			}
@@ -156,25 +172,35 @@ class MapDocumentContentProvider
 		writer.writeLine();
 
 		let lastSource: FunctionEntry | undefined;
+
 		for (const prop of map.properties) {
 			if (prop.source && prop.source !== lastSource) {
 				const prefix = `// Added by ${prop.source.functionName ?? "(anonymous)"} (`;
+
 				const link = formatLocation(prop.source.filePosition, {
 					as: "file",
 					include: "position",
 				});
+
 				const suffix = `):`;
+
 				const line = writer.line;
+
 				const start = 4 + prefix.length;
+
 				const end = start + link.length;
+
 				const range = new Range(line, start, line, end);
+
 				const pos = prop.source.filePosition.range.start;
 				writer.write(`    ${prefix}${link}${suffix}`);
 				writer.writeLine();
+
 				const uri = getScriptSourceUri(
 					prop.source.filePosition.uri,
 					openedLog?.sources,
 				);
+
 				if (uri) {
 					documentLinks.push(
 						new DocumentLink(
@@ -190,8 +216,11 @@ class MapDocumentContentProvider
 
 			const name = formatMapPropertyName(prop);
 			writer.write("    ");
+
 			if (prop.enumerable === false) writer.write("nonenumerable ");
+
 			if (prop.configurable === false) writer.write("nonconfigurable ");
+
 			if (prop.writable === false) writer.write("readonly ");
 			writer.write(name, (range) => declarations.set(range, prop));
 			writer.write(": ");
@@ -232,7 +261,9 @@ class MapDocumentContentProvider
 									: update.event === MapEvent.InitialMap
 										? `Map created`
 										: "";
+
 						let location = "";
+
 						if (update.filePosition) {
 							location += `${update.functionName ?? "(anonymous)"} ${formatLocation(update.filePosition, { as: "file", include: "position" })}`;
 						}
@@ -250,14 +281,17 @@ class MapDocumentContentProvider
 											update.filePosition.uri,
 											openedLog?.sources,
 										);
+
 										if (uri) {
 											const line =
 												writer.line + position.line;
+
 											const start =
 												position.character +
 												(update.functionName?.length ??
 													0) +
 												1;
+
 											const end =
 												start +
 												formatLocation(
@@ -267,14 +301,17 @@ class MapDocumentContentProvider
 														include: "position",
 													},
 												).length;
+
 											const range = new Range(
 												line,
 												start,
 												line,
 												end,
 											);
+
 											const pos =
 												update.filePosition.range.start;
+
 											documentLinks.push(
 												new DocumentLink(
 													range,
@@ -306,6 +343,7 @@ class MapDocumentContentProvider
 			declarations,
 		};
 		this.mapDocumentCache.set(uri, doc);
+
 		return doc;
 	}
 
@@ -327,19 +365,25 @@ class MapDocumentContentProvider
 
 		// do nothing if we can't find a word
 		const range = document.getWordRangeAtPosition(position);
+
 		if (!range) return;
 
 		// do nothing if we are in a comment
 		const line = document.lineAt(range.start);
+
 		const commentStart = line.text.indexOf("//");
+
 		if (commentStart > -1 && range.start.character > commentStart) return;
 
 		// do nothing if we fail to match an address
 		const text = document.getText(range);
+
 		const mapId = MapId.tryParse(text);
+
 		if (!mapId) return;
 
 		const map = openedLog.maps.get(mapId);
+
 		return map && MapReference.fromMapId(mapId, map);
 	}
 
@@ -350,7 +394,9 @@ class MapDocumentContentProvider
 	): ProviderResult<Definition | DefinitionLink[]> {
 		const { references, declarations } =
 			this.getDocumentContentAndLinks(document.uri) ?? {};
+
 		const referencedEntries = references?.findAllContaining(position);
+
 		if (referencedEntries) {
 			return from(referencedEntries)
 				.map(([range, value]) =>
@@ -371,6 +417,7 @@ class MapDocumentContentProvider
 		}
 
 		const declarationEntries = declarations?.findAllContaining(position);
+
 		if (declarationEntries) {
 			return from(declarationEntries)
 				.map(([range, value]) =>
@@ -396,6 +443,7 @@ class MapDocumentContentProvider
 		}
 
 		const mapReference = this.getMapReferenceAtLocation(document, position);
+
 		return (
 			mapReference && getReferenceLocationForMapName(mapReference.mapId)
 		);
@@ -408,10 +456,13 @@ class MapDocumentContentProvider
 		token: CancellationToken,
 	): ProviderResult<Location[]> {
 		const mapReference = this.getMapReferenceAtLocation(document, position);
+
 		if (!mapReference) return;
 
 		const { mapId, map } = mapReference;
+
 		const locations: Location[] = [];
+
 		if (context.includeDeclaration) {
 			locations.push(getReferenceLocationForMapName(mapId));
 		}
@@ -422,27 +473,32 @@ class MapDocumentContentProvider
 					ref.entry.getReferenceLocation("source"),
 					openedLog?.sources,
 				);
+
 				if (location) locations.push(location);
 			} else if (ref.kind === "property") {
 				let location = getReferenceLocationForMapPropertyType(
 					ref.property,
 				);
+
 				if (location)
 					location = getScriptSourceLocation(
 						location,
 						openedLog?.sources,
 					);
+
 				if (location) locations.push(location);
 			} else if (ref.kind === "map") {
 				let location = getReferenceLocationForBaseMapInExtendsClause(
 					mapId,
 					ref.map,
 				);
+
 				if (location)
 					location = getScriptSourceLocation(
 						location,
 						openedLog?.sources,
 					);
+
 				if (location) locations.push(location);
 			}
 		}
@@ -508,6 +564,7 @@ function formatMapPropertyType(property: MapProperty) {
 function getReferenceLineStartOfMapProperty(property: MapProperty) {
 	if (property.map) {
 		const index = property.map.map.properties.indexOf(property);
+
 		if (index > -1) {
 			// count lines generated in the text document provider for maps
 			let line = 1; //interface Map_0x... {
@@ -565,7 +622,9 @@ function getCharacterStartOfBaseMapInExtendsClause({
 }: MapReference) {
 	let pos = getCharacterEndOfMapName(mapId);
 	pos += " extends ".length;
+
 	const constructorType = map.constructorName || map.mapType;
+
 	if (constructorType) {
 		pos += constructorType.length + ", ".length;
 	}
@@ -578,11 +637,14 @@ function getCharacterEndOfBaseMapInExtendsClause(mapId: MapId, start: number) {
 
 function getReferenceLocationForMapName(mapId: MapId) {
 	const line = 0;
+
 	const start = new Position(line, getCharacterStartOfMapName());
+
 	const end = new Position(
 		line,
 		getCharacterEndOfMapName(mapId, start.character),
 	);
+
 	return new Location(getUriForMap(mapId), new Range(start, end));
 }
 
@@ -592,14 +654,17 @@ function getReferenceLocationForBaseMapInExtendsClause(
 ) {
 	if (resolveBaseMap(mapRef.map)?.mapId.equals(mapId)) {
 		const line = 0;
+
 		const start = new Position(
 			line,
 			getCharacterStartOfBaseMapInExtendsClause(mapRef),
 		);
+
 		const end = new Position(
 			line,
 			getCharacterEndOfBaseMapInExtendsClause(mapId, start.character),
 		);
+
 		return new Location(getUriForMap(mapRef.mapId), new Range(start, end));
 	}
 }
@@ -607,15 +672,19 @@ function getReferenceLocationForBaseMapInExtendsClause(
 function getReferenceLocationForMapPropertyName(property: MapProperty) {
 	if (property.map) {
 		const line = getReferenceLineStartOfMapProperty(property);
+
 		if (line === undefined) return;
+
 		const start = new Position(
 			line,
 			getCharacterStartOfMapPropertyName(property),
 		);
+
 		const end = new Position(
 			line,
 			getCharacterEndOfMapPropertyName(property, start.character),
 		);
+
 		return new Location(
 			getUriForMap(property.map.mapId),
 			new Range(start, end),
@@ -626,15 +695,19 @@ function getReferenceLocationForMapPropertyName(property: MapProperty) {
 function getReferenceLocationForMapPropertyType(property: MapProperty) {
 	if (property.map) {
 		const line = getReferenceLineStartOfMapProperty(property);
+
 		if (line === undefined) return;
+
 		const start = new Position(
 			line,
 			getCharacterStartOfMapPropertyType(property),
 		);
+
 		const end = new Position(
 			line,
 			getCharacterEndOfMapPropertyType(property, start.character),
 		);
+
 		return new Location(
 			getUriForMap(property.map.mapId),
 			new Range(start, end),
@@ -675,8 +748,10 @@ export async function showMapAsReference(
 	position: Position,
 ) {
 	mapIds = mapIds.filter((mapId) => !!openedLog?.maps.has(mapId));
+
 	if (mapIds.length) {
 		const openUri = getScriptSourceUri(uri, openedLog?.sources);
+
 		if (openUri) {
 			await typeSafeExecuteCommand(
 				"editor.action.showReferences",
@@ -695,6 +770,7 @@ export function activateMapTextDocumentContentProvider(
 	context: ExtensionContext,
 ) {
 	provider = new MapDocumentContentProvider();
+
 	return Disposable.from(
 		workspace.registerTextDocumentContentProvider(
 			constants.schemes.map,
@@ -724,26 +800,35 @@ export function activateMapTextDocumentContentProvider(
 }
 
 const HOURS_PER_NANOSECOND = TimeDelta.fromHours(1).inNanoseconds();
+
 const MINUTES_PER_NANOSECOND = TimeDelta.fromMinutes(1).inNanoseconds();
+
 const SECONDS_PER_NANOSECOND = TimeDelta.fromSeconds(1).inNanoseconds();
 
 function formatTimeRelativeTo(time: TimeTicks, startTime: TimeTicks) {
 	let delta = time.subtract(startTime);
+
 	let negative = false;
+
 	if (delta.sign() < 0) {
 		delta = delta.negate();
 		negative = true;
 	}
 	let nanos = delta.inNanoseconds();
+
 	const hours = nanos / HOURS_PER_NANOSECOND;
 	nanos -= hours * HOURS_PER_NANOSECOND;
+
 	const minutes = nanos / MINUTES_PER_NANOSECOND;
 	nanos -= minutes * MINUTES_PER_NANOSECOND;
+
 	const seconds = nanos / SECONDS_PER_NANOSECOND;
 	nanos -= seconds * SECONDS_PER_NANOSECOND;
+
 	const milliseconds = TimeDelta.fromNanoseconds(nanos)
 		.inSecondsF()
 		.toFixed(3)
 		.slice(1);
+
 	return `${negative ? "-" : ""}${hours.toString(10).padStart(2, "0")}:${minutes.toString(10).padStart(2, "0")}:${seconds.toString(10).padStart(2, "0")}${milliseconds}`;
 }

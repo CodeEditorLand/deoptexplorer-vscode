@@ -68,7 +68,9 @@ export class ViewBuilder {
 		callTree.computeTotalWeights();
 		callTree.traverse<ProfileViewNode>((node, viewParent) => {
 			let totalWeight = node.totalWeight * this.samplingRate;
+
 			let selfWeight = node.selfWeight * this.samplingRate;
+
 			let viewNode = this.createViewNode(
 				node.entry,
 				totalWeight,
@@ -76,6 +78,7 @@ export class ViewBuilder {
 				node.getLineTicks(),
 				head,
 			);
+
 			if (viewParent) {
 				viewParent.addChild(viewNode);
 			} else {
@@ -84,6 +87,7 @@ export class ViewBuilder {
 			return viewNode;
 		});
 		assert(head);
+
 		return this.createView(head);
 	}
 
@@ -124,7 +128,9 @@ export class ViewBuilder {
 		// This can result in a recursive tree, so we defer population of child nodes.
 
 		const topDownRoot = callTree.getRoot();
+
 		const bottomNodes = new Set<BottomUpProfileViewNodeTemplate>();
+
 		const nodeMap = new Map<string, BottomUpProfileViewNodeTemplate>();
 
 		function* collectStacks(
@@ -134,6 +140,7 @@ export class ViewBuilder {
 			// do not add the root node to the stack
 			if (node.parent) {
 				stack = stack.concat([node]);
+
 				if (node.selfWeight > 0) yield stack;
 			}
 			for (const child of node.childNodes()) {
@@ -142,16 +149,22 @@ export class ViewBuilder {
 		}
 
 		let next_id = 0;
+
 		const seen = new Set<CallTreeNode>();
+
 		for (const stack of collectStacks(topDownRoot, [])) {
 			// The first element of each stack is the top frame (outermost caller)
 			// The last element of each stack is the bottom frame (innermost callee)
 			// In the bottom up stack, a parent node is a callee and a child node is a caller
 			let callee: CallTreeNode | undefined;
+
 			let calleeTemplate: BottomUpProfileViewNodeTemplate | undefined;
+
 			for (let i = stack.length - 1; i >= 0; i--) {
 				const node = stack[i];
+
 				let template = nodeMap.get(node.label);
+
 				if (!template)
 					nodeMap.set(
 						node.label,
@@ -160,10 +173,12 @@ export class ViewBuilder {
 							node.entry,
 						)),
 					);
+
 				if (!seen.has(node)) {
 					// aggregate this node
 					seen.add(node);
 					template.selfTime += node.selfWeight * this.samplingRate;
+
 					for (const {
 						line,
 						hitCount: hit_count,
@@ -224,15 +239,20 @@ export class ViewBuilder {
 
 	private _buildFlatView(callTree: CallTree) {
 		const root = new ProfileViewNode(CodeEntry.root_entry(), 0, 0);
+
 		let rootEntry = root.entry;
+
 		let rootLabel = rootEntry.getName();
+
 		let precs: Record<string, number> = Object.create(null);
 		precs[rootLabel] = 0;
 		callTree.computeTotalWeights();
 		callTree.traverseInDepth(
 			(node) => {
 				precs[node.label] ??= 0;
+
 				let nodeLabelIsRootLabel = node.label === rootLabel;
+
 				if (nodeLabelIsRootLabel || precs[rootLabel] > 0) {
 					if (precs[rootLabel] === 0) {
 						root["_selfTime"] +=
@@ -241,6 +261,7 @@ export class ViewBuilder {
 							node.totalWeight * this.samplingRate;
 					} else {
 						let rec = root.findChild(node.entry);
+
 						if (!rec) {
 							// TODO: Flat line ticks
 							rec = new ProfileViewNode(
@@ -253,6 +274,7 @@ export class ViewBuilder {
 							root.addChild(rec);
 						}
 						rec["_selfTime"] += node.selfWeight * this.samplingRate;
+
 						if (nodeLabelIsRootLabel || precs[node.label] == 0) {
 							rec["_totalTime"] +=
 								node.totalWeight * this.samplingRate;
@@ -332,8 +354,10 @@ export class ProfileView {
 	traverse(f: (node: ProfileViewNode) => void) {
 		let nodesToTraverse = new ConsArray<ProfileViewNode>();
 		nodesToTraverse.concat([this.head]);
+
 		while (!nodesToTraverse.atEnd()) {
 			let node = nodesToTraverse.next();
+
 			if (!node.isCycle) {
 				f(node);
 				nodesToTraverse.concat(node.children);
@@ -427,6 +451,7 @@ export class ProfileViewNode {
 
 	get children() {
 		this.populateChildren();
+
 		return this._children;
 	}
 
@@ -471,6 +496,7 @@ export class ProfileViewLineTickNode {
 class BottomUpProfileViewNodeTemplate {
 	callees: Set<BottomUpProfileViewNodeTemplate> | undefined;
 	lineTicks: Record<number, number> | undefined;
+
 	constructor(
 		public id: number,
 		public entry: CodeEntry,
@@ -490,7 +516,9 @@ function computeBottomUpTotalTime(
 ): number {
 	if (seen.has(template)) return 0;
 	seen.add(template);
+
 	let totalTime = template.selfTime;
+
 	if (template.callees) {
 		for (const child of template.callees) {
 			totalTime += computeBottomUpTotalTime(child, seen);
@@ -504,6 +532,7 @@ function computeBottomUpParentTotalTime(
 	seen: Set<BottomUpProfileViewNodeTemplate>,
 ): number {
 	let totalTime = 0;
+
 	if (template.callers) {
 		for (const caller of template.callers) {
 			totalTime += computeBottomUpTotalTime(caller, seen);
@@ -545,8 +574,11 @@ class BottomUpProfileViewNode extends ProfileViewNode {
 
 	get isCycle() {
 		if (!this.head) return false;
+
 		if (this._isCycle !== undefined) return this._isCycle;
+
 		let node = this.parent;
+
 		while (node?.parent?.parent) {
 			if (node._id === this._id) return (this._isCycle = true);
 			node = node.parent;
@@ -556,7 +588,9 @@ class BottomUpProfileViewNode extends ProfileViewNode {
 
 	protected populateChildren() {
 		if (!this._remaining) return;
+
 		if (this.isCycle) return;
+
 		for (const template of this._remaining) {
 			const child = new BottomUpProfileViewNode(
 				template,

@@ -10,6 +10,7 @@ export class StringMap<K, V> {
 
 	constructor(toKey: (key: K) => string, iterable?: Iterable<[K, V]>) {
 		this._toKey = toKey;
+
 		if (iterable) {
 			for (const [key, value] of iterable) {
 				this.set(key, value);
@@ -31,7 +32,9 @@ export class StringMap<K, V> {
 
 	set(key: K, value: V) {
 		const keyString = this._toKey(key);
+
 		let entry = this._map.get(keyString);
+
 		if (!entry) {
 			this._map.set(keyString, (entry = { key, value }));
 		} else {

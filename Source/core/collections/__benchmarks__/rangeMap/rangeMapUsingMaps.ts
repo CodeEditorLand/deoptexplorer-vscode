@@ -23,7 +23,9 @@ export class RangeMap<T> {
 
 	has(range: Range) {
 		const { start, end } = range;
+
 		const entry = findPosition(this._ranges, start);
+
 		if (entry) {
 			return !!findPosition(entry, end);
 		}
@@ -32,7 +34,9 @@ export class RangeMap<T> {
 
 	get(key: Range) {
 		const { start, end } = key;
+
 		const entry = findPosition(this._ranges, start);
+
 		if (entry) {
 			return findPosition(entry, end)?.[1];
 		}
@@ -40,10 +44,15 @@ export class RangeMap<T> {
 
 	set(key: Range, value: T) {
 		const { start, end } = key;
+
 		const startCharacters = ensureCharactersForLine(this._ranges, start);
+
 		const endLines = ensureLinesForCharacter(startCharacters, start);
+
 		const endCharacters = ensureCharactersForLine(endLines, end);
+
 		let entry = endCharacters.get(end.character);
+
 		if (!entry) {
 			this._size++;
 			endCharacters.set(end.character, [key, value]);
@@ -58,20 +67,26 @@ export class RangeMap<T> {
 		const { start, end } = key;
 
 		const startCharacters = this._ranges.get(start.line);
+
 		if (!startCharacters) return false;
 
 		const endLines = startCharacters.get(start.character);
+
 		if (!endLines) return false;
 
 		const endCharacters = endLines.get(end.line);
+
 		if (!endCharacters) return false;
 
 		if (remove(endCharacters, end.character)) {
 			this._size--;
+
 			if (endCharacters.size === 0) {
 				remove(endLines, end.line);
+
 				if (endLines.size === 0) {
 					remove(startCharacters, start.character);
+
 					if (startCharacters.size === 0) {
 						remove(this._ranges, start.line);
 					}
@@ -99,17 +114,25 @@ export class RangeMap<T> {
 	*keys(): Generator<Range, void> {
 		for (const startLine of orderedKeys(this._ranges)) {
 			const startCharacters = this._ranges.get(startLine);
+
 			if (!startCharacters) continue;
+
 			for (const startCharacter of orderedKeys(startCharacters)) {
 				const endLines = startCharacters.get(startCharacter);
+
 				if (!endLines) continue;
+
 				for (const endLine of orderedKeys(endLines)) {
 					const endCharacters = endLines.get(endLine);
+
 					if (!endCharacters) continue;
+
 					for (const endCharacter of orderedKeys(endCharacters)) {
 						const entry = endCharacters.get(endCharacter);
+
 						if (entry) {
 							const [key] = entry;
+
 							yield key;
 						}
 					}
@@ -121,17 +144,25 @@ export class RangeMap<T> {
 	*values(): Generator<T, void> {
 		for (const startLine of orderedKeys(this._ranges)) {
 			const startCharacters = this._ranges.get(startLine);
+
 			if (!startCharacters) continue;
+
 			for (const startCharacter of orderedKeys(startCharacters)) {
 				const endLines = startCharacters.get(startCharacter);
+
 				if (!endLines) continue;
+
 				for (const endLine of orderedKeys(endLines)) {
 					const endCharacters = endLines.get(endLine);
+
 					if (!endCharacters) continue;
+
 					for (const endCharacter of orderedKeys(endCharacters)) {
 						const entry = endCharacters.get(endCharacter);
+
 						if (entry) {
 							const [, value] = entry;
+
 							yield value;
 						}
 					}
@@ -143,17 +174,25 @@ export class RangeMap<T> {
 	*entries(): Generator<[Range, T], void> {
 		for (const startLine of orderedKeys(this._ranges)) {
 			const startCharacters = this._ranges.get(startLine);
+
 			if (!startCharacters) continue;
+
 			for (const startCharacter of orderedKeys(startCharacters)) {
 				const endLines = startCharacters.get(startCharacter);
+
 				if (!endLines) continue;
+
 				for (const endLine of orderedKeys(endLines)) {
 					const endCharacters = endLines.get(endLine);
+
 					if (!endCharacters) continue;
+
 					for (const endCharacter of orderedKeys(endCharacters)) {
 						const entry = endCharacters.get(endCharacter);
+
 						if (entry) {
 							const [key, value] = entry;
+
 							yield [key, value];
 						}
 					}
@@ -379,6 +418,7 @@ export class RangeMap<T> {
 function set<T>(map: PosMap<T>, key: number, value: T) {
 	const initialSize = map.size;
 	map.set(key, value);
+
 	if (map.size !== initialSize) {
 		if (map.orderedKeys?.length) {
 			if (key < map.orderedKeys[0]) {
@@ -424,7 +464,9 @@ function findPosition<T>(map: LineMap<T>, position: Position) {
 
 function ensureCharactersForLine<T>(map: LineMap<T>, position: Position) {
 	let characters = map.get(position.line);
+
 	if (!characters) set(map, position.line, (characters = new Map()));
+
 	return characters;
 }
 
@@ -433,7 +475,9 @@ function ensureLinesForCharacter<T>(
 	position: Position,
 ) {
 	let characters = map.get(position.character);
+
 	if (!characters) set(map, position.character, (characters = new Map()));
+
 	return characters;
 }
 

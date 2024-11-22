@@ -14,6 +14,7 @@ export function tryParseAddress(text: string): Address | undefined {
 export function parseAddress(text: string): Address {
 	if (text.length > 2 && text.charAt(0) === "0") {
 		const ch1 = text.charAt(1);
+
 		if (ch1 === "x" || ch1 === "X") {
 			return BigInt(text);
 		}

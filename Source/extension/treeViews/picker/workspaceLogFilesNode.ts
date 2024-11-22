@@ -50,6 +50,7 @@ export class WorkspaceLogFilesNode extends BaseNode {
 			/*exclude*/ undefined,
 			/*maxResults*/ 10,
 		);
+
 		if (files.length === 0) {
 			return [];
 		} else {
@@ -60,6 +61,7 @@ export class WorkspaceLogFilesNode extends BaseNode {
 					),
 				),
 			);
+
 			return from(files)
 				.zip(stats, (file, stat) => ({ file, stat }))
 				.where(

@@ -27,18 +27,25 @@ export function parseIcState(text: string) {
 		switch (text) {
 			case "X":
 				return IcState.NO_FEEDBACK;
+
 			case "0":
 				return IcState.UNINITIALIZED;
+
 			case ".":
 				return IcState.PREMONOMORPHIC;
+
 			case "1":
 				return IcState.MONOMORPHIC;
+
 			case "^":
 				return IcState.RECOMPUTE_HANDLER;
+
 			case "P":
 				return IcState.POLYMORPHIC;
+
 			case "N":
 				return IcState.MEGAMORPHIC;
+
 			case "G":
 				return IcState.GENERIC;
 		}
@@ -46,19 +53,26 @@ export function parseIcState(text: string) {
 		switch (text.toLowerCase()) {
 			case "uninitialized":
 				return IcState.UNINITIALIZED;
+
 			case "premonomorphic":
 				return IcState.PREMONOMORPHIC;
+
 			case "monomorphic":
 				return IcState.MONOMORPHIC;
+
 			case "recompute handler":
 			case "recompute_handler":
 				return IcState.RECOMPUTE_HANDLER;
+
 			case "polymorphic":
 				return IcState.POLYMORPHIC;
+
 			case "megamorphic":
 				return IcState.MEGAMORPHIC;
+
 			case "generic":
 				return IcState.GENERIC;
+
 			case "no feedback":
 			case "no_feedback":
 				return IcState.NO_FEEDBACK;
@@ -71,20 +85,28 @@ export function formatIcState(state: IcState) {
 	switch (state) {
 		case IcState.UNINITIALIZED:
 			return "Uninitialized";
+
 		case IcState.PREMONOMORPHIC:
 			return "Premonomorphic";
+
 		case IcState.MONOMORPHIC:
 			return "Monomorphic";
+
 		case IcState.RECOMPUTE_HANDLER:
 			return "Recompute Handler";
+
 		case IcState.POLYMORPHIC:
 			return "Polymorphic";
+
 		case IcState.MEGAMORPHIC:
 			return "Megamorphic";
+
 		case IcState.GENERIC:
 			return "Generic";
+
 		case IcState.NO_FEEDBACK:
 			return "No Feedback";
+
 		default:
 			assert(false, `Argument out of range: state`);
 	}

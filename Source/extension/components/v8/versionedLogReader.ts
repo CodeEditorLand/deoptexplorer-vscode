@@ -65,6 +65,7 @@ export class VersionedLogReader extends LogReader {
 				getOwnPropertyDescriptor: (_target, p) => {
 					if (typeof p === "string") {
 						const dispatcher = this._getDispatcher(p);
+
 						return dispatcher === undefined
 							? undefined
 							: {
@@ -89,15 +90,19 @@ export class VersionedLogReader extends LogReader {
 
 		// Validate version ranges
 		const versionRanges: [string, semver.Range][] = [];
+
 		const normalizedVersionedDispatchTable: VersionedDispatchTable =
 			Object.create(null);
+
 		for (const key of Object.getOwnPropertyNames(versionedDispatchTable)) {
 			const range = new semver.Range(key, { loose: true });
+
 			const normalizedKey = range.range || "*";
 			normalizedVersionedDispatchTable[normalizedKey] = {
 				...normalizedVersionedDispatchTable[normalizedKey],
 				...versionedDispatchTable[key],
 			};
+
 			if (normalizedKey === "*") continue;
 			versionRanges.push([normalizedKey, range]);
 		}
@@ -120,6 +125,7 @@ export class VersionedLogReader extends LogReader {
 	private _getMatchingVersionRangeDispatchTables() {
 		if (!this._matchingVersionRangeDispatchTables) {
 			const matchingVersionDispatchTables: DispatchTable[] = [];
+
 			if (this._version) {
 				for (const [key, versionRange] of this._versionRanges) {
 					if (versionRange.test(this._version.semver)) {
@@ -138,6 +144,7 @@ export class VersionedLogReader extends LogReader {
 	private _getCommands() {
 		if (!this._versionCommandCache) {
 			let commands = ["v8-version"];
+
 			for (const dispatchTable of this._getMatchingVersionRangeDispatchTables()) {
 				commands = [
 					...commands,
@@ -159,9 +166,11 @@ export class VersionedLogReader extends LogReader {
 		}
 
 		let dispatcher = this._versionDispatcherCache.get(command);
+
 		if (dispatcher === undefined) {
 			for (const dispatchTable of this._getMatchingVersionRangeDispatchTables()) {
 				dispatcher = Reflect.get(dispatchTable, command);
+
 				if (dispatcher !== undefined) break;
 			}
 			if (dispatcher === undefined) {
@@ -184,6 +193,7 @@ export class VersionedLogReader extends LogReader {
 		const version = semver.parse(`${major}.${minor}.${rev}`, {
 			loose: true,
 		});
+
 		if (version) {
 			this._version = new V8Version(version, extra);
 			this._versionDispatcherCache.clear();

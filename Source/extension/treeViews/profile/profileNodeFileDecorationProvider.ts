@@ -87,24 +87,37 @@ export class ProfileNodeFileDecorationProvider
 		if (uri.scheme === constants.schemes.profileNode) {
 			const { filePosition, type, generated, inlined } =
 				parseProfileNodeUri(uri);
+
 			if (type === "SHARED_LIB")
 				return this._sharedLibraryNodeFileDecoration;
+
 			if (type === "CPP") return this._nativeCodeNodeFileDecoration;
+
 			if (filePosition === "root") return this._rootNodeFileDecoration;
+
 			if (filePosition === "gc") return this._gcNodeFileDecoration;
+
 			if (filePosition === "idle") return this._idleNodeFileDecoration;
+
 			if (filePosition === "program")
 				return this._programNodeFileDecoration;
+
 			if (filePosition === "unresolved")
 				return this._unresolvedNodeFileDecoration;
+
 			if (filePosition === "hidden")
 				return this._hiddenNodeFileDecoration;
+
 			if (filePosition?.uri.scheme === "node")
 				return this._nodeJsCodeNodeFileDecoration;
+
 			if (filePosition?.uri.path.includes("/node_modules/"))
 				return this._nodeModulesCodeNodeFileDecoration;
+
 			if (generated) return this._generatedCodeNodeFileDecoration;
+
 			if (inlined) return this._inlinedCodeNodeFileDecoration;
+
 			return undefined;
 		}
 	}
@@ -133,15 +146,18 @@ export function getUriForProfileNode(node: ProfileViewNode) {
 											),
 										)
 									: "";
+
 	const generated =
 		node.entry.filePosition && !node.entry.generatedFilePosition
 			? `&generated=1`
 			: ``;
+
 	const inlined =
 		node.entry instanceof DynamicFuncCodeEntry &&
 		node.entry.state === FunctionState.Inlined
 			? `&inlined=1`
 			: ``;
+
 	return Uri.parse(
 		`${constants.schemes.profileNode}:${filePosition}?type=${node.entry.type}${generated}${inlined}`,
 	);
@@ -149,6 +165,7 @@ export function getUriForProfileNode(node: ProfileViewNode) {
 
 function parseProfileNodeUri(uri: Uri) {
 	assert(uri.scheme === constants.schemes.profileNode);
+
 	const filePosition =
 		uri.path === "gc"
 			? "gc"
@@ -167,9 +184,14 @@ function parseProfileNodeUri(uri: Uri) {
 											JSON.parse(uri.path),
 										) as Location)
 									: undefined;
+
 	const params = new URLSearchParams(uri.query);
+
 	const type = params.get("type") ?? undefined;
+
 	const generated = !!params.get("generated");
+
 	const inlined = !!params.get("inlined");
+
 	return { filePosition, type, generated, inlined } as const;
 }

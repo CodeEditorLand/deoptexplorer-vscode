@@ -4,6 +4,7 @@
 import { Location, Position, Range, Uri } from "vscode";
 
 const MAX_INT32 = 2 ** 31 - 1;
+
 const MIN_INT32 = -(2 ** 31);
 
 export interface MinMax {
@@ -22,7 +23,9 @@ export function randomElement<T>(
 ): T | undefined;
 export function randomElement<T>(elements: readonly T[], missChance = 0) {
 	if (elements.length === 0) throw new RangeError();
+
 	if (missChance > 0 && randomBoolean(missChance)) return undefined;
+
 	return elements[randomInt({ min: 0, max: elements.length - 1 })];
 }
 
@@ -46,8 +49,11 @@ export function randomRange({
 	collapseChance = 0,
 }: { line?: MinMax; character?: MinMax; collapseChance?: number } = {}) {
 	const collapsed = randomBoolean(collapseChance);
+
 	const start = randomPosition({ line, character });
+
 	const end = collapsed ? start : randomPosition({ line, character });
+
 	return new Range(start, end);
 }
 
@@ -67,6 +73,8 @@ export function randomLocation({
 	collapseChance?: number;
 } = {}) {
 	const uri = uris?.length ? randomElement(uris) : randomUri();
+
 	const range = randomRange({ line, character, collapseChance });
+
 	return new Location(uri, range);
 }

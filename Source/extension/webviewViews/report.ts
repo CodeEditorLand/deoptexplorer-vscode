@@ -27,11 +27,17 @@ import { renderFunctionsBySelfTime } from "./reportParts/partFunctionsBySelfTime
 import { renderLinkToFile } from "./utils";
 
 const TOP_COUNT = 15;
+
 let currentContext: ExtensionContext | undefined;
+
 let currentTitle: string | undefined;
+
 let currentContent: string | undefined;
+
 let reportView: WebviewPanel | undefined;
+
 let reportViewOnDidDisposeSubscription: Disposable | undefined;
+
 let reportViewOnDidReceiveMessageSubscription: Disposable | undefined;
 
 function generateOpenLogReportViewContent(file: Uri, log: LogFile) {
@@ -67,7 +73,9 @@ function generateReportViewHtml(context: ExtensionContext, webview: Webview) {
 	const scriptUri = Uri.file(
 		context.asAbsolutePath("resources/scripts/report.js"),
 	);
+
 	const nonce = createNonce();
+
 	return html`<!doctype html>
 		<html lang="en">
 			<head>
@@ -140,6 +148,7 @@ export function showReportView(
 			typeof showOptions === "object"
 				? showOptions.viewColumn
 				: showOptions;
+
 		const preserveFocus =
 			typeof showOptions === "object"
 				? showOptions.preserveFocus
@@ -183,6 +192,7 @@ function destroy() {
 
 export function activateReportWebview(context: ExtensionContext) {
 	currentContext = context;
+
 	return Disposable.from(
 		new Disposable(destroy),
 		events.onDidOpenLogFile(() => {

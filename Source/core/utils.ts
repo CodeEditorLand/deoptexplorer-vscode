@@ -13,6 +13,7 @@ export function tryExec<T>(
 		return cb();
 	} catch (e) {
 		onError?.(e);
+
 		return undefined;
 	}
 }
@@ -28,20 +29,30 @@ export function binarySearchKey<T, K>(
 	assert(start >= 0 && start <= array.length);
 	assert(end >= 0 && end <= array.length);
 	assert(start <= end);
+
 	if (end - start <= 0) return -1;
+
 	let low = start;
+
 	let high = end - 1;
+
 	while (low <= high) {
 		const middle = low + ((high - low) >> 1);
+
 		const midKey = keySelector(array[middle]);
+
 		switch (Math.sign(comparer.compare(midKey, key))) {
 			case -1:
 				low = middle + 1;
+
 				break;
+
 			case 0:
 				return middle;
+
 			case +1:
 				high = middle - 1;
+
 				break;
 		}
 	}
@@ -55,6 +66,7 @@ export function getNullableEqualer<T>(
 	equaler: Equaler<T>,
 ): Equaler<T | null | undefined> {
 	let nullableEqualer = weakNullableEqualers.get(equaler);
+
 	if (!nullableEqualer)
 		weakNullableEqualers.set(
 			equaler,
@@ -63,6 +75,7 @@ export function getNullableEqualer<T>(
 				(value) => hashNullable(value, equaler),
 			)),
 		);
+
 	return nullableEqualer;
 }
 
@@ -96,6 +109,7 @@ export function getNullableComparer<T>(
 	comparer: Comparer<T>,
 ): Comparer<T | null | undefined> {
 	let nullableComparer = weakNullableComparers.get(comparer);
+
 	if (!nullableComparer)
 		weakNullableComparers.set(
 			comparer,
@@ -103,6 +117,7 @@ export function getNullableComparer<T>(
 				compareNullable(left, right, comparer),
 			)),
 		);
+
 	return nullableComparer;
 }
 

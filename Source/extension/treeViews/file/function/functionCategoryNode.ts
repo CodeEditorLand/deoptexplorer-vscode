@@ -70,21 +70,29 @@ function getFunctionStateWeight(state: FunctionState | -1) {
 	switch (state) {
 		case FunctionState.Interpreted:
 			return 0;
+
 		default:
 		case FunctionState.Compiled:
 			return 1;
+
 		case FunctionState.CompiledSparkplug:
 			return 2;
+
 		case FunctionState.NativeContextIndependent:
 			return 3;
+
 		case FunctionState.OptimizedTurboprop:
 			return 4;
+
 		case FunctionState.OptimizedMaglev:
 			return 5;
+
 		case FunctionState.Optimized:
 			return 6;
+
 		case FunctionState.Inlined:
 			return 7;
+
 		case -1:
 			return 8;
 	}

@@ -24,6 +24,7 @@ export class LineTick {
 
 	static fromRecord(lineTicks: Record<number, number> | undefined) {
 		if (!lineTicks) return [];
+
 		return Object.entries(lineTicks)
 			.map(([line, count]) => new LineTick(+line, count))
 			.sort((a, b) => a.line - b.line);

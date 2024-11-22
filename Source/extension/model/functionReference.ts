@@ -31,6 +31,7 @@ export class FunctionReference implements Equatable, Comparable {
 			);
 			hc = Equaler.combineHashes(hc, hash(value.name));
 			hc = Equaler.combineHashes(hc, hashNullable(value.symbolKind));
+
 			return hc;
 		},
 	);

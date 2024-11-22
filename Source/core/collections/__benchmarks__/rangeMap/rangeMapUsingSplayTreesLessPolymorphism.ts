@@ -25,7 +25,9 @@ export class RangeMap<T> {
 
 	has(range: Range) {
 		const { start, end } = range;
+
 		const entry = findPosition(this._ranges, start)?.value;
+
 		if (entry) {
 			return !!findPosition(entry, end);
 		}
@@ -34,7 +36,9 @@ export class RangeMap<T> {
 
 	get(key: Range) {
 		const { start, end } = key;
+
 		const entry = findPosition(this._ranges, start)?.value;
+
 		if (entry) {
 			return findPosition(entry, end)?.value[1];
 		}
@@ -70,6 +74,7 @@ export class RangeMap<T> {
 						leastCharacterGreaterThan(endLine, end),
 					)) {
 						const [key, value] = endCharacter.value;
+
 						if (key.contains(range)) {
 							yield [key, value];
 						}
@@ -114,6 +119,7 @@ export class RangeMap<T> {
 						leastCharacterGreaterThan(endLine, end),
 					)) {
 						const [key, value] = endCharacter.value;
+
 						if (key.contains(range)) {
 							return [key, value];
 						}
@@ -152,6 +158,7 @@ export class RangeMap<T> {
 						break;
 					}
 					const endCharacters = endLine.value;
+
 					for (const endCharacter of iterateAscending(
 						least(endCharacters),
 					)) {
@@ -159,6 +166,7 @@ export class RangeMap<T> {
 							break endLoop;
 						}
 						const [key, value] = endCharacter.value;
+
 						if (range.contains(key)) {
 							yield [key, value];
 						}
@@ -194,6 +202,7 @@ export class RangeMap<T> {
 				break;
 			}
 			const startCharacters = startLine.value;
+
 			for (const startCharacter of iterateAscending(
 				least(startCharacters),
 			)) {
@@ -202,6 +211,7 @@ export class RangeMap<T> {
 				}
 				// Since all entries must intersect with the range, all entry ends must occur on or after the range start
 				const endLines = startCharacter.value;
+
 				for (const endLine of iterateAscending(
 					leastLineGreaterThan(endLines, start),
 				)) {
@@ -209,6 +219,7 @@ export class RangeMap<T> {
 						leastCharacterGreaterThan(endLine, start),
 					)) {
 						const [key, value] = endCharacter.value;
+
 						if (intersects(key, range)) {
 							yield [key, value];
 						}
@@ -231,10 +242,15 @@ export class RangeMap<T> {
 
 	set(key: Range, value: T) {
 		const { start, end } = key;
+
 		const startCharacters = ensureCharactersForLine(this._ranges, start);
+
 		const endLines = ensureLinesForCharacter(startCharacters, start);
+
 		const endCharacters = ensureCharactersForLine(endLines, end);
+
 		let entry = endCharacters.find(end.character)?.value;
+
 		if (!entry) {
 			endCharacters.insert(end.character, [key, value]);
 			this._size++;
@@ -248,21 +264,27 @@ export class RangeMap<T> {
 		const { start, end } = key;
 
 		const startCharacters = this._ranges.find(start.line)?.value;
+
 		if (!startCharacters) return false;
 
 		const endLines = startCharacters.find(start.character)?.value;
+
 		if (!endLines) return false;
 
 		const endCharacters = endLines.find(end.line)?.value;
+
 		if (!endCharacters) return false;
 
 		if (endCharacters.find(end.character)) {
 			endCharacters.remove(end.character);
 			this._size--;
+
 			if (endCharacters.isEmpty()) {
 				endLines.remove(end.line);
+
 				if (endLines.isEmpty()) {
 					startCharacters.remove(start.character);
+
 					if (startCharacters.isEmpty()) {
 						this._ranges.remove(start.line);
 					}
@@ -358,7 +380,9 @@ function findPosition<T>(tree: LineTree<T>, position: Position) {
 
 function ensureCharactersForLine<T>(tree: LineTree<T>, position: Position) {
 	let characters = tree.find(position.line)?.value;
+
 	if (!characters) tree.insert(position.line, (characters = new SplayTree()));
+
 	return characters;
 }
 
@@ -367,8 +391,10 @@ function ensureLinesForCharacter<T>(
 	position: Position,
 ) {
 	let characters = tree.find(position.character)?.value;
+
 	if (!characters)
 		tree.insert(position.character, (characters = new SplayTree()));
+
 	return characters;
 }
 
@@ -436,6 +462,7 @@ function* iterateDescending<T>(
 ): Generator<SplayTree.Node<number, T>, void> {
 	if (node) {
 		yield node;
+
 		yield* iterateWorker(node.left, true);
 	}
 }
@@ -448,6 +475,7 @@ function* iterateAscending<T>(
 ): Generator<SplayTree.Node<number, T>, void> {
 	if (node) {
 		yield node;
+
 		yield* iterateWorker(node.right, false);
 	}
 }
@@ -461,7 +489,9 @@ function* iterateWorker<T>(
 ): Generator<SplayTree.Node<number, T>, void> {
 	if (node) {
 		yield* iterateWorker(descending ? node.right : node.left, descending);
+
 		yield node;
+
 		yield* iterateWorker(descending ? node.left : node.right, descending);
 	}
 }

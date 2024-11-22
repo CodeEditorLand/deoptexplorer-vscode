@@ -38,6 +38,7 @@ export class FunctionStateDecorations {
 
 	constructor() {
 		const stack = new VSDisposableStack();
+
 		try {
 			this._compiledCodeDecorationType = stack.use(
 				createBaseDecorationType("compiledCode", {
@@ -91,6 +92,7 @@ export class FunctionStateDecorations {
 		if (this._showDecorations !== value) {
 			this._hide();
 			this._showDecorations = value;
+
 			if (this._showDecorations !== "none") {
 				this._show();
 			}
@@ -114,13 +116,18 @@ export class FunctionStateDecorations {
 
 	private _show() {
 		if (!openedLog) return;
+
 		for (const editor of getTextEditors(this._showDecorations)) {
 			const uri = unwrapScriptSource(editor.document.uri).uri;
+
 			if (!uri) continue;
 
 			const fileUri = getCanonicalUri(uri);
+
 			const entries = openedLog.files.get(fileUri);
+
 			const functions = entries?.functions;
+
 			if (!functions?.length) return;
 
 			if (functions.length > this._maxDecorations) {
@@ -161,18 +168,23 @@ export class FunctionStateDecorations {
 		entry: FunctionEntry,
 	): TextEditorDecorationType | undefined {
 		let last = FunctionState.Compiled;
+
 		let optimizedCount = 0;
+
 		for (let i = 0; i < entry.updates.length; i++) {
 			const update = entry.updates[i];
 			last = update.state;
+
 			if (isOptimizedFunctionState(last)) {
 				optimizedCount++;
 			}
 		}
 		if (isCompiledFunctionState(last))
 			return this._compiledCodeDecorationType;
+
 		if (isInterpretedFunctionState(last))
 			return this._optimizableCodeDecorationType;
+
 		if (isOptimizedFunctionState(last))
 			return optimizedCount > 1
 				? this._reoptimizedCodeDecorationType
@@ -192,5 +204,6 @@ export class FunctionStateDecorations {
 export function activateFunctionStateDecorations(context: ExtensionContext) {
 	const stack = new VSDisposableStack();
 	stack.use(new FunctionStateDecorations());
+
 	return stack;
 }

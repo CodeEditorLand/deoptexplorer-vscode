@@ -72,11 +72,14 @@ export class ProfileViewNodeSnapshot {
 
 	getFileLineTicks() {
 		if (this._fileLineTicks) return this._fileLineTicks;
+
 		const location =
 			this.entry.generatedFilePosition ??
 			this.entry.filePosition ??
 			this.entry.functionName.filePosition;
+
 		const uri = location && getCanonicalUri(location.uri);
+
 		return (this._fileLineTicks = uri
 			? this.lineTicks.map(
 					({ line, hitCount: hit_count }) =>
@@ -100,30 +103,39 @@ export class ProfileViewNodeSnapshot {
 			this.entry.generatedFilePosition ??
 			this.entry.filePosition ??
 			this.entry.functionName.filePosition;
+
 		const uri = location && getCanonicalUri(location.uri);
+
 		const sourceMap =
 			uri && this.log
 				? (this.log.sources.getExistingSourceMap(uri) ??
 					(await this.log.sources.getSourceMapAsync(uri)))
 				: "no-sourcemap";
+
 		const mappedLineTicks: FileLineTick[] = [];
+
 		if (!token?.isCancellationRequested) {
 			let sourceFile: CanonicalUri | undefined;
+
 			if (sourceMap !== "no-sourcemap") {
 				for (const lineTick of this.getFileLineTicks()) {
 					const fileUri = lineTick.file;
+
 					const generatedLocation = new Location(
 						fileUri,
 						new Position(lineTick.line, 0),
 					);
+
 					const sourceLocation = sourceMap.toSourceLocation(
 						generatedLocation,
 						SourceMapBias.LEAST_UPPER_BOUND,
 					);
+
 					if (sourceLocation) {
 						const canonicalSourceFile = getCanonicalUri(
 							sourceLocation.uri,
 						);
+
 						if (
 							!sourceFile ||
 							UriEqualer.equals(sourceFile, canonicalSourceFile)
@@ -136,6 +148,7 @@ export class ProfileViewNodeSnapshot {
 									lineTick.hitCount,
 								),
 							);
+
 							continue;
 						}
 					}

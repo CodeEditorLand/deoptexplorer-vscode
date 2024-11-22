@@ -8,6 +8,7 @@ import { getCanonicalLocation } from "../services/canonicalPaths";
 import { formatLocation, parseLocation } from "../vscode/location";
 
 const deoptPositionRegExp = /^<(.+?)>((?: inlined at <[^>]+>)*)$/;
+
 const inlinedAtRegExp = /^ inlined at <([^>]+)>/;
 
 /**
@@ -24,12 +25,16 @@ export class DeoptPosition {
 	 */
 	static parse(text: string) {
 		let match = deoptPositionRegExp.exec(text);
+
 		if (match) {
 			const filePosition = getCanonicalLocation(
 				parseLocation(match[1], /*strict*/ false),
 			);
+
 			let inlinedAt: Location[] | undefined;
+
 			let rest = match[2];
+
 			while (rest) {
 				assert((match = inlinedAtRegExp.exec(rest)));
 				inlinedAt ??= [];
@@ -49,6 +54,7 @@ export class DeoptPosition {
 
 	toString() {
 		let text = `<${this.filePosition}>`;
+
 		if (this.inlinedAt) {
 			for (const location of this.inlinedAt) {
 				text += ` inlined at <${formatLocation(location, { as: "file", include: "position" })}>`;

@@ -80,10 +80,12 @@ export abstract class EntryNode<TEntry extends Entry> extends BaseNode {
 	 */
 	protected formatDescription(): string {
 		const { range } = this.entry.pickReferenceLocation(this.file);
+
 		let relative =
 			this.log.sourcePaths.has(this.file) && this.base
 				? relativeUriFragment(this.base, this.file)
 				: undefined;
+
 		if (relative && /^\.[\\/]/.test(relative)) {
 			relative = relative.slice(2);
 		}
@@ -106,6 +108,7 @@ export abstract class EntryNode<TEntry extends Entry> extends BaseNode {
 
 	protected createTreeItem() {
 		const referenceLocation = this.entry.pickReferenceLocation(this.file);
+
 		return createTreeItem(
 			this.formatLabel(),
 			TreeItemCollapsibleState.None,

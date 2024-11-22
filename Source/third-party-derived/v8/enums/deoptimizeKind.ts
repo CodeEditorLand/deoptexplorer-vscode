@@ -151,16 +151,22 @@ function priority(kind: DeoptimizeKind) {
 	switch (kind) {
 		case DeoptimizeKind.Eager:
 			return 0;
+
 		case DeoptimizeKind.EagerWithResume:
 			return 1;
+
 		case DeoptimizeKind.Soft:
 			return 2;
+
 		case DeoptimizeKind.BailoutSoft:
 			return 3;
+
 		case DeoptimizeKind.Bailout:
 			return 4;
+
 		case DeoptimizeKind.Lazy:
 			return 5;
+
 		default:
 			return 6;
 	}

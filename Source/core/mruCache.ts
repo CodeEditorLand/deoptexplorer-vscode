@@ -59,6 +59,7 @@ export class MruCache<T> {
 
 	set(uri: string | Uri | URL, value: T) {
 		let node = this.getNode(uri.toString(), true);
+
 		if (node) {
 			(void 0, this._onRemove)?.(value);
 			node.value = value;
@@ -71,6 +72,7 @@ export class MruCache<T> {
 
 	delete(uri: string | Uri | URL) {
 		const uriString = uri.toString();
+
 		for (
 			let node = this._head, prev: CacheNode<T> | undefined;
 			node;
@@ -84,6 +86,7 @@ export class MruCache<T> {
 					this._head = node.next;
 				}
 				(void 0, this._onRemove)?.(node.value);
+
 				return true;
 			}
 		}
@@ -110,6 +113,7 @@ export class MruCache<T> {
 		if (this._onRemove || (disposing && this._onDispose)) {
 			for (let node = head; node; node = node.next) {
 				(void 0, this._onRemove)?.(node.value);
+
 				if (disposing) {
 					(void 0, this._onDispose)?.(node.value);
 				}
@@ -136,6 +140,7 @@ export class MruCache<T> {
 					}
 					this._size--;
 					(void 0, this._onRemove)?.(node.value);
+
 					return;
 				}
 			}

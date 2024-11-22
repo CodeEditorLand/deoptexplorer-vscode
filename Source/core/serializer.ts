@@ -56,6 +56,7 @@ const knownSerializers: Map<
 	keyof KnownSerializers,
 	KnownSerializer<keyof KnownSerializers>
 > = new Map();
+
 let knownSerializersArray: Serializer[] | undefined;
 
 function getKnownSerializers() {
@@ -71,6 +72,7 @@ export function registerKnownSerializer<K extends keyof KnownSerializers>(
 ) {
 	knownSerializersArray = undefined;
 	knownSerializers.set(key, serializer);
+
 	return serializer;
 }
 
@@ -146,8 +148,10 @@ function serializeCircularity(
 	circularities: SerializerCircularities,
 ) {
 	circularities.map.delete(originalValue);
+
 	if (circularity.id !== undefined) {
 		circularity.value = value;
+
 		return { $type: "circular", id: circularity.id, value };
 	}
 	return value;
@@ -172,6 +176,7 @@ function serializeWorker(
 	}
 
 	let circularity = circularities.map.get(value);
+
 	if (circularity) {
 		// If the circularity does not have an ID, we've already since it once
 		// give the circularity an `id` so that we can mark it as circular
@@ -184,16 +189,19 @@ function serializeWorker(
 	// we haven't seen this value yet, so track it in case we have an eventual circularity.
 	circularity = {};
 	circularities.map.set(value, circularity);
+
 	for (const serializer of serializers) {
 		if (serializer.canSerialize(value)) {
 			if (serializer.builtin && ignoreBuiltins) {
 				return value;
 			}
 			const result = serializer.serialize(value, serialize);
+
 			if (circularity.id !== undefined)
 				throw new Error(
 					"Invalid circularity in custom-serialised object",
 				);
+
 			return result;
 		}
 	}
@@ -209,9 +217,12 @@ function serializeWorker(
 
 	if (Array.isArray(value)) {
 		let result: unknown[] | undefined;
+
 		for (let i = 0; i < value.length; i++) {
 			const item = value[i];
+
 			const serialized = serialize(item, serializers);
+
 			if (serialized !== item || result || circularity.id !== undefined) {
 				if (!result) {
 					result = value.slice(0, i);
@@ -227,13 +238,18 @@ function serializeWorker(
 		);
 	} else {
 		const pairs: [string, unknown][] = [];
+
 		let result: Record<string, unknown> | undefined;
+
 		for (let key in value) {
 			const item = (value as any)[key];
+
 			const serialized = serialize(item, serializers);
+
 			if (serialized !== item || result || circularity.id !== undefined) {
 				if (!result) {
 					result = {};
+
 					for (const [key, value] of pairs) {
 						result[key] = value;
 					}
@@ -275,6 +291,7 @@ function deserializeWorker(
 				throw new TypeError("Circular reference in deserialization");
 			}
 			circularities.seen.add(value);
+
 			try {
 				return deserializer.deserialize(value, deserialize);
 			} finally {
@@ -284,15 +301,20 @@ function deserializeWorker(
 	}
 
 	let circularity: Circularity | undefined;
+
 	if (isCircularity(value)) {
 		circularity = value;
+
 		if (circularity.value === undefined) {
 			assert(circularities.values.has(circularity.id));
+
 			return circularities.values.get(circularity.id);
 		}
 		value = circularity.value;
+
 		if (typeof value !== "object" || value === null) {
 			circularities.values.set(circularity.id, value);
+
 			return value;
 		}
 	}
@@ -302,16 +324,20 @@ function deserializeWorker(
 	}
 
 	circularities.seen.add(value);
+
 	try {
 		if (Array.isArray(value)) {
 			let result: unknown[] | undefined;
+
 			if (circularity) {
 				result = [];
 				circularities.values.set(circularity.id, result);
 			}
 			for (let i = 0; i < value.length; i++) {
 				const item = value[i];
+
 				const deserialized = deserialize(item, deserializers);
+
 				if (deserialized !== item || result) {
 					if (!result) {
 						result = value.slice(0, i);
@@ -322,13 +348,16 @@ function deserializeWorker(
 			return result ?? value;
 		} else {
 			const prototype = Object.getPrototypeOf(value);
+
 			if (prototype !== Object.prototype && prototype !== null) {
 				// not a plain object, nothing to deserialize
 				return value;
 			}
 
 			const pairs: [string, unknown][] = [];
+
 			let result: Record<string, unknown> | undefined;
+
 			if (circularity) {
 				result = {};
 				circularities.values.set(circularity.id, result);
@@ -336,10 +365,13 @@ function deserializeWorker(
 
 			for (let key in value) {
 				const item = (value as any)[key];
+
 				const deserialized = deserialize(item, deserializers);
+
 				if (deserialized !== item || result) {
 					if (!result) {
 						result = {};
+
 						for (const [key, value] of pairs) {
 							result[key] = value;
 						}
@@ -362,7 +394,9 @@ function combineSerializers(
 ) {
 	if (!newSerializers || newSerializers === oldSerializers)
 		return oldSerializers;
+
 	const newSerializerSet = new Set(newSerializers);
+
 	for (const oldSerializer of oldSerializers) {
 		newSerializerSet.add(oldSerializer);
 	}
@@ -390,6 +424,7 @@ function makeHandler<T>(
 		newSerializers?: Iterable<Serializer>,
 	): unknown => {
 		const serializers = combineSerializers(oldSerializers, newSerializers);
+
 		return worker(
 			value,
 			serializers,
@@ -399,6 +434,7 @@ function makeHandler<T>(
 			state,
 		);
 	};
+
 	return handler;
 }
 
