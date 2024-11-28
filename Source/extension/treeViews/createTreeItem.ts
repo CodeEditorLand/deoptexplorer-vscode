@@ -29,16 +29,19 @@ export function createTreeItem(
 	state: TreeItemCollapsibleState,
 	options?: Omit<TypeSafeTreeItemOptions, "label">,
 ): TreeItem;
+
 export function createTreeItem(
 	resourceUri: Uri,
 	state: TreeItemCollapsibleState,
 	options?: Omit<TypeSafeTreeItemOptions, "resourceUri">,
 ): TreeItem;
+
 export function createTreeItem(
 	labelOrResourceUri: string | TreeItemLabel | Uri,
 	state: TreeItemCollapsibleState,
 	options?: Omit<TypeSafeTreeItemOptions, "resourceUri" | "label">,
 ): TreeItem;
+
 export function createTreeItem(
 	labelOrResourceUri: string | TreeItemLabel | Uri,
 	state: TreeItemCollapsibleState,

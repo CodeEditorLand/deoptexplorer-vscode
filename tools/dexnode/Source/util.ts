@@ -11,7 +11,9 @@ declare global {
 }
 
 export const isDeno = typeof globalThis.Deno?.version?.v8 === "string";
+
 export const isElectron = !!process.versions.electron;
+
 export const isNodeJS = !!process.versions.node && !isElectron && !isDeno;
 
 export function canAccess(file: string, mode: "write" | "exec") {

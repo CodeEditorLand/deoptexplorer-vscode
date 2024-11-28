@@ -7,10 +7,12 @@ export function scaleProgress(
 	progress: Progress<number>,
 	scale: number,
 ): Progress<number>;
+
 export function scaleProgress(
 	progress: Progress<{ increment?: number; message?: string }>,
 	scale: number,
 ): Progress<{ increment?: number; message?: string }>;
+
 export function scaleProgress(
 	progress: Progress<{ increment?: number; message?: string } | number>,
 	scale: number,

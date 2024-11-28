@@ -7,11 +7,13 @@ import type * as vscode from "vscode";
 import type { ContextCommandHandler } from "./commands";
 
 declare const invalid: unique symbol;
+
 export interface invalid<T, M = "Invalid type"> {
 	[invalid]: [T, M];
 }
 
 declare const elaboration: unique symbol;
+
 export interface elaboration<A, B> {
 	[elaboration]: [A, B];
 }

@@ -39,10 +39,15 @@ import { CancellationError, CancellationToken } from "vscode";
 import { CsvParser } from "./csvparser";
 
 // Parses dummy variable for readability;
+
 export const parseInt32 = "parse-int32";
+
 export const parseString = "parse-string";
+
 export const parseVarArgs = "parse-var-args";
+
 export const commandNameArg = "command-name-arg";
+
 export const cancelTokenArg = "cancel-token-arg";
 
 /**

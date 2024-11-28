@@ -8,6 +8,7 @@ import { HostFlags } from "./hostFlags.js";
 import { getHostExecPath, HOSTS } from "./hosts.js";
 
 export type HostFlagKey = (typeof HOSTS)[number]["flagName"];
+
 export type HostOptions = Partial<Record<HostFlagKey, boolean>>;
 
 export interface Options extends HostOptions {

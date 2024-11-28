@@ -241,6 +241,7 @@ export function getFunctionEntryFromFunctionUri(uri: Uri) {
 }
 
 let panel: WebviewPanel | undefined;
+
 export async function showFunctionHistory(entry: FunctionEntry) {
 	if (openedLog) {
 		if (!panel) {

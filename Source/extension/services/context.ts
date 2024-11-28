@@ -45,20 +45,35 @@ import * as storage from "./storage";
 let currentContext: ExtensionContext | undefined;
 
 export let logStatus = kDefaultLogStatus;
+
 export let sortICs = kDefaultSortICs;
+
 export let showICStates = kDefaultShowICStates;
+
 export let sortDeopts = kDefaultSortDeopts;
+
 export let groupDeopts = kDefaultGroupDeopts;
+
 export let sortMaps = kDefaultMapSortMode;
+
 export let groupMaps = kDefaultGroupMaps;
+
 export let showMaps = kDefaultShowMaps;
+
 export let sortProfile = kDefaultProfileSortMode;
+
 export let showProfile = kDefaultProfileShowMode;
+
 export let showJustMyCode = kDefaultShowJustMyCode;
+
 export let showNativeCodeProfileNodes = kDefaultShowNativeCodeProfileNodes;
+
 export let showNodeJsProfileNodes = kDefaultShowNodeJsProfileNodes;
+
 export let showNodeModulesProfileNodes = kDefaultShowNodeModulesProfileNodes;
+
 export let showDecorations = kDefaultShowDecorations;
+
 export let showLineTicks = kDefaultShowLineTicks;
 
 function setContext(key: string, value: any) {

@@ -10,7 +10,9 @@ export function fail(message: string | Error): never {
 }
 
 export function assert(condition: false, message?: string): never;
+
 export function assert(condition: any, message?: string): asserts condition;
+
 export function assert(condition: any, message?: string): asserts condition {
 	if (!condition) {
 		debugger;

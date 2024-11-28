@@ -4,13 +4,16 @@
 import { ImmutableEnumSet } from "#core/collections/enumSet.js";
 
 export const extensionName = "deoptexplorer";
+
 export const extensionUIName = "Deopt Explorer";
+
 export const supportedLanguages: readonly string[] = [
 	"javascript",
 	"javascriptreact",
 	"typescript",
 	"typescriptreact",
 ];
+
 export const debuggerType = extensionName;
 
 export namespace commands {
@@ -344,7 +347,9 @@ export namespace contextKeys {
 }
 
 export const kDefaultLogStatus = LogStatus.Closed;
+
 export const kDefaultSortICs = SortICs.ByLocation;
+
 export const kDefaultShowICStates = new ImmutableEnumSet([
 	ShowICStates.Megamorphic,
 	ShowICStates.Polymorphic,
@@ -352,25 +357,38 @@ export const kDefaultShowICStates = new ImmutableEnumSet([
 	ShowICStates.Other,
 ]);
 // export const kDefaultShowICTypes = new ImmutableEnumSet([ShowICTypes.LoadGlobalIC, ShowICTypes.StoreGlobalIC, ShowICTypes.LoadIC, ShowICTypes.StoreIC, ShowICTypes.KeyedLoadIC, ShowICTypes.KeyedStoreIC, ShowICTypes.StoreInArrayLiteralIC]);
+
 export const kDefaultGroupDeopts = new ImmutableEnumSet([
 	GroupDeopts.ByFile,
 	GroupDeopts.ByFunction,
 	GroupDeopts.ByKind,
 ]);
+
 export const kDefaultSortDeopts = SortDeopts.ByLocation;
+
 export const kDefaultMapSortMode = MapSortMode.ByCount;
+
 export const kDefaultGroupMaps = new ImmutableEnumSet<GroupMaps>();
+
 export const kDefaultProfileSortMode = ProfileSortMode.BySelfTime;
+
 export const kDefaultProfileShowMode = ProfileShowMode.BottomUp;
+
 export const kDefaultShowMaps = new ImmutableEnumSet<ShowMaps>();
+
 export const kDefaultShowJustMyCode = true;
+
 export const kDefaultShowNativeCodeProfileNodes = true;
+
 export const kDefaultShowNodeJsProfileNodes = true;
+
 export const kDefaultShowNodeModulesProfileNodes = true;
+
 export const kDefaultShowDecorations = new ImmutableEnumSet<ShowDecorations>([
 	ShowDecorations.Deopts,
 	ShowDecorations.ICs,
 ]);
+
 export const kDefaultShowLineTicks = false;
 
 export const enum LogStatus {

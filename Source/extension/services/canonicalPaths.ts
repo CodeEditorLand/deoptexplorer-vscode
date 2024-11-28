@@ -14,12 +14,15 @@ declare const canonicalUriString: unique symbol;
 
 /** @deprecated */
 export type CanonicalPath = string & { [canonicalPath]: never };
+
 export type CanonicalUri = Uri & {
 	[canonicalUri]: never;
 	fsPath: CanonicalPath;
 	toString(): CanonicalUriString;
 };
+
 export type CanonicalUriString = string & { [canonicalUriString]: never };
+
 export type CanonicalLocation = Location & { readonly uri: CanonicalUri };
 
 let canonicalPathCache: Map<string, CanonicalPath> | undefined;

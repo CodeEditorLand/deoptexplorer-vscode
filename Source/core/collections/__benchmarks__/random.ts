@@ -17,10 +17,12 @@ export function randomInt({ min = MIN_INT32, max = MAX_INT32 }: MinMax = {}) {
 }
 
 export function randomElement<T>(elements: readonly T[]): T;
+
 export function randomElement<T>(
 	elements: readonly T[],
 	missChance?: number,
 ): T | undefined;
+
 export function randomElement<T>(elements: readonly T[], missChance = 0) {
 	if (elements.length === 0) throw new RangeError();
 

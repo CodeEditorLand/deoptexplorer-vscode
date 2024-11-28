@@ -32,17 +32,21 @@ export type OkLocalFileResolution = {
 	readonly result: "ok";
 	readonly local: true;
 };
+
 export type OkNonlocalFileResolution = {
 	readonly result: "ok";
 	readonly local: false;
 };
+
 export type OkFileResolution = OkLocalFileResolution | OkNonlocalFileResolution;
 
 export type SkipFileResolution = { readonly result: "skip" };
+
 export type RedirectFileResolution = {
 	readonly result: "redirect";
 	readonly file: Uri;
 };
+
 export type FileResolution =
 	| OkFileResolution
 	| SkipFileResolution

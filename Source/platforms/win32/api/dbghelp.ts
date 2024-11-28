@@ -93,6 +93,7 @@ Object.setPrototypeOf(SYM_TYPE, INT);
 //   DWORD    MachineType;            // IMAGE_FILE_MACHINE_XXX from ntimage.h and winnt.h
 //   DWORD    Reserved;               // Padding - don't remove.
 // } IMAGEHLP_MODULE64, *PIMAGEHLP_MODULE64;
+
 export const IMAGEHLP_MODULE64 = StructType({
 	SizeOfStruct: DWORD, // must be set to sizeof(IMAGEHLP_MODULE64)
 	BaseOfImage: DWORD64,
@@ -120,9 +121,11 @@ export const IMAGEHLP_MODULE64 = StructType({
 	MachineType: DWORD,
 	Reserved: DWORD,
 });
+
 export type IMAGEHLP_MODULE64 = ref.UnderlyingType<typeof IMAGEHLP_MODULE64>;
 
 export const PIMAGEHLP_MODULE64 = ref.refType(IMAGEHLP_MODULE64);
+
 export type PIMAGEHLP_MODULE64 = ref.UnderlyingType<typeof PIMAGEHLP_MODULE64>;
 
 // https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/ns-dbghelp-symbol_info
@@ -143,6 +146,7 @@ export type PIMAGEHLP_MODULE64 = ref.UnderlyingType<typeof PIMAGEHLP_MODULE64>;
 //   ULONG   MaxNameLen;
 //   CHAR    Name[1];
 // } SYMBOL_INFO, *PSYMBOL_INFO;
+
 export const SYMBOL_INFO = StructType({
 	SizeOfStruct: ULONG,
 	TypeIndex: ULONG,
@@ -160,9 +164,11 @@ export const SYMBOL_INFO = StructType({
 	MaxNameLen: ULONG,
 	Name: ArrayType(CHAR, 1),
 });
+
 export type SYMBOL_INFO = ref.UnderlyingType<typeof SYMBOL_INFO>;
 
 export const PSYMBOL_INFO = ref.refType(SYMBOL_INFO);
+
 export type PSYMBOL_INFO = ref.UnderlyingType<typeof PSYMBOL_INFO>;
 
 // https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/ns-dbghelp-symbol_infow
@@ -183,6 +189,7 @@ export type PSYMBOL_INFO = ref.UnderlyingType<typeof PSYMBOL_INFO>;
 //   ULONG   MaxNameLen;
 //   WCHAR    Name[1];
 // } SYMBOL_INFO, *PSYMBOL_INFO;
+
 export const SYMBOL_INFOW = StructType({
 	SizeOfStruct: ULONG,
 	TypeIndex: ULONG,
@@ -200,9 +207,11 @@ export const SYMBOL_INFOW = StructType({
 	MaxNameLen: ULONG,
 	Name: ArrayType(WCHAR, 1),
 });
+
 export type SYMBOL_INFOW = ref.UnderlyingType<typeof SYMBOL_INFOW>;
 
 export const PSYMBOL_INFOW = ref.refType(SYMBOL_INFOW);
+
 export type PSYMBOL_INFOW = ref.UnderlyingType<typeof PSYMBOL_INFOW>;
 
 // https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/ns-dbghelp-imagehlp_cba_event
@@ -212,20 +221,24 @@ export type PSYMBOL_INFOW = ref.UnderlyingType<typeof PSYMBOL_INFOW>;
 //   PCHAR desc;
 //   PVOID object;
 // } IMAGEHLP_CBA_EVENT, *PIMAGEHLP_CBA_EVENT;
+
 export const IMAGEHLP_CBA_EVENT = StructType({
 	severity: DWORD, // one of the sev* constants
 	code: DWORD, // reserved for future use
 	desc: PCSTR,
 	object: PVOID, // reserved for future use
 });
+
 export type IMAGEHLP_CBA_EVENT = ref.UnderlyingType<typeof IMAGEHLP_CBA_EVENT>;
 
 export const sevInfo = 0;
+
 export const sevProblem = 1; // reserved for future use
 export const sevAttn = 2; // reserved for future use
 export const sevFatal = 3; // reserved for future use
 
 export const PIMAGEHLP_CBA_EVENT = ref.refType(IMAGEHLP_CBA_EVENT);
+
 export type PIMAGEHLP_CBA_EVENT = ref.UnderlyingType<
 	typeof PIMAGEHLP_CBA_EVENT
 >;
@@ -264,6 +277,7 @@ export type PIMAGEHLP_CBA_EVENT = ref.UnderlyingType<
 //   PCHAR   FileName;
 //   DWORD64 Address;
 // } IMAGEHLP_LINE64, *PIMAGEHLP_LINE64;
+
 export const IMAGEHLP_LINE64 = StructType({
 	SizeOfStruct: DWORD,
 	Key: PVOID,
@@ -271,9 +285,11 @@ export const IMAGEHLP_LINE64 = StructType({
 	FileName: PCSTR,
 	Address: DWORD64,
 });
+
 export type IMAGEHLP_LINE64 = ref.UnderlyingType<typeof IMAGEHLP_LINE64>;
 
 export const PIMAGEHLP_LINE64 = ref.refType(IMAGEHLP_LINE64);
+
 export type PIMAGEHLP_LINE64 = ref.UnderlyingType<typeof PIMAGEHLP_LINE64>;
 
 // https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nc-dbghelp-psym_enumeratesymbols_callback
@@ -289,6 +305,7 @@ export const PSYM_ENUMERATESYMBOLS_CALLBACK = ffi.Function(BOOL, [
 	ULONG, // SymbolSize
 	PVOID, // UserContext
 ]);
+
 export type PSYM_ENUMERATESYMBOLS_CALLBACK = ref.UnderlyingType<
 	typeof PSYM_ENUMERATESYMBOLS_CALLBACK
 >;
@@ -307,6 +324,7 @@ export const PSYM_ENUMMODULES_CALLBACK64 = ffi.Function(BOOL, [
 	DWORD64, // BaseOfDll,
 	PVOID, // UserContext
 ]);
+
 export type PSYM_ENUMMODULES_CALLBACK64 = ref.UnderlyingType<
 	typeof PSYM_ENUMMODULES_CALLBACK64
 >;
@@ -317,6 +335,7 @@ export const PSYMBOL_REGISTERED_CALLBACK = ffi.Function(BOOL, [
 	"pointer", // CallbackData
 	"pointer", // UserContext
 ]);
+
 export type PSYMBOL_REGISTERED_CALLBACK = ref.UnderlyingType<
 	typeof PSYMBOL_REGISTERED_CALLBACK
 >;
@@ -577,28 +596,51 @@ function dbghelpFactory() {
 }
 
 export const SYMOPT_CASE_INSENSITIVE = 0x00000001;
+
 export const SYMOPT_UNDNAME = 0x00000002;
+
 export const SYMOPT_DEFERRED_LOADS = 0x00000004;
+
 export const SYMOPT_NO_CPP = 0x00000008;
+
 export const SYMOPT_LOAD_LINES = 0x00000010;
+
 export const SYMOPT_OMAP_FIND_NEAREST = 0x00000020;
+
 export const SYMOPT_LOAD_ANYTHING = 0x00000040;
+
 export const SYMOPT_IGNORE_CVREC = 0x00000080;
+
 export const SYMOPT_NO_UNQUALIFIED_LOADS = 0x00000100;
+
 export const SYMOPT_FAIL_CRITICAL_ERRORS = 0x00000200;
+
 export const SYMOPT_EXACT_SYMBOLS = 0x00000400;
+
 export const SYMOPT_ALLOW_ABSOLUTE_SYMBOLS = 0x00000800;
+
 export const SYMOPT_IGNORE_NT_SYMPATH = 0x00001000;
+
 export const SYMOPT_INCLUDE_32BIT_MODULES = 0x00002000;
+
 export const SYMOPT_PUBLICS_ONLY = 0x00004000;
+
 export const SYMOPT_NO_PUBLICS = 0x00008000;
+
 export const SYMOPT_AUTO_PUBLICS = 0x00010000;
+
 export const SYMOPT_NO_IMAGE_SEARCH = 0x00020000;
+
 export const SYMOPT_SECURE = 0x00040000;
+
 export const SYMOPT_NO_PROMPTS = 0x00080000;
+
 export const SYMOPT_OVERWRITE = 0x00100000;
+
 export const SYMOPT_IGNORE_IMAGEDIR = 0x00200000;
+
 export const SYMOPT_FAVOR_COMPRESSED = 0x00800000;
+
 export const SYMOPT_DEBUG = 0x80000000;
 
 export const CBA_DEFERRED_SYMBOL_LOAD_START = 0x00000001; // Deferred symbol load has started. The CallbackData parameter is a pointer to a IMAGEHLP_DEFERRED_SYMBOL_LOAD64 structure.

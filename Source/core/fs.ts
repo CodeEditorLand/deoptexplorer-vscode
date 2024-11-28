@@ -133,7 +133,9 @@ async function* vscodeReadLines(file: Uri) {
 }
 
 export function readFileAsync(file: string): Promise<string>;
+
 export function readFileAsync(uri: Uri): Promise<string>;
+
 export async function readFileAsync(uri: Uri | string) {
 	if (typeof uri === "string") {
 		uri = isUriString(uri)
@@ -146,7 +148,9 @@ export async function readFileAsync(uri: Uri | string) {
 }
 
 export function tryReadFileAsync(file: string): Promise<string | undefined>;
+
 export function tryReadFileAsync(uri: Uri): Promise<string | undefined>;
+
 export async function tryReadFileAsync(uri: Uri | string) {
 	try {
 		return await readFileAsync(uri as string);
@@ -154,7 +158,9 @@ export async function tryReadFileAsync(uri: Uri | string) {
 }
 
 export function writeFileAsync(file: string, content: string): Promise<void>;
+
 export function writeFileAsync(uri: Uri, content: string): Promise<void>;
+
 export async function writeFileAsync(uri: Uri | string, content: string) {
 	if (typeof uri === "string") {
 		uri = isUriString(uri)

@@ -339,12 +339,15 @@ declare const kUnusedKnownCommandsAreValid: CheckKnownCommands;
 // #endregion Type checking for `KnownCommands`
 
 export type KnownCommandNames = Extract<keyof KnownCommands, string>;
+
 export type KnownCommandParameters<K extends KnownCommandNames> = Parameters<
 	Extract<KnownCommands[K], (...args: any) => any>
 >;
+
 export type KnownCommandReturnType<K extends KnownCommandNames> = Thenable<
 	ReturnType<Extract<KnownCommands[K], (...args: any) => any>>
 >;
+
 export type KnownCommandProviderResult<K extends KnownCommandNames> =
 	| Thenable<ReturnType<Extract<KnownCommands[K], (...args: any) => any>>>
 	| ReturnType<Extract<KnownCommands[K], (...args: any) => any>>;
@@ -401,6 +404,7 @@ export function typeSafeRegisterCommand<K extends KnownCommandNames>(
 	) => KnownCommandProviderResult<K>,
 	thisArg?: any,
 ): vscode.Disposable;
+
 export function typeSafeRegisterCommand<K extends KnownCommandNames>(
 	command: K,
 	callback: (

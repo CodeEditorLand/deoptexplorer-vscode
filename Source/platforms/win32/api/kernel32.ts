@@ -56,6 +56,7 @@ export function FormatErrorMessage(lMessageId: DWORD) {
 }
 
 export const DONT_RESOLVE_DLL_REFERENCES = 0x1;
+
 export const LOAD_LIBRARY_AS_DATAFILE = 0x2;
 
 const _kernel32 = lazy(() => {

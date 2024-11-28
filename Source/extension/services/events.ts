@@ -21,6 +21,7 @@ import { LogFile } from "../model/logFile";
 import { ProfileViewNodeSnapshot } from "../model/profileViewNodeSnapshot";
 
 export let events!: ReturnType<typeof createEvents>["events"];
+
 export let emitters!: ReturnType<typeof createEvents>["emitters"];
 
 function createEvents() {

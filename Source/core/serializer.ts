@@ -49,6 +49,7 @@ export type KnownType<
 
 export type KnownSerializedType<K extends keyof KnownSerializers> =
 	KnownSerializers[K][1];
+
 export interface KnownSerializer<K extends keyof KnownSerializers>
 	extends Serializer<KnownType<K>, KnownSerializedType<K>> {}
 

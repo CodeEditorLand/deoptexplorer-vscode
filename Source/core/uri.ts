@@ -393,7 +393,9 @@ const uriStartRegExp = /^[a-z][-+.a-z0-9]*:/i;
 export function isUriString(
 	text: CanonicalUriString,
 ): text is CanonicalUriString;
+
 export function isUriString(text: string): boolean;
+
 export function isUriString(text: string) {
 	// an empty string is not a valid uri
 	if (text === "") return false;

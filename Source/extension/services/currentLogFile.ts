@@ -39,6 +39,7 @@ import {
 import * as storage from "./storage";
 
 export let openedFile: Uri | undefined;
+
 export let openedLog: LogFile | undefined;
 
 let currentContext: ExtensionContext | undefined;

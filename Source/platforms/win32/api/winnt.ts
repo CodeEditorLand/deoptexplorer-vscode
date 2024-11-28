@@ -22,6 +22,7 @@ const IMAGE_DOS_SIGNATURE_LE = 0x5a4d; // MZ (in little-endian)
 const IMAGE_NT_SIGNATURE_LE = 0x00004550; // PE00 (in little-endian)
 
 export const IMAGE_NT_OPTIONAL_HDR32_MAGIC = 0x10b;
+
 export const IMAGE_NT_OPTIONAL_HDR64_MAGIC = 0x20b;
 
 /*
@@ -48,6 +49,7 @@ typedef struct _IMAGE_DOS_HEADER {      // DOS .EXE header
 } IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;
 */
 export type IMAGE_DOS_HEADER = RuntimeType<typeof IMAGE_DOS_HEADER>;
+
 export const IMAGE_DOS_HEADER = StructType({
 	e_magic: WORD,
 	e_cblp: WORD,
@@ -82,6 +84,7 @@ typedef struct _IMAGE_FILE_HEADER {
 } IMAGE_FILE_HEADER, *PIMAGE_FILE_HEADER;
 */
 export type IMAGE_FILE_HEADER = RuntimeType<typeof IMAGE_FILE_HEADER>;
+
 export const IMAGE_FILE_HEADER = StructType({
 	Machine: WORD,
 	NumberOfSections: WORD,
@@ -101,6 +104,7 @@ typedef struct _IMAGE_DATA_DIRECTORY {
 } IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;
 */
 export type IMAGE_DATA_DIRECTORY = RuntimeType<typeof IMAGE_DATA_DIRECTORY>;
+
 export const IMAGE_DATA_DIRECTORY = StructType({
 	VirtualAddress: ULONG,
 	Size: ULONG,
@@ -143,6 +147,7 @@ typedef struct _IMAGE_OPTIONAL_HEADER {
 export type IMAGE_OPTIONAL_HEADER32 = RuntimeType<
 	typeof IMAGE_OPTIONAL_HEADER32
 >;
+
 export const IMAGE_OPTIONAL_HEADER32 = StructType({
 	Magic: WORD as PrimitiveType<
 		(typeof WORD)["name"],
@@ -219,6 +224,7 @@ typedef struct _IMAGE_OPTIONAL_HEADER64 {
 export type IMAGE_OPTIONAL_HEADER64 = RuntimeType<
 	typeof IMAGE_OPTIONAL_HEADER64
 >;
+
 export const IMAGE_OPTIONAL_HEADER64 = StructType({
 	Magic: WORD as PrimitiveType<
 		(typeof WORD)["name"],
@@ -273,6 +279,7 @@ typedef struct _IMAGE_NT_HEADERS {
 } IMAGE_NT_HEADERS32, *PIMAGE_NT_HEADERS32;
 */
 export type IMAGE_NT_HEADERS32 = RuntimeType<typeof IMAGE_NT_HEADERS32>;
+
 export const IMAGE_NT_HEADERS32 = StructType({
 	Signature: DWORD,
 	FileHeader: IMAGE_FILE_HEADER,
@@ -287,6 +294,7 @@ typedef struct _IMAGE_NT_HEADERS64 {
 } IMAGE_NT_HEADERS64, *PIMAGE_NT_HEADERS64;
 */
 export type IMAGE_NT_HEADERS64 = RuntimeType<typeof IMAGE_NT_HEADERS64>;
+
 export const IMAGE_NT_HEADERS64 = StructType({
 	Signature: DWORD,
 	FileHeader: IMAGE_FILE_HEADER,

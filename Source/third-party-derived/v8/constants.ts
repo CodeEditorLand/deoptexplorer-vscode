@@ -12,9 +12,15 @@
 import { toAddress } from "#core/address.js";
 
 export const kNoLineNumberInfo = 0;
+
 export const kNoColumnInfo = 0;
+
 export const kNoScriptInfo = 0;
+
 export const kNoScriptId = 0;
+
 export const kNoSourcePosition = -1;
+
 export const kNotInlined = -1;
+
 export const kNullAddress = toAddress(0);

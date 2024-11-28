@@ -45,6 +45,7 @@ export function fileUriToPath(
 	uri: Uri | string,
 	canonicalize?: boolean,
 ): string;
+
 export function fileUriToPath(uri: Uri | string, canonicalize?: boolean) {
 	if (typeof uri === "string") uri = Uri.parse(uri, /*strict*/ true);
 
@@ -71,6 +72,7 @@ export function pathToFileUri(file: string, canonicalize: true): CanonicalUri;
  * @param canonicalize Indicates whether the input value should be converted to a canonical `file://` URI.
  */
 export function pathToFileUri(file: string, canonicalize?: boolean): Uri;
+
 export function pathToFileUri(file: string, canonicalize?: boolean) {
 	const uri = Uri.file(normalizePathPosix(file));
 
@@ -102,6 +104,7 @@ export function pathOrUriStringToUri(
  * @param canonicalize Indicates whether the input value should be converted to a canonical URI.
  */
 export function pathOrUriStringToUri(text: string, canonicalize?: boolean): Uri;
+
 export function pathOrUriStringToUri(text: string, canonicalize?: boolean) {
 	if (isUriString(text))
 		return canonicalize
@@ -119,11 +122,14 @@ export function pathOrUriStringToUri(text: string, canonicalize?: boolean) {
 export function uriToPathOrUriString(
 	uri: CanonicalUri,
 ): CanonicalPath | CanonicalUriString;
+
 export function uriToPathOrUriString(
 	uri: Uri,
 	canonicalize: true,
 ): CanonicalPath | CanonicalUriString;
+
 export function uriToPathOrUriString(uri: Uri, canonicalize?: boolean): string;
+
 export function uriToPathOrUriString(uri: Uri, canonicalize?: boolean) {
 	if (uri.scheme === "file")
 		return normalizePathPosix(
@@ -143,10 +149,12 @@ export function formatUri(
 	uri: CanonicalUri,
 	options?: { as?: "uri"; skipEncoding?: false },
 ): CanonicalUriString;
+
 export function formatUri(
 	uri: Uri | undefined,
 	options?: FormatUriOptions,
 ): string;
+
 export function formatUri(
 	uri: Uri | undefined,
 	{ as = "uri", skipEncoding, relativeTo }: FormatUriOptions = {},

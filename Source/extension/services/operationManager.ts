@@ -10,7 +10,9 @@ let diskOperationSource = new CancellationTokenSource();
 let uiOperationSource = new CancellationTokenSource();
 
 export let extensionToken = extensionSource.token;
+
 export let diskOperationToken = diskOperationSource.token;
+
 export let uiOperationToken = uiOperationSource.token;
 
 let diskOperationSubscription = extensionToken.onCancellationRequested(
