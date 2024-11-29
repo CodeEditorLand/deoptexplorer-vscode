@@ -11,6 +11,7 @@ import { RangeMap } from "../rangeMap/rangeMapUsingSplayTreesLessPolymorphism";
 export class LocationMap<T> {
 	// uri -> startLine -> startCharacter -> endLine -> endCharacter -> T
 	private _files = new Map<string, RangeMap<[Location, T]>>();
+
 	private _size: number = 0;
 
 	/**
@@ -45,11 +46,13 @@ export class LocationMap<T> {
 		if (!ranges) this._files.set(uriString, (ranges = new RangeMap()));
 
 		const initialSize = ranges.size;
+
 		ranges.set(key.range, [key, value]);
 
 		if (initialSize > ranges.size) {
 			this._size++;
 		}
+
 		return this;
 	}
 
@@ -68,8 +71,10 @@ export class LocationMap<T> {
 			if (ranges.size === 0) {
 				this._files.delete(uriString);
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -78,6 +83,7 @@ export class LocationMap<T> {
 	 */
 	clear() {
 		this._files.clear();
+
 		this._size = 0;
 	}
 

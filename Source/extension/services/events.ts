@@ -102,7 +102,9 @@ function createEvents() {
 
 export function activateEventsService(context: ExtensionContext) {
 	const obj = createEvents();
+
 	events = obj.events;
+
 	emitters = obj.emitters;
 
 	return obj.disposable;
@@ -112,7 +114,9 @@ type EVENTMAP<A extends Record<string, EventEmitter<any>>> = {
 	events: {
 		[P in Extract<keyof A, string> as `on${Capitalize<P>}`]: A[P]["event"];
 	};
+
 	emitters: { [P in Extract<keyof A, string>]: A[P]["fire"] };
+
 	disposable: Disposable;
 };
 
@@ -128,9 +132,12 @@ function EVENTMAP<A extends Record<string, EventEmitter<any>>>(
 	for (const [key, emitter] of Object.entries(map)) {
 		events[`on${key.slice(0, 1).toUpperCase()}${key.slice(1)}`] =
 			emitter.event;
+
 		emitters[key] = emitter.fire.bind(emitter);
+
 		disposables.push(emitter);
 	}
+
 	return {
 		events: events as EVENTMAP<A>["events"],
 		emitters: emitters as EVENTMAP<A>["emitters"],

@@ -65,7 +65,9 @@ export class ViewBuilder {
 
 	private _buildCallTreeView(callTree: CallTree) {
 		let head: ProfileViewNode | undefined;
+
 		callTree.computeTotalWeights();
+
 		callTree.traverse<ProfileViewNode>((node, viewParent) => {
 			let totalWeight = node.totalWeight * this.samplingRate;
 
@@ -84,8 +86,10 @@ export class ViewBuilder {
 			} else {
 				head = viewNode;
 			}
+
 			return viewNode;
 		});
+
 		assert(head);
 
 		return this.createView(head);
@@ -143,6 +147,7 @@ export class ViewBuilder {
 
 				if (node.selfWeight > 0) yield stack;
 			}
+
 			for (const child of node.childNodes()) {
 				yield* collectStacks(child, stack);
 			}
@@ -177,6 +182,7 @@ export class ViewBuilder {
 				if (!seen.has(node)) {
 					// aggregate this node
 					seen.add(node);
+
 					template.selfTime += node.selfWeight * this.samplingRate;
 
 					for (const {
@@ -187,22 +193,30 @@ export class ViewBuilder {
 							number,
 							number
 						>;
+
 						template.lineTicks[line] ??= 0;
+
 						template.lineTicks[line] += hit_count;
 					}
 				}
+
 				if (!callee) {
 					// if this node is the bottom node of the stack, add the template
 					bottomNodes.add(template);
 				} else {
 					assert(calleeTemplate);
+
 					template.callees ??= new Set();
+
 					template.callees.add(calleeTemplate);
 
 					calleeTemplate.callers ??= new Set();
+
 					calleeTemplate.callers.add(template);
 				}
+
 				callee = node;
+
 				calleeTemplate = template;
 			}
 		}
@@ -245,8 +259,11 @@ export class ViewBuilder {
 		let rootLabel = rootEntry.getName();
 
 		let precs: Record<string, number> = Object.create(null);
+
 		precs[rootLabel] = 0;
+
 		callTree.computeTotalWeights();
+
 		callTree.traverseInDepth(
 			(node) => {
 				precs[node.label] ??= 0;
@@ -257,6 +274,7 @@ export class ViewBuilder {
 					if (precs[rootLabel] === 0) {
 						root["_selfTime"] +=
 							node.selfWeight * this.samplingRate;
+
 						root["_totalTime"] +=
 							node.totalWeight * this.samplingRate;
 					} else {
@@ -271,8 +289,10 @@ export class ViewBuilder {
 								[],
 								root,
 							);
+
 							root.addChild(rec);
 						}
+
 						rec["_selfTime"] += node.selfWeight * this.samplingRate;
 
 						if (nodeLabelIsRootLabel || precs[node.label] == 0) {
@@ -280,6 +300,7 @@ export class ViewBuilder {
 								node.totalWeight * this.samplingRate;
 						}
 					}
+
 					precs[node.label]++;
 				}
 			},
@@ -353,6 +374,7 @@ export class ProfileView {
 	 */
 	traverse(f: (node: ProfileViewNode) => void) {
 		let nodesToTraverse = new ConsArray<ProfileViewNode>();
+
 		nodesToTraverse.concat([this.head]);
 
 		while (!nodesToTraverse.atEnd()) {
@@ -360,6 +382,7 @@ export class ProfileView {
 
 			if (!node.isCycle) {
 				f(node);
+
 				nodesToTraverse.concat(node.children);
 			}
 		}
@@ -370,10 +393,15 @@ export class ProfileViewNode {
 	readonly token = Symbol();
 
 	parent: ProfileViewNode | null = null;
+
 	private _tokenPath: readonly symbol[] | undefined;
+
 	private _children: ProfileViewNode[] = [];
+
 	private _selfTime: number;
+
 	private _totalTime: number;
+
 	private _lineTicks: readonly ProfileViewLineTickNode[];
 
 	/**
@@ -396,7 +424,9 @@ export class ProfileViewNode {
 		public head: ProfileViewNode | null = null,
 	) {
 		this._totalTime = totalTime;
+
 		this._selfTime = selfTime;
+
 		this._lineTicks = lineTicks.map(
 			({ line, hitCount: hit_count }) =>
 				new ProfileViewLineTickNode(this, line, hit_count),
@@ -411,17 +441,21 @@ export class ProfileViewNode {
 				: [this.token])
 		);
 	}
+
 	get totalTime() {
 		return this._totalTime;
 	}
+
 	get totalPercent() {
 		return this.head
 			? (this.totalTime * 100.0) / this.head.totalTime
 			: 100.0;
 	}
+
 	get selfTime() {
 		return this._selfTime;
 	}
+
 	get selfPercent() {
 		return this.head
 			? (this.selfTime * 100.0) / this.head.totalTime
@@ -466,6 +500,7 @@ export class ProfileViewNode {
 	 */
 	addChild(node: ProfileViewNode) {
 		node.parent = this;
+
 		this._children.push(node);
 	}
 
@@ -495,6 +530,7 @@ export class ProfileViewLineTickNode {
 
 class BottomUpProfileViewNodeTemplate {
 	callees: Set<BottomUpProfileViewNodeTemplate> | undefined;
+
 	lineTicks: Record<number, number> | undefined;
 
 	constructor(
@@ -515,6 +551,7 @@ function computeBottomUpTotalTime(
 	seen: Set<BottomUpProfileViewNodeTemplate>,
 ): number {
 	if (seen.has(template)) return 0;
+
 	seen.add(template);
 
 	let totalTime = template.selfTime;
@@ -524,6 +561,7 @@ function computeBottomUpTotalTime(
 			totalTime += computeBottomUpTotalTime(child, seen);
 		}
 	}
+
 	return totalTime;
 }
 
@@ -538,16 +576,21 @@ function computeBottomUpParentTotalTime(
 			totalTime += computeBottomUpTotalTime(caller, seen);
 		}
 	}
+
 	return totalTime || template.totalTime;
 }
 
 class BottomUpProfileViewNode extends ProfileViewNode {
 	private _remaining: Set<BottomUpProfileViewNodeTemplate> | undefined;
+
 	private _parentTotalTime: number | undefined;
+
 	private _id: number;
+
 	private _isCycle: boolean | undefined;
 
 	public declare head: BottomUpProfileViewNode | null;
+
 	public declare parent: BottomUpProfileViewNode | null;
 
 	constructor(
@@ -561,8 +604,11 @@ class BottomUpProfileViewNode extends ProfileViewNode {
 			LineTick.fromRecord(template.lineTicks),
 			head,
 		);
+
 		this._id = template.id;
+
 		this._remaining = template.callers;
+
 		this._parentTotalTime = template.parentTotalTime;
 	}
 
@@ -581,8 +627,10 @@ class BottomUpProfileViewNode extends ProfileViewNode {
 
 		while (node?.parent?.parent) {
 			if (node._id === this._id) return (this._isCycle = true);
+
 			node = node.parent;
 		}
+
 		return (this._isCycle = false);
 	}
 
@@ -596,8 +644,10 @@ class BottomUpProfileViewNode extends ProfileViewNode {
 				template,
 				this.head ?? this,
 			);
+
 			this.addChild(child);
 		}
+
 		this._remaining = undefined;
 	}
 }

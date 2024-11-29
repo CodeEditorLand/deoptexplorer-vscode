@@ -30,6 +30,7 @@ export async function activate(context: ExtensionContext) {
 		);
 	} catch (e) {
 		console.error(e);
+
 		debugger;
 
 		throw e;

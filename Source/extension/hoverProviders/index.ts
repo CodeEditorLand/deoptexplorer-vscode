@@ -24,6 +24,7 @@ export function activateHoverProviders(context: ExtensionContext) {
 
 	const resetCache = () => {
 		icProvider.resetCache();
+
 		deoptProvider.resetCache();
 
 		functionStateProvider.resetCache();
@@ -33,12 +34,17 @@ export function activateHoverProviders(context: ExtensionContext) {
 		{ scheme: "file", language },
 		{ scheme: constants.schemes.source },
 	]);
+
 	disposables.use(languages.registerHoverProvider(selectors, icProvider));
+
 	disposables.use(languages.registerHoverProvider(selectors, deoptProvider));
+
 	disposables.use(
 		languages.registerHoverProvider(selectors, functionStateProvider),
 	);
+
 	disposables.use(events.onDidOpenLogFile(resetCache));
+
 	disposables.use(events.onDidCloseLogFile(resetCache));
 
 	return disposables;

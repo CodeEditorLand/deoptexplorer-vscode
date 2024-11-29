@@ -35,6 +35,7 @@ export class ImmutableEnumSet<T extends string | number> {
 		}
 
 		this._set = new Set(values);
+
 		this._ordered = this._set.size <= 1;
 	}
 
@@ -204,6 +205,7 @@ export class ImmutableEnumSet<T extends string | number> {
 		for (const value of this._getOrderedSet()) {
 			hc = Equaler.combineHashes(hc, Equaler.defaultEqualer.hash(value));
 		}
+
 		return hc;
 	}
 
@@ -251,6 +253,7 @@ export class ImmutableEnumSet<T extends string | number> {
 		}
 
 		this._set = new Set(orderBy(this._set, identity));
+
 		this._ordered = true;
 
 		return this._set;

@@ -77,6 +77,7 @@ export function splitUriPath(path: string): PathParts {
 		const driveLetter = root.charCodeAt(
 			ch === SLASH || ch === BACKSLASH ? 1 : 0,
 		);
+
 		root = String.fromCharCode(
 			SLASH,
 			driveLetter & ~0b100000,
@@ -121,7 +122,9 @@ function reducePathParts(path: PathParts): PathParts {
 		if (uriPartDoubleDotRegExp.test(part)) {
 			// for '..', shorten the path
 			lastPartWasDotOrDotDot = true;
+
 			resolvedPath ??= path.slice(1, i);
+
 			resolvedPath.pop();
 
 			continue;
@@ -130,6 +133,7 @@ function reducePathParts(path: PathParts): PathParts {
 		if (uriPartSingleDotRegExp.test(part)) {
 			// for '.', skip the part
 			lastPartWasDotOrDotDot = true;
+
 			resolvedPath ??= path.slice(1, i);
 
 			continue;
@@ -137,6 +141,7 @@ function reducePathParts(path: PathParts): PathParts {
 
 		// append the segment
 		lastPartWasDotOrDotDot = false;
+
 		resolvedPath?.push(part);
 	}
 
@@ -144,6 +149,7 @@ function reducePathParts(path: PathParts): PathParts {
 	if (lastPartWasDotOrDotDot) {
 		// resolved must be defined if we encountered a `.` or `..`.
 		assert(resolvedPath);
+
 		resolvedPath.push("");
 	}
 
@@ -176,6 +182,7 @@ function isReducedPathFast(path: string) {
 			return false;
 		}
 	}
+
 	return !uriNonNormalizedSegmentRegExp.test(path);
 }
 
@@ -193,6 +200,7 @@ export function reducePath(path: string): string {
  */
 export function resolveUri(base: Uri, ...parts: (string | Uri)[]) {
 	let { authority, path, query, fragment } = base;
+
 	path = reducePath(path);
 
 	for (let part of parts) {
@@ -205,6 +213,7 @@ export function resolveUri(base: Uri, ...parts: (string | Uri)[]) {
 			// if the part is a `Uri`, it replaces the base.
 			base = part;
 			({ authority, path, query, fragment } = base);
+
 			path = reducePath(path);
 
 			continue;
@@ -221,8 +230,11 @@ export function resolveUri(base: Uri, ...parts: (string | Uri)[]) {
 		if (part.startsWith("//")) {
 			// If the part contains an authority, overwrite the authority, path, query, and fragment
 			authority = uriAuthority;
+
 			path = reducePath(uriPath);
+
 			query = uriQuery;
+
 			fragment = uriFragment;
 		} else if (uriPath !== "") {
 			// If the part contains a path, resolve the path and overwrite the query and fragment.
@@ -239,19 +251,24 @@ export function resolveUri(base: Uri, ...parts: (string | Uri)[]) {
 					path.lastIndexOf("/"),
 					path.lastIndexOf("\\"),
 				);
+
 				path = reducePath(path.slice(0, lastSlashIndex + 1) + uriPath);
 			}
+
 			query = uriQuery;
+
 			fragment = uriFragment;
 		} else if (uriQuery !== "") {
 			// If the part contains a query, overwrite the query and fragment.
 			query = uriQuery;
+
 			fragment = uriFragment;
 		} else if (uriFragment !== "") {
 			// If the part contains a fragment, overwrite the fragment.
 			fragment = uriFragment;
 		}
 	}
+
 	return base.with({ authority, path, query, fragment });
 }
 
@@ -271,12 +288,15 @@ function formatUriFragment(
 	if (from !== "authority") {
 		if (from !== "path" || path.startsWith("/") || path.startsWith("\\")) {
 			authority = "dummy";
+
 			base += "//dummy";
 		} else {
 			authority = "";
 		}
+
 		if (from !== "path") {
 			path = "/";
+
 			base += "/";
 
 			if (from !== "query") {
@@ -284,6 +304,7 @@ function formatUriFragment(
 			}
 		}
 	}
+
 	return Uri.parse(base, /*strict*/ true)
 		.with({ authority, path, query, fragment })
 		.toString()
@@ -316,6 +337,7 @@ function relativePathParts(from: PathParts, to: PathParts): PathParts {
 	for (; start < from.length && relative.length < maxSteps; start++) {
 		relative.push("..");
 	}
+
 	return ["", ...relative, ...components];
 }
 
@@ -325,12 +347,14 @@ function relativePathParts(from: PathParts, to: PathParts): PathParts {
 export function relativeUriFragment(from: Uri, to: Uri) {
 	// normalize both arguments
 	from = resolveUri(from);
+
 	to = resolveUri(to);
 
 	if (to.scheme !== from.scheme) {
 		// if the scheme doesn't match then the fragment must be absolute.
 		return to.toString();
 	}
+
 	if (to.authority !== from.authority) {
 		return formatUriFragment(
 			"authority",
@@ -340,6 +364,7 @@ export function relativeUriFragment(from: Uri, to: Uri) {
 			to.fragment,
 		);
 	}
+
 	if (to.path !== from.path) {
 		if (!to.path.startsWith("/") || !from.path.startsWith("/")) {
 			// if either argument is not rooted, we cannot compute a relative path
@@ -360,9 +385,11 @@ export function relativeUriFragment(from: Uri, to: Uri) {
 			to.fragment,
 		);
 	}
+
 	if (to.query !== from.query) {
 		return formatUriFragment("query", "", to.path, to.query, to.fragment);
 	}
+
 	if (to.fragment !== from.fragment) {
 		return formatUriFragment(
 			"fragment",
@@ -372,6 +399,7 @@ export function relativeUriFragment(from: Uri, to: Uri) {
 			to.fragment,
 		);
 	}
+
 	return "";
 }
 
@@ -409,6 +437,7 @@ export function isUriString(text: string) {
 	} catch {
 		return false;
 	}
+
 	return true;
 }
 
@@ -418,6 +447,7 @@ export function computeCommonBaseDirectory(files: Iterable<Uri>) {
 	let authority: string | undefined;
 
 	let pathParts: PathParts | undefined;
+
 	next: for (let file of files) {
 		if (scheme === undefined) {
 			scheme = file.scheme;
@@ -462,6 +492,7 @@ export function computeCommonBaseDirectory(files: Iterable<Uri>) {
 				if (i === 0) {
 					return undefined;
 				}
+
 				pathParts.length = i;
 
 				continue next;
@@ -529,6 +560,7 @@ export function isJsxFile(uri: Uri) {
 		case ".mjsx":
 			return true;
 	}
+
 	return false;
 }
 
@@ -546,6 +578,7 @@ export function isJavaScriptFile(uri: Uri, excludeJsx = false) {
 		case ".mjsx":
 			return !excludeJsx;
 	}
+
 	return false;
 }
 
@@ -556,6 +589,7 @@ export function isTsxFile(uri: Uri) {
 		case ".tsx":
 			return true;
 	}
+
 	return false;
 }
 
@@ -569,5 +603,6 @@ export function isTypeScriptFile(uri: Uri, excludeTsx = false) {
 		case ".tsx":
 			return !excludeTsx;
 	}
+
 	return false;
 }

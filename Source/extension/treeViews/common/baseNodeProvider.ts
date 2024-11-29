@@ -24,13 +24,19 @@ export type RootNodeFactory = (
  */
 export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 	private _roots?: RootNodeFactory | BaseNode[];
+
 	private _resolvedRoots?: Promise<BaseNode[]> | BaseNode[];
+
 	private _onDidChangeTreeDataEvent = new EventEmitter<
 		BaseNode | null | undefined
 	>();
+
 	private _updatesSuspended = 0;
+
 	private _updateRequested = false;
+
 	private _cancelSource: CancellationTokenSource | undefined;
+
 	private _paginationOptions?: PaginationOptions;
 
 	/**
@@ -43,6 +49,7 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 		paginationOptions?: PaginationOptions,
 	) {
 		this._roots = roots;
+
 		this._paginationOptions = paginationOptions;
 	}
 
@@ -72,6 +79,7 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 			if (this._updatesSuspended === 0) {
 				if (this._updateRequested) {
 					this._updateRequested = false;
+
 					this._onDidChangeTreeDataEvent.fire(undefined);
 				}
 			}
@@ -136,6 +144,7 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 	protected setRoots(roots: RootNodeFactory | BaseNode[] | undefined) {
 		if (this._roots !== roots) {
 			this._roots = roots;
+
 			this.invalidate();
 		}
 	}
@@ -145,7 +154,9 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 	 */
 	protected invalidate() {
 		this._resolvedRoots = undefined;
+
 		this._cancelSource?.cancel();
+
 		this._cancelSource = undefined;
 
 		if (this._updatesSuspended) {
@@ -161,15 +172,18 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 				typeof this._roots === "function"
 					? this._startEnsureRoots(this._roots)
 					: this._roots;
+
 			this._resolvedRoots = isPromise(roots)
 				? roots.then((roots) => this._finishEnsureRoots(roots))
 				: this._finishEnsureRoots(roots);
 		}
+
 		return this._resolvedRoots;
 	}
 
 	private _startEnsureRoots(factory: RootNodeFactory) {
 		this._cancelSource?.cancel();
+
 		this._cancelSource = new CancellationTokenSource();
 
 		const result = factory(this._cancelSource.token);
@@ -184,7 +198,9 @@ export abstract class BaseNodeProvider implements TreeDataProvider<BaseNode> {
 			/*paginationParent*/ undefined,
 			this._paginationOptions,
 		);
+
 		this._cancelSource?.dispose();
+
 		this._cancelSource = undefined;
 
 		return this._resolvedRoots;

@@ -55,6 +55,7 @@ export namespace SYM_TYPE {
 	export function get(buffer: Buffer, offset: number) {
 		return INT.get(buffer, offset) as SYM_TYPE;
 	}
+
 	export function set(buffer: Buffer, offset: number, value: SYM_TYPE) {
 		return INT.set(buffer, offset, value);
 	}
@@ -365,6 +366,7 @@ function dbghelpFactory() {
 				//   PCSTR  UserSearchPath,
 				//   BOOL   fInvadeProcess
 				// );
+
 				SymInitialize: [
 					BOOL,
 					[
@@ -378,6 +380,7 @@ function dbghelpFactory() {
 				// BOOL IMAGEAPI SymCleanup(
 				//   HANDLE hProcess
 				// );
+
 				SymCleanup: [
 					BOOL,
 					[
@@ -387,12 +390,14 @@ function dbghelpFactory() {
 
 				// https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-symgetoptions
 				// DWORD IMAGEAPI SymGetOptions();
+
 				SymGetOptions: [DWORD, []],
 
 				// https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-symsetoptions
 				// DWORD IMAGEAPI SymSetOptions(
 				//   DWORD SymOptions
 				// );
+
 				SymSetOptions: [
 					DWORD,
 					[
@@ -445,6 +450,7 @@ function dbghelpFactory() {
 				//   PMODLOAD_DATA Data,
 				//   DWORD         Flags
 				// );
+
 				SymLoadModuleEx: [
 					DWORD64,
 					[
@@ -465,6 +471,7 @@ function dbghelpFactory() {
 				//   DWORD64            qwAddr,
 				//   PIMAGEHLP_MODULE64 ModuleInfo
 				// );
+
 				SymGetModuleInfo64: [
 					BOOL,
 					[
@@ -479,6 +486,7 @@ function dbghelpFactory() {
 				//   HANDLE  hProcess,
 				//   DWORD64 BaseOfDll
 				// );
+
 				SymUnloadModule64: [
 					BOOL,
 					[
@@ -495,6 +503,7 @@ function dbghelpFactory() {
 				//   PSYM_ENUMERATESYMBOLS_CALLBACK EnumSymbolsCallback,
 				//   PVOID                          UserContext
 				// );
+
 				SymEnumSymbols: [
 					BOOL,
 					[
@@ -566,6 +575,7 @@ function dbghelpFactory() {
 				//   PDWORD           pdwDisplacement,
 				//   PIMAGEHLP_LINE64 Line64
 				// );
+
 				SymGetLineFromAddr64: [
 					BOOL,
 					[HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64],
@@ -590,6 +600,7 @@ function dbghelpFactory() {
 			}),
 		(e) => {
 			console.error(e);
+
 			debugger;
 		},
 	);
@@ -702,6 +713,7 @@ export class Dbghelp {
 			//   PCSTR  UserSearchPath,
 			//   BOOL   fInvadeProcess
 			// );
+
 			SymInitialize: [
 				BOOL,
 				[
@@ -715,6 +727,7 @@ export class Dbghelp {
 			// BOOL IMAGEAPI SymCleanup(
 			//   HANDLE hProcess
 			// );
+
 			SymCleanup: [
 				BOOL,
 				[
@@ -724,12 +737,14 @@ export class Dbghelp {
 
 			// https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-symgetoptions
 			// DWORD IMAGEAPI SymGetOptions();
+
 			SymGetOptions: [DWORD, []],
 
 			// https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-symsetoptions
 			// DWORD IMAGEAPI SymSetOptions(
 			//   DWORD SymOptions
 			// );
+
 			SymSetOptions: [
 				DWORD,
 				[
@@ -782,6 +797,7 @@ export class Dbghelp {
 			//   PMODLOAD_DATA Data,
 			//   DWORD         Flags
 			// );
+
 			SymLoadModuleEx: [
 				DWORD64,
 				[
@@ -802,6 +818,7 @@ export class Dbghelp {
 			//   DWORD64            qwAddr,
 			//   PIMAGEHLP_MODULE64 ModuleInfo
 			// );
+
 			SymGetModuleInfo64: [
 				BOOL,
 				[
@@ -816,6 +833,7 @@ export class Dbghelp {
 			//   HANDLE  hProcess,
 			//   DWORD64 BaseOfDll
 			// );
+
 			SymUnloadModule64: [
 				BOOL,
 				[
@@ -832,6 +850,7 @@ export class Dbghelp {
 			//   PSYM_ENUMERATESYMBOLS_CALLBACK EnumSymbolsCallback,
 			//   PVOID                          UserContext
 			// );
+
 			SymEnumSymbols: [
 				BOOL,
 				[
@@ -903,6 +922,7 @@ export class Dbghelp {
 			//   PDWORD           pdwDisplacement,
 			//   PIMAGEHLP_LINE64 Line64
 			// );
+
 			SymGetLineFromAddr64: [
 				BOOL,
 				[HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64],
@@ -1124,7 +1144,9 @@ export class Dbghelp {
 	/** Create a unique handle to act as a process handle. */
 	createSimpleHandle() {
 		const buffer = Buffer.alloc(ref.sizeof.pointer);
+
 		buffer.writeBigInt64LE(BigInt(1));
+
 		buffer.type = ref.refType(ref.types.void);
 
 		return buffer as HANDLE;
@@ -1133,6 +1155,7 @@ export class Dbghelp {
 	/** Create a unique handle to act as a process handle. */
 	createRandomHandle() {
 		const buffer = randomBytes(ref.sizeof.pointer);
+
 		buffer.type = ref.refType(ref.types.void);
 
 		return buffer as HANDLE;

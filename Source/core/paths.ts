@@ -65,12 +65,14 @@ export function toFileSystemPath(file: string | Uri): string {
 			throw new Error(
 				`Expected scheme 'file', received '${file.scheme}' instead.`,
 			);
+
 		file = file.fsPath;
 	} else if (isUriString(file)) {
 		const url = new URL(file);
 
 		if (url.protocol === "file:") file = fileURLToPath(file);
 	}
+
 	return isDosPath(file)
 		? normalizeDosPathRoot(normalizeSlashesWindows(file))
 		: normalizeSlashesPosix(file);

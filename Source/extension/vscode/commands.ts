@@ -8,11 +8,13 @@ import { AsCommandArgumentValue } from "../types";
 
 interface EditorGroupLayout {
 	orientation?: 0 | 1;
+
 	groups: EditorGroupArgument[];
 }
 
 interface EditorGroupArgument {
 	size?: number;
+
 	groups?: EditorGroupArgument[];
 }
 
@@ -140,7 +142,9 @@ declare global {
 				| string
 				| {
 						extensionId: string;
+
 						issueTitle?: string;
+
 						issueBody?: string;
 				  },
 		) => void;
@@ -179,14 +183,23 @@ declare global {
 		"workbench.action.files.newUntitledFile": (viewType: string) => void;
 		"workbench.action.findInFiles": (args: {
 			query?: string;
+
 			replace?: string;
+
 			preserveCase?: boolean;
+
 			triggerSearch?: boolean;
+
 			filesToInclude?: string;
+
 			filesToExclude?: string;
+
 			isRegex?: boolean;
+
 			isCaseSensitive?: boolean;
+
 			matchWholeWord?: boolean;
+
 			useExcludeSettingsAndIgnoreFiles?: boolean;
 		}) => void;
 		"workbench.action.quickOpen": (prefix?: string) => void;
@@ -215,51 +228,85 @@ declare global {
 		) => void;
 		"editor.fold": (args: {
 			levels?: number;
+
 			direction?: "up" | "down";
+
 			selectionLines?: number[];
 		}) => void;
 		"editor.unfold": (args: {
 			levels?: number;
+
 			direction?: "up" | "down";
+
 			selectionLines?: number[];
 		}) => void;
 		"search.action.openEditor": (args: {
 			query?: string;
+
 			filesToInclude?: string;
+
 			filesToExclude?: string;
+
 			contextLines?: number;
+
 			matchWholeWord?: boolean;
+
 			isCaseSensitive?: boolean;
+
 			isRegexp?: boolean;
+
 			useExcludeSettingsAndIgnoreFiles?: boolean;
+
 			showIncludesExcludes?: boolean;
+
 			triggerSearch?: boolean;
+
 			focusResults?: boolean;
 		}) => void;
 		"search.action.openNewEditor": (args: {
 			query?: string;
+
 			filesToInclude?: string;
+
 			filesToExclude?: string;
+
 			contextLines?: number;
+
 			matchWholeWord?: boolean;
+
 			isCaseSensitive?: boolean;
+
 			isRegexp?: boolean;
+
 			useExcludeSettingsAndIgnoreFiles?: boolean;
+
 			showIncludesExcludes?: boolean;
+
 			triggerSearch?: boolean;
+
 			focusResults?: boolean;
 		}) => void;
 		"search.action.openNewEditorToSide": (args: {
 			query?: string;
+
 			filesToInclude?: string;
+
 			filesToExclude?: string;
+
 			contextLines?: number;
+
 			matchWholeWord?: boolean;
+
 			isCaseSensitive?: boolean;
+
 			isRegexp?: boolean;
+
 			useExcludeSettingsAndIgnoreFiles?: boolean;
+
 			showIncludesExcludes?: boolean;
+
 			triggerSearch?: boolean;
+
 			focusResults?: boolean;
 		}) => void;
 		"setContext": (key: string, value: unknown) => void;
@@ -278,23 +325,32 @@ declare global {
 				| "viewPortCenter"
 				| "viewPortBottom"
 				| "viewPortIfOutside";
+
 			by?: "line" | "wrappedLine" | "character" | "halfLine";
+
 			value?: number;
+
 			select?: boolean;
 		}) => void;
 		"editorScroll": (args: {
 			to: "up" | "down";
+
 			by?: "line" | "wrappedLine" | "page" | "halfPage";
+
 			value?: number;
+
 			revealCursor?: boolean;
 		}) => void;
 		"moveActiveEditor": (args: {
 			to: "left" | "right";
+
 			by?: "tab" | "group";
+
 			value?: number;
 		}) => void;
 		"revealLine": (args: {
 			lineNumber: number;
+
 			at?: "top" | "center" | "bottom";
 		}) => void;
 
@@ -356,7 +412,9 @@ export type TypeSafeCommand<K extends KnownCommandNames = KnownCommandNames> =
 	K extends KnownCommandNames
 		? {
 				title: string;
+
 				command: K;
+
 				tooltip?: string;
 			} & (KnownCommands[K] extends []
 				? { arguments?: [] }

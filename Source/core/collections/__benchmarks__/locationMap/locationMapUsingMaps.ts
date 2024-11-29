@@ -15,6 +15,7 @@ export class LocationMap<T> {
 			Map<number, [Location, T] | Map<number, Map<number, [Location, T]>>>
 		>
 	> = new Map();
+
 	private _size: number = 0;
 
 	/**
@@ -45,6 +46,7 @@ export class LocationMap<T> {
 		} else if (Array.isArray(entry)) {
 			return key.range.isEmpty;
 		}
+
 		return false;
 	}
 
@@ -99,6 +101,7 @@ export class LocationMap<T> {
 			// if we have an empty range, set it as the sole value at this step.
 			if (key.range.isEmpty) {
 				startCharacters.set(startCharacter, [key, value]);
+
 				this._size++;
 
 				return this;
@@ -115,6 +118,7 @@ export class LocationMap<T> {
 
 			// migrate the single entry for the empty range to an individual map entry.
 			const existingEntry = endLines;
+
 			startCharacters.set(startCharacter, (endLines = new Map()));
 
 			const { line: existingEndLine, character: existingEndCharacter } =
@@ -127,6 +131,7 @@ export class LocationMap<T> {
 					existingEndLine,
 					(existingEndCharacters = new Map()),
 				);
+
 			existingEndCharacters.set(existingEndCharacter, existingEntry);
 
 			// if both the existing entry and the new entry have the same line,  reuse the existing end
@@ -144,6 +149,7 @@ export class LocationMap<T> {
 
 		if (!entry) {
 			this._size++;
+
 			endCharacters.set(endCharacter, [key, value]);
 		} else {
 			entry[1] = value;
@@ -181,6 +187,7 @@ export class LocationMap<T> {
 			// entry's range is empty
 			if (key.range.isEmpty) {
 				this._size--;
+
 				startCharacters.delete(startCharacter);
 
 				if (startCharacters.size === 0) {
@@ -190,8 +197,10 @@ export class LocationMap<T> {
 						this._files.delete(uriString);
 					}
 				}
+
 				return true;
 			}
+
 			return false;
 		}
 
@@ -217,8 +226,10 @@ export class LocationMap<T> {
 					}
 				}
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -227,6 +238,7 @@ export class LocationMap<T> {
 	 */
 	clear() {
 		this._files.clear();
+
 		this._size = 0;
 	}
 

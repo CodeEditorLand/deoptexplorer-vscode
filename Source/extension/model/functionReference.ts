@@ -24,12 +24,16 @@ export class FunctionReference implements Equatable, Comparable {
 			equateNullable(left.symbolKind, right.symbolKind),
 		(value) => {
 			let hc = 0;
+
 			hc = Equaler.combineHashes(hc, hashNullable(value.uri, UriEqualer));
+
 			hc = Equaler.combineHashes(
 				hc,
 				hashNullable(value.range, RangeEqualer),
 			);
+
 			hc = Equaler.combineHashes(hc, hash(value.name));
+
 			hc = Equaler.combineHashes(hc, hashNullable(value.symbolKind));
 
 			return hc;
@@ -77,6 +81,7 @@ export class FunctionReference implements Equatable, Comparable {
 		if (this._location === undefined && this.uri && this.range) {
 			this._location = new Location(this.uri, this.range);
 		}
+
 		return this._location;
 	}
 
@@ -125,9 +130,13 @@ declare global {
 			FunctionReference,
 			{
 				$type: "FunctionReference";
+
 				name: string;
+
 				uri: KnownSerializedType<"Uri"> | undefined;
+
 				range: KnownSerializedType<"Range"> | undefined;
+
 				symbolKind: SymbolKind | undefined;
 			}
 		>;

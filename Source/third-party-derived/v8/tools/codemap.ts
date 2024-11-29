@@ -103,6 +103,7 @@ export class CodeMap {
 			start,
 			start + toAddress(codeEntry.size),
 		);
+
 		this.dynamics_.insert(start, codeEntry);
 	}
 
@@ -117,11 +118,13 @@ export class CodeMap {
 		let removedNode = this.dynamics_.remove(from);
 
 		if (!removedNode) throw new Error("Key not found");
+
 		this.deleteAllCoveredNodes_(
 			this.dynamics_,
 			to,
 			to + toAddress(removedNode.value.size),
 		);
+
 		this.dynamics_.insert(to, removedNode.value);
 	}
 
@@ -143,6 +146,7 @@ export class CodeMap {
 	 */
 	addLibrary(start: Address, codeEntry: CodeEntry) {
 		this.markPages_(start, start + toAddress(codeEntry.size));
+
 		this.libraries_.insert(start, codeEntry);
 	}
 
@@ -159,7 +163,9 @@ export class CodeMap {
 	private markPages_(start: Address, end: Address) {
 		for (
 			let addr = start;
+
 			addr <= end;
+
 			addr += toAddress(CodeMap.PAGE_SIZE)
 		) {
 			this.pages_[Number(addr / toAddress(CodeMap.PAGE_SIZE)) | 0] = 1;
@@ -184,8 +190,10 @@ export class CodeMap {
 				end2 = start2 + toAddress(node.value.size);
 
 			if (start2 < end && start < end2) to_delete.push(start2);
+
 			addr = start2 - toAddress(1);
 		}
+
 		for (let i = 0, l = to_delete.length; i < l; ++i)
 			tree.remove(to_delete[i]);
 	}
@@ -223,10 +231,12 @@ export class CodeMap {
 
 				if (!result) return null;
 			}
+
 			if (out_instruction_start) out_instruction_start.value = result.key;
 
 			return result.value;
 		}
+
 		let min = this.dynamics_.findMin();
 
 		let max = this.dynamics_.findMax();
@@ -245,13 +255,16 @@ export class CodeMap {
 
 			if (!entry["nameUpdated_"]) {
 				entry.name = this.dynamicsNameGen_.getName(entry.name);
+
 				entry["nameUpdated_"] = true;
 			}
+
 			if (out_instruction_start)
 				out_instruction_start.value = dynaEntry.key;
 
 			return entry;
 		}
+
 		return null;
 	}
 
@@ -311,6 +324,7 @@ class NameGenerator {
 
 			return name;
 		}
+
 		let count = ++this.knownNames_[name];
 
 		return name + " {" + count + "}";

@@ -37,6 +37,7 @@ function alias<T>(
 		type,
 		Object.getOwnPropertyDescriptors(overrides),
 	);
+
 	alias.name = name;
 
 	return alias;
@@ -593,6 +594,7 @@ const CWString: ref.Type<string | null> = {
 		if (ref.isNull(_buf)) {
 			return null;
 		}
+
 		const _buf2 = ref.reinterpretUntilZeros(_buf, 2, 0);
 
 		return _buf2.toString("utf16le");
@@ -605,6 +607,7 @@ const CWString: ref.Type<string | null> = {
 		} else {
 			_buf = ref.allocCString(val, "utf16le");
 		}
+
 		return ref.writePointer(buf, offset, _buf);
 	},
 };
@@ -670,5 +673,6 @@ export function reinterpret_cast(
 	if (!reinterpretBuffer.type) {
 		reinterpretBuffer.type = type;
 	}
+
 	return ref.get(reinterpretBuffer, 0, type);
 }

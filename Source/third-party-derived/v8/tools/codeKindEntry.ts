@@ -37,6 +37,7 @@ export class CodeKindEntry {
 	static readonly STACK_FRAMES = 8;
 
 	readonly inExecution: CodeKindEvent[] = [];
+
 	readonly stackFrames: CodeKindEvent[][] = [];
 
 	constructor(

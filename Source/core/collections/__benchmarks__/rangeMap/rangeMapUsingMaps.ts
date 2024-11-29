@@ -15,6 +15,7 @@ type StartLineMap<T> = LineMap<EndLineMap<T>>;
 
 export class RangeMap<T> {
 	private _ranges: StartLineMap<T> = new Map();
+
 	private _size: number = 0;
 
 	get size() {
@@ -29,6 +30,7 @@ export class RangeMap<T> {
 		if (entry) {
 			return !!findPosition(entry, end);
 		}
+
 		return false;
 	}
 
@@ -55,6 +57,7 @@ export class RangeMap<T> {
 
 		if (!entry) {
 			this._size++;
+
 			endCharacters.set(end.character, [key, value]);
 		} else {
 			entry[1] = value;
@@ -92,13 +95,16 @@ export class RangeMap<T> {
 					}
 				}
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
 	clear() {
 		this._ranges.clear();
+
 		this._size = 0;
 	}
 
@@ -221,6 +227,7 @@ export class RangeMap<T> {
 			if (lineIsAfter(startLine, start)) {
 				break;
 			}
+
 			for (const [startCharacter, endLines] of iterateAscending(
 				startCharacters,
 			)) {
@@ -315,6 +322,7 @@ export class RangeMap<T> {
 			if (lineIsAfter(startLine, end)) {
 				break;
 			}
+
 			for (const [
 				startCharacter,
 				endLines,
@@ -335,12 +343,14 @@ export class RangeMap<T> {
 					if (lineIsAfter(endLine, end)) {
 						break;
 					}
+
 					for (const [endCharacter, [key, value]] of iterateAscending(
 						endCharacters,
 					)) {
 						if (characterIsAfter(endLine, endCharacter, end)) {
 							break endLoop;
 						}
+
 						if (range.contains(key)) {
 							yield [key, value];
 						}
@@ -375,6 +385,7 @@ export class RangeMap<T> {
 			if (lineIsAfter(startLine, end)) {
 				break;
 			}
+
 			for (const [startCharacter, endLines] of iterateAscending(
 				startCharacters,
 			)) {
@@ -417,6 +428,7 @@ export class RangeMap<T> {
 
 function set<T>(map: PosMap<T>, key: number, value: T) {
 	const initialSize = map.size;
+
 	map.set(key, value);
 
 	if (map.size !== initialSize) {
@@ -445,8 +457,10 @@ function remove<T>(map: PosMap<T>, key: number) {
 				map.orderedKeys = undefined;
 			}
 		}
+
 		return true;
 	}
+
 	return false;
 }
 

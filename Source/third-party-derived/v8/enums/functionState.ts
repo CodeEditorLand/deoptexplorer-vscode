@@ -64,6 +64,7 @@ export function isOptimizedFunctionState(
 		case FunctionState.Inlined:
 			return true;
 	}
+
 	return false;
 }
 

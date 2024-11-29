@@ -10,6 +10,8 @@ import { IcEntry } from "#deoptigate/icEntry.js";
  */
 export interface FileEntry {
 	functions: FunctionEntry[];
+
 	ics: IcEntry[];
+
 	deopts: DeoptEntry[];
 }

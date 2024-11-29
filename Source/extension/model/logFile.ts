@@ -31,6 +31,7 @@ export class LogFile {
 		Uri,
 		Record<Entry["kind"], (position: Position) => Iterable<Entry>>
 	>(uriToString);
+
 	private _commonBaseDirectory: Uri | undefined | null;
 
 	constructor(
@@ -54,6 +55,7 @@ export class LogFile {
 			this._commonBaseDirectory =
 				computeCommonBaseDirectory(this.sourcePaths) ?? null;
 		}
+
 		return this._commonBaseDirectory ?? undefined;
 	}
 
@@ -68,9 +70,11 @@ export class LogFile {
 		if (relative && /^\.[\\/]/.test(relative)) {
 			relative = relative.slice(2);
 		}
+
 		if (ignoreIfBasename && uriBasename(file) === relative) {
 			return undefined;
 		}
+
 		return relative;
 	}
 

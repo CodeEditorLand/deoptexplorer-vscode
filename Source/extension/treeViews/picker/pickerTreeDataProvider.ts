@@ -12,8 +12,11 @@ import { WorkspaceLogFilesNode } from "./workspaceLogFilesNode";
  */
 export class PickerTreeDataProvider extends BaseNodeProvider {
 	private helpNode = new HelpNode(this);
+
 	private openFileNode = new OpenFileNode(this);
+
 	private recentFilesNode = new RecentLogFilesNode(this);
+
 	private workspaceFilesNode = new WorkspaceLogFilesNode(this);
 
 	constructor() {
@@ -27,8 +30,11 @@ export class PickerTreeDataProvider extends BaseNodeProvider {
 
 	invalidate() {
 		this.helpNode.invalidate();
+
 		this.openFileNode.invalidate();
+
 		this.recentFilesNode.invalidate();
+
 		this.workspaceFilesNode.invalidate();
 
 		super.invalidate();

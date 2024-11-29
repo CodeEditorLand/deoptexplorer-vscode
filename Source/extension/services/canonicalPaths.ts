@@ -17,7 +17,9 @@ export type CanonicalPath = string & { [canonicalPath]: never };
 
 export type CanonicalUri = Uri & {
 	[canonicalUri]: never;
+
 	fsPath: CanonicalPath;
+
 	toString(): CanonicalUriString;
 };
 
@@ -56,7 +58,9 @@ function getCanonicalPath(file: string): CanonicalPath {
 	const realPath = tryRealpath(file) ?? file;
 
 	const reducedPath = reducePath(realPath);
+
 	canonicalPath = normalizePathPosix(reducedPath) as CanonicalPath;
+
 	canonicalPathCache?.set(file, canonicalPath);
 
 	return canonicalPath;
@@ -73,6 +77,7 @@ export function getCanonicalUri(uri: Uri) {
 			fsPath !== normalizePathPosix(uri.fsPath) ? Uri.file(fsPath) : uri
 		) as CanonicalUri;
 	}
+
 	return resolveUri(uri) as CanonicalUri;
 }
 
@@ -97,6 +102,7 @@ export function* walkUpContainingDirectories(file: Uri) {
 		const parent = resolveUri(directory, "../");
 
 		if (directory.path === parent.path) break;
+
 		directory = parent;
 	}
 }
@@ -105,6 +111,7 @@ export function activateCanonicalPaths(context: ExtensionContext) {
 	canonicalPathCache = new Map();
 
 	const stack = new VSDisposableStack();
+
 	stack.defer(() => {
 		canonicalPathCache = undefined!;
 	});

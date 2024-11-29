@@ -38,8 +38,10 @@ export function getWordAtText(
 		} else {
 			textOffset += start;
 		}
+
 		text = text.substring(start, column + maxLen / 2);
 	}
+
 	const t1 = Date.now();
 
 	const pos = column - 1 - textOffset;
@@ -52,7 +54,9 @@ export function getWordAtText(
 		if (Date.now() - t1 >= timeBudget) {
 			break;
 		}
+
 		const regexIndex = pos - windowSize * i;
+
 		wordDefinition.lastIndex = Math.max(0, regexIndex);
 
 		const thisMatch = _findRegexMatchEnclosingPosition(
@@ -65,23 +69,28 @@ export function getWordAtText(
 		if (!thisMatch && match) {
 			break;
 		}
+
 		match = thisMatch;
 
 		if (regexIndex <= 0) {
 			break;
 		}
+
 		prevRegexIndex = regexIndex;
 	}
+
 	if (match) {
 		const result: IWordAtPosition = {
 			word: match[0],
 			startColumn: textOffset + 1 + match.index,
 			endColumn: textOffset + 1 + match.index + match[0].length,
 		};
+
 		wordDefinition.lastIndex = 0;
 
 		return result;
 	}
+
 	return null;
 }
 
@@ -102,5 +111,6 @@ function _findRegexMatchEnclosingPosition(
 			break;
 		}
 	}
+
 	return match;
 }

@@ -30,6 +30,7 @@ export class SourcePositionTable {
 	// https://github.com/v8/v8/blob/6bbf2dfa5b3bde9a40527268741b739f7d7e4bd0/src/profiler/profile-generator.cc#L22
 	setPosition(pcOffset: Address, line: number, inliningId: number) {
 		assert(pcOffset >= kNullAddress);
+
 		assert(line > 0); // The 1-based number of the source line.
 		assert(inliningId >= kNotInlined);
 		// It's possible that we map multiple source positions to a pc_offset in
@@ -75,6 +76,7 @@ export class SourcePositionTable {
 		if (i < 0) i = ~i;
 
 		if (i > 0) i--;
+
 		assert(i >= 0 && i < this._pcOffsetsToLines_.length);
 
 		return this._pcOffsetsToLines_[i].lineNumber;
@@ -96,6 +98,7 @@ export class SourcePositionTable {
 		if (i < 0) i = ~i;
 
 		if (i > 0) i--;
+
 		assert(i >= 0 && i < this._pcOffsetsToLines_.length);
 
 		return this._pcOffsetsToLines_[i].inliningId;

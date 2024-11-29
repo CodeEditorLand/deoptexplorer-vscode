@@ -170,6 +170,7 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 					log: this.log,
 					ignoreIfBasename: true,
 				};
+
 				lines.push(
 					markdown`**file:** ${formatLocationMarkdown(key.location, { as: "file", relativeTo, include: "position", skipEncoding: true, linkSources: this.log?.sources })}  \n`,
 				);
@@ -285,8 +286,11 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 	};
 
 	private _sortBy = constants.kDefaultSortICs;
+
 	private _showICStates = constants.kDefaultShowICStates;
+
 	private _log?: LogFile;
+
 	private _ics?: IcNode[];
 
 	constructor() {
@@ -305,10 +309,12 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 							.through((q) => this._applyOrder(q))
 							.toArray();
 					}
+
 					return from(this._ics)
 						.through((q) => this._applyGroups(q))
 						.toArray();
 				}
+
 				return [];
 			},
 			{ pageSize: PAGE_SIZE },
@@ -318,9 +324,11 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 	get log() {
 		return this._log;
 	}
+
 	set log(value) {
 		if (this._log !== value) {
 			this._log = value;
+
 			this.invalidate();
 		}
 	}
@@ -328,9 +336,11 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 	get showICStates() {
 		return this._showICStates;
 	}
+
 	set showICStates(value) {
 		if (this._showICStates !== value) {
 			this._showICStates = value;
+
 			this.invalidate();
 		}
 	}
@@ -338,15 +348,18 @@ export class IcTreeDataProvider extends BaseNodeProvider {
 	get sortBy() {
 		return this._sortBy;
 	}
+
 	set sortBy(value) {
 		if (this._sortBy !== value) {
 			this._sortBy = value;
+
 			this.invalidate();
 		}
 	}
 
 	protected invalidate() {
 		super.invalidate();
+
 		this._ics = undefined;
 	}
 

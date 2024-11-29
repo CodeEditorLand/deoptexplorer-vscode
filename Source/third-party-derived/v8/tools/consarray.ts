@@ -42,7 +42,9 @@
  */
 export class ConsArray<T> {
 	private tail_ = new Cell<T>(null!, null!);
+
 	private currCell_: Cell<T> = this.tail_;
+
 	private currCellPos_ = 0;
 
 	/**
@@ -55,6 +57,7 @@ export class ConsArray<T> {
 	concat(arr: readonly T[]) {
 		if (arr.length > 0) {
 			this.tail_.data = arr;
+
 			this.tail_ = this.tail_.next = new Cell(null!, null!);
 		}
 	}
@@ -78,8 +81,10 @@ export class ConsArray<T> {
 
 		if (this.currCellPos_ >= this.currCell_.data.length) {
 			this.currCell_ = this.currCell_.next;
+
 			this.currCellPos_ = 0;
 		}
+
 		return result;
 	}
 

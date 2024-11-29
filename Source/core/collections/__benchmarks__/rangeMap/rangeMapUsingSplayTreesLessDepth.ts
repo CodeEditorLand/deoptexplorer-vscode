@@ -17,6 +17,7 @@ type StartLineTree<T> = LineTree<[Range, T] | EndLineTree<T>>;
 export class RangeMap<T> {
 	// startLine -> startCharacter -> endLine -> endCharacter -> T
 	private _ranges: StartLineTree<T> = new SplayTree();
+
 	private _size: number = 0;
 
 	get size() {
@@ -31,9 +32,11 @@ export class RangeMap<T> {
 		if (isCollapsed(entry)) {
 			return range.isEmpty;
 		}
+
 		if (entry) {
 			return !!findPosition(entry, end);
 		}
+
 		return false;
 	}
 
@@ -67,12 +70,14 @@ export class RangeMap<T> {
 			if (lineIsAfter(startLine, start)) {
 				break;
 			}
+
 			for (const startCharacter of iterateAscending(
 				least(startLine.value),
 			)) {
 				if (characterIsAfter(startLine, startCharacter, start)) {
 					break startLoop;
 				}
+
 				if (isCollapsed(startCharacter.value)) {
 					const [key, value] = startCharacter.value;
 
@@ -165,12 +170,14 @@ export class RangeMap<T> {
 			if (lineIsAfter(startLine, end)) {
 				break;
 			}
+
 			for (const startCharacter of iterateAscending(
 				leastCharacterGreaterThan(startLine, start),
 			)) {
 				if (characterIsAfter(startLine, startCharacter, end)) {
 					break;
 				}
+
 				if (isCollapsed(startCharacter.value)) {
 					const [key, value] = startCharacter.value;
 
@@ -181,12 +188,14 @@ export class RangeMap<T> {
 					// Since all entries must be contained within the range, all entry ends must occur on or before the
 					// range end
 					const endLines = startCharacter.value;
+
 					endLoop: for (const endLine of iterateAscending(
 						least(endLines),
 					)) {
 						if (lineIsAfter(endLine, end)) {
 							break;
 						}
+
 						const endCharacters = endLine.value;
 
 						for (const endCharacter of iterateAscending(
@@ -195,6 +204,7 @@ export class RangeMap<T> {
 							if (characterIsAfter(endLine, endCharacter, end)) {
 								break endLoop;
 							}
+
 							const [key, value] = endCharacter.value;
 
 							if (range.contains(key)) {
@@ -232,6 +242,7 @@ export class RangeMap<T> {
 			if (lineIsAfter(startLine, end)) {
 				break;
 			}
+
 			const startCharacters = startLine.value;
 
 			for (const startCharacter of iterateAscending(
@@ -240,6 +251,7 @@ export class RangeMap<T> {
 				if (characterIsAfter(startLine, startCharacter, end)) {
 					break startLoop;
 				}
+
 				if (isCollapsed(startCharacter.value)) {
 					const [key, value] = startCharacter.value;
 
@@ -292,6 +304,7 @@ export class RangeMap<T> {
 			// if we have an empty range, set it as the sole value at this step.
 			if (key.isEmpty) {
 				startCharacters.insert(start.character, [key, value]);
+
 				this._size++;
 
 				return this;
@@ -311,6 +324,7 @@ export class RangeMap<T> {
 
 			// migrate the single entry for the empty range to an individual map entry.
 			const existingEntry = endLines;
+
 			startCharacters.insert(
 				start.character,
 				(endLines = new SplayTree()),
@@ -322,6 +336,7 @@ export class RangeMap<T> {
 				endLines,
 				existingEntry[0].end,
 			);
+
 			existingEndCharacters.insert(existingEnd.character, existingEntry);
 
 			// if both the existing entry and the new entry have the same line, reuse the existing end
@@ -337,6 +352,7 @@ export class RangeMap<T> {
 
 		if (!entry) {
 			this._size++;
+
 			endCharacters.insert(end.character, [key, value]);
 		} else {
 			entry[1] = value;
@@ -361,13 +377,16 @@ export class RangeMap<T> {
 			// entry's range is empty
 			if (key.isEmpty) {
 				this._size--;
+
 				startCharacters.remove(start.character);
 
 				if (startCharacters.isEmpty()) {
 					this._ranges.remove(start.line);
 				}
+
 				return true;
 			}
+
 			return false;
 		}
 
@@ -377,6 +396,7 @@ export class RangeMap<T> {
 
 		if (endCharacters.find(end.character)) {
 			endCharacters.remove(end.character);
+
 			this._size--;
 
 			if (endCharacters.isEmpty()) {
@@ -390,13 +410,16 @@ export class RangeMap<T> {
 					}
 				}
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
 	clear() {
 		this._ranges = new SplayTree();
+
 		this._size = 0;
 	}
 

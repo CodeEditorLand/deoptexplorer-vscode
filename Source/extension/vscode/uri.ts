@@ -141,7 +141,9 @@ export function uriToPathOrUriString(uri: Uri, canonicalize?: boolean) {
 
 export interface FormatUriOptions {
 	as?: "uri" | "file";
+
 	skipEncoding?: boolean;
+
 	relativeTo?: Uri | { log: LogFile; ignoreIfBasename?: boolean };
 }
 
@@ -188,9 +190,13 @@ export function formatUri(
 
 export interface FormatUriMarkdownOptions extends FormatUriOptions {
 	trusted?: boolean;
+
 	label?: string;
+
 	title?: string;
+
 	schemes?: { allow?: string[]; deny?: string[] };
+
 	linkSources?: Sources;
 }
 
@@ -231,6 +237,7 @@ export function formatUriMarkdown(
 	}
 
 	const link = formatUri(linkUri, { as: "uri" });
+
 	title ??= formatUri(uri, { as: "file", skipEncoding: true });
 
 	return md`[${label}](${link}${title ? md` "${title}"` : ""})`;

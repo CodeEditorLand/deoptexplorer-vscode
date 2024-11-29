@@ -24,6 +24,7 @@ const args = getHostExecArgs(argv, flags);
 
 if (!argv.quiet) {
 	const processName = path.basename(argv.exec_path);
+
 	console.log(`> ${processName} ${args.join(" ")}`);
 }
 

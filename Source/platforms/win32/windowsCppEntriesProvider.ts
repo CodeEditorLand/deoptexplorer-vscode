@@ -22,11 +22,17 @@ import { tryCreateDbghelpWrapper } from "./dbghelpLoader";
 
 export interface WindowsCppEntriesProviderOptions {
 	extensionUri?: Uri;
+
 	targetRootFS?: string;
+
 	removeTemplates?: boolean;
+
 	globalStorageUri?: Uri;
+
 	dumpbinExe?: string;
+
 	useDbghelp?: boolean;
+
 	unmangleNames?: boolean;
 }
 
@@ -34,16 +40,27 @@ export interface WindowsCppEntriesProviderOptions {
 //       WindowsCppEntriesProvider when working with native libraries compiled with ASLR.
 export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 	private removeTemplates?: boolean;
+
 	private _symbols: string | FuncInfo[] = "";
+
 	private libStart = kNullAddress;
+
 	private symbolsFormat: "map" | "dumpbin-map" | undefined;
+
 	private dumpbinPath: string | null | undefined;
+
 	private imageBase = toAddress(0);
+
 	private imageBaseChecked = false;
+
 	private moduleType?: string;
+
 	private globalStorageUri?: Uri;
+
 	private useDbghelp?: boolean;
+
 	private extensionUri?: Uri;
+
 	private dbghelpWrapper:
 		| import("./dbghelpWrapper.js").DbghelpWrapper
 		| undefined;
@@ -57,10 +74,15 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 		extensionUri,
 	}: WindowsCppEntriesProviderOptions = {}) {
 		super({ targetRootFS });
+
 		this.removeTemplates = removeTemplates;
+
 		this.globalStorageUri = globalStorageUri;
+
 		this.extensionUri = extensionUri;
+
 		this.dumpbinPath = dumpbinExe;
+
 		this.useDbghelp = useDbghelp;
 	}
 
@@ -126,8 +148,11 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 
 	// This is almost a constant on 32-bit Windows.
 	static readonly EXE_IMAGE_BASE_32 = toAddress(0x000400000);
+
 	static readonly EXE_IMAGE_BASE_64 = toAddress(0x140000000);
+
 	static readonly DLL_IMAGE_BASE_32 = toAddress(0x010000000);
+
 	static readonly DLL_IMAGE_BASE_64 = toAddress(0x180000000);
 
 	protected async loadSymbols(
@@ -142,9 +167,13 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 		}
 
 		const { dir, ext, name, base } = path.parse(libName);
+
 		this._symbols = "";
+
 		this.moduleType = ext.toLowerCase();
+
 		this.libStart = libStart;
+
 		this.symbolsFormat = undefined;
 
 		const headers = winnt.getImageHeaders(libName);
@@ -158,6 +187,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 		}
 
 		this.imageBase = toAddress(headers.OptionalHeader.ImageBase);
+
 		this.parsePos = 0;
 
 		// If we are not explicitly using `dbghelp`, attempt to load a linker map
@@ -209,9 +239,11 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 									],
 									{ encoding: "utf8", stdio: "pipe" },
 								);
+
 								this._symbols = fs.readFileSync(tempFile, {
 									encoding: "utf8",
 								});
+
 								this.symbolsFormat = "dumpbin-map";
 
 								return;
@@ -247,6 +279,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 			this.dbghelpWrapper ??= await tryCreateDbghelpWrapper(
 				this.extensionUri,
 			);
+
 			this.dbghelpWrapper?.loadSymbols(libName, libStart, libEnd, {
 				progress,
 				token,
@@ -273,6 +306,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 					// ignore EEXIST
 					continue;
 				}
+
 				output.warn("Unable to create temp file:", e);
 
 				break;
@@ -308,6 +342,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 			if (instanceNames) {
 				interface VsInstanceState {
 					installationPath: string;
+
 					installationVersion: semver.SemVer;
 				}
 
@@ -376,6 +411,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 						// discover MSVC tools versions
 						const msvcToolsVersions: {
 							name: string;
+
 							version: semver.SemVer;
 						}[] = [];
 
@@ -431,6 +467,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 				) {
 					return true;
 				}
+
 				break;
 
 			case ".dll":
@@ -440,8 +477,10 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 				) {
 					return true;
 				}
+
 				break;
 		}
+
 		return false;
 	}
 
@@ -454,6 +493,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 			if (this.parsePos < this._symbols.length) {
 				return this._symbols[this.parsePos++];
 			}
+
 			return false;
 		}
 
@@ -464,6 +504,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 		}
 
 		const line = this._symbols.substring(this.parsePos, lineEndPos).trim();
+
 		this.parsePos = lineEndPos + 2;
 
 		if (this.imageBase != toAddress(0) && !this.imageBaseChecked) {
@@ -491,6 +532,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 
 					if (!this.imageBaseChecked) {
 						this.imageBaseChecked = true;
+
 						this.imageBase = parseAddress(imageBaseFields[1]);
 
 						if (!this.isValidImageBase(this.imageBase)) {
@@ -523,6 +565,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 
 			return { name, start };
 		}
+
 		return null;
 	}
 
@@ -540,6 +583,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 				if (bracketDepth === 0) {
 					result += name.slice(start, i);
 				}
+
 				bracketDepth++;
 			} else if (ch === ">") {
 				bracketDepth--;
@@ -549,6 +593,7 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 				}
 			}
 		}
+
 		result += name.slice(start);
 
 		return result;
@@ -576,13 +621,16 @@ export class WindowsCppEntriesProvider extends V8WindowsCppEntriesProvider {
 			if (!prefix) {
 				return name;
 			}
+
 			const nameEndPos = name.indexOf("@@");
+
 			undecorated = name
 				.slice(prefix[0].length, nameEndPos)
 				.split("@")
 				.reverse()
 				.join("::");
 		}
+
 		undecorated = undecorated.replace(/(?<=\W)\s+|\s+(?=\W)/g, "");
 
 		return this.removeTemplates

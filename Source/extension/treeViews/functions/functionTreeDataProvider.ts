@@ -20,8 +20,11 @@ const PAGE_SIZE = 500;
  */
 export class FunctionsTreeDataProvider extends BaseNodeProvider {
 	private _log?: LogFile;
+
 	private _deopts?: FunctionNode[];
+
 	private _applyFilters = (nodes: Query<FunctionNode>) => nodes;
+
 	private _applyGroups = (nodes: Query<FunctionNode>) =>
 		nodes
 			.through((nodes) =>
@@ -81,10 +84,12 @@ export class FunctionsTreeDataProvider extends BaseNodeProvider {
 							.through(this._applyFilters)
 							.toArray();
 					}
+
 					return from(this._deopts)
 						.through(this._applyGroups)
 						.toArray();
 				}
+
 				return [];
 			},
 			{ pageSize: PAGE_SIZE },
@@ -94,15 +99,18 @@ export class FunctionsTreeDataProvider extends BaseNodeProvider {
 	get log() {
 		return this._log;
 	}
+
 	set log(value) {
 		if (this._log !== value) {
 			this._log = value;
+
 			this.invalidate();
 		}
 	}
 
 	protected invalidate() {
 		super.invalidate();
+
 		this._deopts = undefined;
 	}
 }

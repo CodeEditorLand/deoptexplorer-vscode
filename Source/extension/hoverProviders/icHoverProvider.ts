@@ -85,18 +85,24 @@ export class ICHoverProvider implements HoverProvider {
 
 				if (worst) {
 					const icRange = entry.pickReferenceLocation(file).range;
+
 					range = range?.intersection(icRange) ?? icRange;
+
 					messages.push(...getHoverMessageForIc(entry, worst, file));
 				}
 			}
+
 			if (messages) {
 				if (!hoverCache) {
 					hoverCache = new RangeMap();
+
 					this._perFileHoverCache.set(document.uri, hoverCache);
 				}
+
 				range ??= new Range(position, position);
 
 				const hover = new Hover(messages, range);
+
 				hoverCache.set(range, hover);
 
 				return hover;
@@ -182,6 +188,7 @@ function getLastPropertySource(map: MapEntry) {
 			? markdown.trusted` | [${source.functionName}](${uri.with({ fragment: `${pos.line + 1},${pos.character + 1}` })})`
 			: markdown.trusted` ${source.functionName}`;
 	}
+
 	return "";
 }
 

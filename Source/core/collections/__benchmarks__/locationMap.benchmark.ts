@@ -16,12 +16,15 @@ import {
 
 interface LocationMapLike<T> {
 	get size(): number;
+
 	has(key: vscode.Location): boolean;
 
 	get(key: vscode.Location): T | undefined;
 
 	set(key: vscode.Location, value: T): this;
+
 	delete(key: vscode.Location): boolean;
+
 	clear(): void;
 
 	forEach(
@@ -32,8 +35,11 @@ interface LocationMapLike<T> {
 		) => unknown,
 		thisArg?: unknown,
 	): void;
+
 	keys(): Generator<vscode.Location, void, unknown>;
+
 	values(): Generator<T, void, unknown>;
+
 	entries(): Generator<[vscode.Location, T], void, unknown>;
 	[Symbol.iterator](): Generator<[vscode.Location, T], void, unknown>;
 }
@@ -51,7 +57,9 @@ describe("locationMap", () => {
 
 	const implementations: {
 		name: string;
+
 		LocationMap: new <T>() => LocationMapLike<T>;
+
 		locationMap: LocationMapLike<number>;
 	}[] = [
 		{ name: "current", LocationMap, locationMap: undefined! },
@@ -86,6 +94,7 @@ describe("locationMap", () => {
 
 		beforeAll(() => {
 			const uris = [...generate(uriCount, () => randomUri())];
+
 			entries = [
 				...generate(
 					rangeCount,
@@ -117,6 +126,7 @@ describe("locationMap", () => {
 
 		afterAll(() => {
 			entries = undefined!;
+
 			keys = undefined!;
 
 			for (const implementation of implementations) {
@@ -126,6 +136,7 @@ describe("locationMap", () => {
 
 		beforeAll(() => {
 			const uris = [...generate(uriCount, () => randomUri())];
+
 			entries = [
 				...generate(
 					rangeCount,
@@ -151,9 +162,11 @@ describe("locationMap", () => {
 					);
 				}
 			}
+
 			const keyCount =
 				Math.floor(rangeCount * totalPopulation) +
 				Math.floor(rangeCount * missPopulation);
+
 			keys = Array.from({ length: keyCount }).map(
 				() =>
 					randomElement(entries, missPopulation)?.[0] ??

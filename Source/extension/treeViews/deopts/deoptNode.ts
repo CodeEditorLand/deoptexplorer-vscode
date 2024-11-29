@@ -27,7 +27,9 @@ import { DeoptTreeDataProvider } from "./deoptTreeDataProvider";
 
 export class DeoptNode extends BaseNode {
 	private _functionReference: FunctionReference | null | undefined;
+
 	private _file: Uri | undefined;
+
 	private _worstBailoutType: DeoptimizeKind | null | undefined;
 
 	constructor(
@@ -41,22 +43,27 @@ export class DeoptNode extends BaseNode {
 	get provider() {
 		return super.provider as DeoptTreeDataProvider;
 	}
+
 	get file() {
 		return (this._file ??= this.deopt.filePosition.uri);
 	}
+
 	get functionReference() {
 		if (this._functionReference === undefined) {
 			const functionEntry = from(this.deopt.updates).maxBy(
 				(update) => update.bailoutType,
 				DeoptimizeKindComparer,
 			)?.functionEntry;
+
 			this._functionReference =
 				(functionEntry &&
 					FunctionReference.fromFunctionEntry(functionEntry)) ??
 				null;
 		}
+
 		return this._functionReference ?? undefined;
 	}
+
 	get worstBailoutType() {
 		if (this._worstBailoutType === undefined) {
 			this._worstBailoutType =
@@ -64,6 +71,7 @@ export class DeoptNode extends BaseNode {
 					.select((update) => update.bailoutType)
 					.min(DeoptimizeKindComparer) ?? null;
 		}
+
 		return this._worstBailoutType ?? undefined;
 	}
 
@@ -148,6 +156,7 @@ export class DeoptNode extends BaseNode {
 				lastDeoptReason === undefined
 			) {
 				lastBailoutType = update.bailoutType;
+
 				lastDeoptReason = update.deoptReason;
 
 				continue;
@@ -158,7 +167,9 @@ export class DeoptNode extends BaseNode {
 				bailouts.push(
 					markdown`${formatDeoptimizeKind(lastBailoutType, this.provider.log?.version)} - ${lastDeoptReason || "(unknown)"}  \n`,
 				);
+
 				lastBailoutType = update.bailoutType;
+
 				lastDeoptReason = update.deoptReason;
 
 				break;
@@ -171,6 +182,7 @@ export class DeoptNode extends BaseNode {
 						markdown`${formatDeoptimizeKind(lastBailoutType, this.provider.log?.version)} - ${lastDeoptReason || "(unknown)"}  \n`,
 					);
 				}
+
 				lastDeoptReason = update.deoptReason;
 
 				break;
@@ -182,6 +194,7 @@ export class DeoptNode extends BaseNode {
 			bailouts.push(
 				markdown`${formatDeoptimizeKind(lastBailoutType, this.provider.log?.version)} - ${lastDeoptReason || "(unknown)"}`,
 			);
+
 			bailouts.unshift(
 				markdown`
 \n\n

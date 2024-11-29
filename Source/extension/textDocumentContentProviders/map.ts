@@ -62,7 +62,9 @@ let provider: MapDocumentContentProvider;
 
 interface MapDocument {
 	text: string;
+
 	links: DocumentLink[];
+
 	references: RangeMap<MapId | MapReference>;
 	/** Declaration at a range */
 	declarations: RangeMap<MapId | MapReference | MapProperty>;
@@ -76,6 +78,7 @@ class MapDocumentContentProvider
 		DocumentLinkProvider
 {
 	private onDidChangeEvent = new EventEmitter<Uri>();
+
 	onDidChange = this.onDidChangeEvent.event;
 
 	private mapDocumentCache = new MruCache<MapDocument>(5);
@@ -116,6 +119,7 @@ class MapDocumentContentProvider
 		while (currentMapRef) {
 			// NOTE: Shouldn't be circular, but just in case...
 			if (seen.has(currentMapRef.mapId)) break;
+
 			seen.add(currentMapRef.mapId);
 
 			let nextMapRef: MapReference | undefined;
@@ -131,6 +135,7 @@ class MapDocumentContentProvider
 					history.unshift(update);
 
 					const nextMap = update.fromMap;
+
 					nextMapRef =
 						nextMap &&
 						MapReference.fromMapId(update.fromMapId, nextMap);
@@ -143,11 +148,15 @@ class MapDocumentContentProvider
 		}
 
 		const writer = new TextWriter();
+
 		writer.write("map");
+
 		writer.write(" ");
+
 		writer.write(formatMapName(mapId), (range) => {
 			declarations.set(range, thisMapRef);
 		});
+
 		writer.write(" ");
 
 		const constructorName = map.constructorName || map.mapType;
@@ -160,15 +169,20 @@ class MapDocumentContentProvider
 			if (constructorName) {
 				writer.write(constructorName);
 			}
+
 			if (baseMap) {
 				if (constructorName) writer.write(", ");
+
 				writer.write(formatMapName(baseMap.mapId), (range) => {
 					references.set(range, baseMap);
 				});
 			}
+
 			writer.write(" ");
 		}
+
 		writer.write("{");
+
 		writer.writeLine();
 
 		let lastSource: FunctionEntry | undefined;
@@ -193,7 +207,9 @@ class MapDocumentContentProvider
 				const range = new Range(line, start, line, end);
 
 				const pos = prop.source.filePosition.range.start;
+
 				writer.write(`    ${prefix}${link}${suffix}`);
+
 				writer.writeLine();
 
 				const uri = getScriptSourceUri(
@@ -211,10 +227,12 @@ class MapDocumentContentProvider
 						),
 					);
 				}
+
 				lastSource = prop.source;
 			}
 
 			const name = formatMapPropertyName(prop);
+
 			writer.write("    ");
 
 			if (prop.enumerable === false) writer.write("nonenumerable ");
@@ -222,22 +240,32 @@ class MapDocumentContentProvider
 			if (prop.configurable === false) writer.write("nonconfigurable ");
 
 			if (prop.writable === false) writer.write("readonly ");
+
 			writer.write(name, (range) => declarations.set(range, prop));
+
 			writer.write(": ");
+
 			writePropertyType(writer, prop, (range) => {
 				if (prop.type instanceof MapId) {
 					references.set(range, prop.type);
 				}
 			});
+
 			writer.write(";");
+
 			writer.writeLine();
 		}
 
 		writer.write("}");
+
 		writer.writeLine();
+
 		writer.writeLine();
+
 		writer.write("/*");
+
 		writer.writeLine();
+
 		writer.write(
 			markdown
 				.table(
@@ -267,6 +295,7 @@ class MapDocumentContentProvider
 						if (update.filePosition) {
 							location += `${update.functionName ?? "(anonymous)"} ${formatLocation(update.filePosition, { as: "file", include: "position" })}`;
 						}
+
 						return [
 							`${formatTimeRelativeTo(update.timestamp, startTime)}`,
 							update.event,
@@ -332,8 +361,11 @@ class MapDocumentContentProvider
 		);
 
 		writer.write(map.details.trim());
+
 		writer.writeLine();
+
 		writer.write("*/");
+
 		writer.writeLine();
 
 		const doc: MapDocument = {
@@ -342,6 +374,7 @@ class MapDocumentContentProvider
 			references,
 			declarations,
 		};
+
 		this.mapDocumentCache.set(uri, doc);
 
 		return doc;
@@ -547,6 +580,7 @@ function writePropertyType(
 		writer.write(property.type);
 	} else if (property.type) {
 		writer.write("map ");
+
 		writer.write(formatMapName(property.type), cb);
 	} else {
 		writer.write("unknown");
@@ -621,6 +655,7 @@ function getCharacterStartOfBaseMapInExtendsClause({
 	map,
 }: MapReference) {
 	let pos = getCharacterEndOfMapName(mapId);
+
 	pos += " extends ".length;
 
 	const constructorType = map.constructorName || map.mapType;
@@ -628,6 +663,7 @@ function getCharacterStartOfBaseMapInExtendsClause({
 	if (constructorType) {
 		pos += constructorType.length + ", ".length;
 	}
+
 	return pos;
 }
 
@@ -734,6 +770,7 @@ export function getUriForMap(mapId: MapId) {
 export async function showMap(mapId: MapId, viewColumn?: ViewColumn) {
 	if (openedLog?.maps.has(mapId)) {
 		const document = await workspace.openTextDocument(getUriForMap(mapId));
+
 		await window.showTextDocument(document, {
 			preview: false,
 			preserveFocus: true,
@@ -812,17 +849,22 @@ function formatTimeRelativeTo(time: TimeTicks, startTime: TimeTicks) {
 
 	if (delta.sign() < 0) {
 		delta = delta.negate();
+
 		negative = true;
 	}
+
 	let nanos = delta.inNanoseconds();
 
 	const hours = nanos / HOURS_PER_NANOSECOND;
+
 	nanos -= hours * HOURS_PER_NANOSECOND;
 
 	const minutes = nanos / MINUTES_PER_NANOSECOND;
+
 	nanos -= minutes * MINUTES_PER_NANOSECOND;
 
 	const seconds = nanos / SECONDS_PER_NANOSECOND;
+
 	nanos -= seconds * SECONDS_PER_NANOSECOND;
 
 	const milliseconds = TimeDelta.fromNanoseconds(nanos)

@@ -21,8 +21,10 @@ export function html(array: TemplateStringsArray, ...args: HtmlValue[]) {
 
 	for (let i = 1; i < array.length; i++) {
 		appendArg(result, args[i - 1]);
+
 		result.appendHtml(array[i]);
 	}
+
 	return result;
 }
 
@@ -46,6 +48,7 @@ export type HtmlValue =
  */
 export class HtmlString {
 	value: string;
+
 	isTrusted?: boolean;
 
 	constructor(value = "") {
@@ -90,22 +93,27 @@ function appendArg(result: HtmlString, arg: HtmlValue) {
 		if (arg === null) {
 			return;
 		}
+
 		if (arg instanceof HtmlString) {
 			assert(
 				!result.isTrusted || arg.isTrusted,
 				"Cannot mix trusted and untrusted content",
 			);
+
 			result.appendHtml(arg.value);
 
 			return;
 		}
+
 		if (Symbol.iterator in arg) {
 			for (const item of arg as Iterable<HtmlValue>) {
 				appendArg(result, item);
 			}
+
 			return;
 		}
 	}
+
 	if (arg !== undefined) {
 		result.appendText(`${arg}`);
 	}

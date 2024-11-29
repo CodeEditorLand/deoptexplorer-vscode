@@ -35,6 +35,7 @@ export class IcEntry extends ReferenceableEntryBase {
 	 * Gets the name of the function for this entry.
 	 */
 	functionName: string;
+
 	generatedFunctionName?: string;
 
 	/**
@@ -48,6 +49,7 @@ export class IcEntry extends ReferenceableEntryBase {
 		filePosition: Location,
 	) {
 		super(sources, filePosition);
+
 		this.functionName = functionName;
 	}
 
@@ -66,6 +68,7 @@ export class IcEntry extends ReferenceableEntryBase {
 	protected onResolveLocations() {
 		// This resolves the reference locations for the entry.
 		resolveIcLocations("generated", this);
+
 		resolveIcLocations("source", this);
 	}
 }

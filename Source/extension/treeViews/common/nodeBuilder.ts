@@ -7,7 +7,9 @@ export interface NodeBuilder<
 	TNode extends BaseNode,
 > {
 	readonly provider: TProvider;
+
 	build(parent: TParent): TNode;
+
 	flatten?(): Iterable<NodeBuilder<TProvider, TParent, TNode>>;
 }
 
@@ -15,5 +17,6 @@ export interface NodeBuilderEntries<
 	T extends NodeBuilder<BaseNodeProvider, BaseNode | undefined, BaseNode>,
 > {
 	readonly kind: string;
+
 	readonly values: readonly T[];
 }

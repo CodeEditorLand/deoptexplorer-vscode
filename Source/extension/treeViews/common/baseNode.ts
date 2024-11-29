@@ -14,9 +14,13 @@ import type { BaseNodeProvider } from "./baseNodeProvider";
  */
 export abstract class BaseNode extends ContextCommandHandler {
 	private _treeItem?: TreeItem;
+
 	private _parent: BaseNode | undefined;
+
 	private _provider: BaseNodeProvider;
+
 	private _visualParent?: BaseNode;
+
 	private _children?: Promise<BaseNode[]>;
 
 	constructor(
@@ -27,7 +31,9 @@ export abstract class BaseNode extends ContextCommandHandler {
 		super();
 
 		if (parent) assert(parent.provider === provider);
+
 		this._provider = provider;
+
 		this._parent = parent;
 	}
 
@@ -71,6 +77,7 @@ export abstract class BaseNode extends ContextCommandHandler {
 	 */
 	invalidate() {
 		this._children = undefined;
+
 		this._treeItem = undefined;
 	}
 

@@ -85,10 +85,12 @@ export async function setLogStatus(value: LogStatus) {
 		if (currentContext) {
 			emitters.willLogStatusChange();
 		}
+
 		logStatus = value;
 
 		if (currentContext) {
 			await setContext(contextKeys.logStatus, value);
+
 			emitters.didLogStatusChange(value);
 		}
 	}
@@ -99,6 +101,7 @@ export async function setSortICs(value: SortICs) {
 		if (currentContext) {
 			emitters.willSortICsChange();
 		}
+
 		sortICs = value;
 
 		if (currentContext) {
@@ -106,6 +109,7 @@ export async function setSortICs(value: SortICs) {
 				storage.setSortICs(value),
 				setContext(contextKeys.ics.sort, sortICs),
 			]);
+
 			emitters.didSortICsChange(value);
 		}
 	}
@@ -116,6 +120,7 @@ export async function setShowICStates(value: ImmutableEnumSet<ShowICStates>) {
 		if (currentContext) {
 			emitters.willShowICStatesChange();
 		}
+
 		showICStates = value;
 
 		if (currentContext) {
@@ -139,6 +144,7 @@ export async function setShowICStates(value: ImmutableEnumSet<ShowICStates>) {
 					showICStates.has(ShowICStates.Other),
 				),
 			]);
+
 			emitters.didShowICStatesChange(value);
 		}
 	}
@@ -149,6 +155,7 @@ export async function setSortDeopts(value: SortDeopts) {
 		if (currentContext) {
 			emitters.willSortDeoptsChange();
 		}
+
 		sortDeopts = value;
 
 		if (currentContext) {
@@ -156,6 +163,7 @@ export async function setSortDeopts(value: SortDeopts) {
 				storage.setSortDeopts(value),
 				setContext(contextKeys.deopts.sort, sortDeopts),
 			]);
+
 			emitters.didSortDeoptsChange(value);
 		}
 	}
@@ -166,6 +174,7 @@ export async function setGroupDeopts(value: ImmutableEnumSet<GroupDeopts>) {
 		if (currentContext) {
 			emitters.willGroupDeoptsChange();
 		}
+
 		groupDeopts = value;
 
 		if (currentContext) {
@@ -184,6 +193,7 @@ export async function setGroupDeopts(value: ImmutableEnumSet<GroupDeopts>) {
 					groupDeopts.has(GroupDeopts.ByKind),
 				),
 			]);
+
 			emitters.didGroupDeoptsChange(value);
 		}
 	}
@@ -194,6 +204,7 @@ export async function setSortMaps(value: MapSortMode) {
 		if (currentContext) {
 			emitters.willSortMapsChange();
 		}
+
 		sortMaps = value;
 
 		if (currentContext) {
@@ -201,6 +212,7 @@ export async function setSortMaps(value: MapSortMode) {
 				storage.setSortMaps(value),
 				setContext(contextKeys.sortMaps, value),
 			]);
+
 			emitters.didSortMapsChange(value);
 		}
 	}
@@ -211,6 +223,7 @@ export async function setGroupMaps(value: ImmutableEnumSet<GroupMaps>) {
 		if (currentContext) {
 			emitters.willGroupMapsChange();
 		}
+
 		groupMaps = value;
 
 		if (currentContext) {
@@ -225,6 +238,7 @@ export async function setGroupMaps(value: ImmutableEnumSet<GroupMaps>) {
 					groupMaps.has(GroupMaps.ByFunction),
 				),
 			]);
+
 			emitters.didGroupMapsChange(value);
 		}
 	}
@@ -235,6 +249,7 @@ export async function setShowMaps(value: ImmutableEnumSet<ShowMaps>) {
 		if (currentContext) {
 			emitters.willShowMapsChange();
 		}
+
 		showMaps = value;
 
 		if (currentContext) {
@@ -253,6 +268,7 @@ export async function setShowMaps(value: ImmutableEnumSet<ShowMaps>) {
 					showMaps.has(ShowMaps.Transitions),
 				),
 			]);
+
 			emitters.didShowMapsChange(value);
 		}
 	}
@@ -263,10 +279,12 @@ export async function setSortProfile(value: ProfileSortMode) {
 		if (currentContext) {
 			emitters.willSortProfileChange();
 		}
+
 		sortProfile = value;
 
 		if (currentContext) {
 			await setContext(contextKeys.sortProfile, value);
+
 			emitters.didSortProfileChange(value);
 		}
 	}
@@ -277,10 +295,12 @@ export async function setShowProfile(value: ProfileShowMode) {
 		if (currentContext) {
 			emitters.willShowProfileChange();
 		}
+
 		showProfile = value;
 
 		if (currentContext) {
 			await setContext(contextKeys.showProfile, value);
+
 			emitters.didShowProfileChange(value);
 		}
 	}
@@ -291,6 +311,7 @@ export async function setShowProfileJustMyCode(value: boolean) {
 		if (currentContext) {
 			emitters.willShowProfileJustMyCodeChange();
 		}
+
 		showJustMyCode = value;
 
 		if (currentContext) {
@@ -298,6 +319,7 @@ export async function setShowProfileJustMyCode(value: boolean) {
 				storage.setShowJustMyCode(value),
 				setContext(contextKeys.showProfileJustMyCode, value),
 			]);
+
 			emitters.didShowProfileJustMyCodeChange(value);
 		}
 	}
@@ -308,10 +330,12 @@ export async function setShowNativeCodeProfileNodes(value: boolean) {
 		if (currentContext) {
 			emitters.willShowNativeCodeProfileNodesChange();
 		}
+
 		showNativeCodeProfileNodes = value;
 
 		if (currentContext) {
 			await setContext(contextKeys.showNativeCodeProfileNodes, value);
+
 			emitters.didShowNativeCodeProfileNodesChange(value);
 		}
 	}
@@ -322,10 +346,12 @@ export async function setShowNodeJsProfileNodes(value: boolean) {
 		if (currentContext) {
 			emitters.willShowNodeJsProfileNodesChange();
 		}
+
 		showNodeJsProfileNodes = value;
 
 		if (currentContext) {
 			await setContext(contextKeys.showNodeJsProfileNodes, value);
+
 			emitters.didShowNodeJsProfileNodesChange(value);
 		}
 	}
@@ -336,10 +362,12 @@ export async function setShowNodeModulesProfileNodes(value: boolean) {
 		if (currentContext) {
 			emitters.willShowNodeModulesProfileNodesChange();
 		}
+
 		showNodeModulesProfileNodes = value;
 
 		if (currentContext) {
 			await setContext(contextKeys.showNodeModulesProfileNodes, value);
+
 			emitters.didShowNodeModulesProfileNodesChange(value);
 		}
 	}
@@ -352,6 +380,7 @@ export async function setShowDecorations(
 		if (currentContext) {
 			emitters.willShowDecorationsChange();
 		}
+
 		showDecorations = value;
 
 		if (currentContext) {
@@ -377,6 +406,7 @@ export async function setShowDecorations(
 					showDecorations.has(ShowDecorations.LineTicks),
 				),
 			]);
+
 			emitters.didShowDecorationsChange(value);
 		}
 	}
@@ -387,10 +417,12 @@ export async function setShowLineTicks(value: boolean) {
 		if (currentContext) {
 			emitters.willShowLineTicksChange();
 		}
+
 		showLineTicks = value;
 
 		if (currentContext) {
 			await setContext(contextKeys.showLineTicks, value);
+
 			emitters.didShowLineTicksChange(value);
 		}
 	}
@@ -398,17 +430,29 @@ export async function setShowLineTicks(value: boolean) {
 
 export async function activateContextService(context: ExtensionContext) {
 	currentContext = context;
+
 	showJustMyCode = storage.getShowJustMyCode();
+
 	showNativeCodeProfileNodes = storage.getShowNativeCodeProfileNodes();
+
 	showNodeJsProfileNodes = storage.getShowNodeJsProfileNodes();
+
 	showNodeModulesProfileNodes = storage.getShowNodeModulesProfileNodes();
+
 	sortICs = storage.getSortICs();
+
 	showICStates = storage.getShowICStates();
+
 	groupDeopts = storage.getGroupDeopts();
+
 	sortDeopts = storage.getSortDeopts();
+
 	groupMaps = storage.getGroupMaps();
+
 	showMaps = storage.getShowMaps();
+
 	sortMaps = storage.getSortMaps();
+
 	await Promise.all([
 		setContext(
 			contextKeys.decorations.showDeopts,
@@ -500,22 +544,39 @@ export async function activateContextService(context: ExtensionContext) {
 
 	return new Disposable(() => {
 		logStatus = kDefaultLogStatus;
+
 		sortICs = kDefaultSortICs;
+
 		showICStates = kDefaultShowICStates;
+
 		sortDeopts = kDefaultSortDeopts;
+
 		groupDeopts = kDefaultGroupDeopts;
+
 		sortMaps = kDefaultMapSortMode;
+
 		groupMaps = kDefaultGroupMaps;
+
 		showMaps = kDefaultShowMaps;
+
 		sortMaps = kDefaultMapSortMode;
+
 		sortProfile = kDefaultProfileSortMode;
+
 		showProfile = kDefaultProfileShowMode;
+
 		showJustMyCode = kDefaultShowJustMyCode;
+
 		showNativeCodeProfileNodes = kDefaultShowNativeCodeProfileNodes;
+
 		showNodeJsProfileNodes = kDefaultShowNodeJsProfileNodes;
+
 		showNodeModulesProfileNodes = kDefaultShowNodeModulesProfileNodes;
+
 		showDecorations = kDefaultShowDecorations;
+
 		showLineTicks = kDefaultShowLineTicks;
+
 		currentContext = undefined;
 	});
 }

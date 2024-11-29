@@ -84,18 +84,24 @@ export class DeoptHoverProvider implements HoverProvider {
 
 				if (worst) {
 					const deoptRange = entry.pickReferenceLocation(file).range;
+
 					range = range?.intersection(deoptRange) ?? deoptRange;
+
 					messages.push(...getHoverMessageForDeoptEntry(entry));
 				}
 			}
+
 			if (messages) {
 				if (!hoverCache) {
 					hoverCache = new RangeMap();
+
 					this._perFileHoverCache.set(document.uri, hoverCache);
 				}
+
 				range ??= new Range(position, position);
 
 				const hover = new Hover(messages, range);
+
 				hoverCache.set(range, hover);
 
 				return hover;

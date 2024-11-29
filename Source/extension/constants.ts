@@ -320,6 +320,7 @@ export namespace contextKeys {
 			// }
 		}
 	}
+
 	export namespace deopts {
 		const deopts = `${extensionName}.deopts` as const;
 
@@ -331,6 +332,7 @@ export namespace contextKeys {
 
 		export const groupByKind = `${deopts}.groupByKind` as const;
 	}
+
 	export namespace maps {
 		const maps = `${extensionName}.maps`;
 
@@ -522,11 +524,13 @@ export namespace colors {
 			overviewRuler: `${extensionName}.${name}.overviewRuler`,
 		} as const;
 	}
+
 	function makeForegroundColor<K extends string>(name: K) {
 		return {
 			foreground: `${extensionName}.${name}.foreground`,
 		} as const;
 	}
+
 	export const noFeedbackIc = makeHighlightColors("noFeedbackIc");
 
 	export const uninitializedIc = makeHighlightColors("uninitializedIc");

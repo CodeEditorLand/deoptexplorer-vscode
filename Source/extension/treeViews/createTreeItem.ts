@@ -60,16 +60,24 @@ export function createTreeItem(
 
 	if (labelOrResourceUri instanceof Uri) {
 		item = new TreeItem(labelOrResourceUri, state);
+
 		item.label = label;
 	} else {
 		item = new TreeItem(labelOrResourceUri, state);
+
 		item.resourceUri = resourceUri;
 	}
+
 	item.id = id;
+
 	item.iconPath = iconPath;
+
 	item.tooltip = tooltip;
+
 	item.description = description;
+
 	item.contextValue = contextValue;
+
 	item.command = command;
 
 	return item;

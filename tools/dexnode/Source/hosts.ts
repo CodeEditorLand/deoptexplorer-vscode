@@ -79,23 +79,29 @@ export function getHostExecArgs(argv: Options, v8Flags: string[]) {
 	switch (argv.host.flags & HostFlags.ArgumentsMask) {
 		case HostFlags.ChromiumArguments:
 			args.push("--no-sandbox");
+
 			args.push(`--js-flags=${v8Flags.join(",")}`);
+
 			args.push(...argv._);
 
 			break;
 
 		case HostFlags.DenoArguments:
 			args.push("run");
+
 			args.push(`--v8-flags=${v8Flags.join(",")}`);
+
 			args.push(...argv._);
 
 			break;
 
 		case HostFlags.NodeJSArguments:
 			args.push(...v8Flags);
+
 			args.push(...argv._);
 
 			break;
 	}
+
 	return args;
 }

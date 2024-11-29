@@ -183,6 +183,7 @@ export const enum CharacterCodes {
 	bar = 0x7c, // |
 	caret = 0x5e, // ^
 	closeBrace = 0x7d, // }
+
 	closeBracket = 0x5d, // ]
 	closeParen = 0x29, // )
 	colon = 0x3a, // :
@@ -202,6 +203,7 @@ export const enum CharacterCodes {
 	plus = 0x2b, // +
 	question = 0x3f, // ?
 	semicolon = 0x3b, // ;
+
 	singleQuote = 0x27, // '
 	slash = 0x2f, // /
 	tilde = 0x7e, // ~

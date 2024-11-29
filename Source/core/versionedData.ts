@@ -10,7 +10,9 @@ import { V8Version } from "./v8Version";
  */
 export class VersionedData<T> {
 	private _evolutions: [semver.Range, T][] = [];
+
 	private _defaultEvolution: T | undefined;
+
 	private _versionCache: [V8Version, T | undefined] | undefined;
 
 	/**
@@ -24,6 +26,7 @@ export class VersionedData<T> {
 				this._defaultEvolution = mappings;
 			} else {
 				const range = new semver.Range(key, { loose: true });
+
 				this._evolutions.push([range, mappings]);
 			}
 		}
@@ -52,9 +55,11 @@ export class VersionedData<T> {
 		if (typeof version === "string") {
 			version = new semver.SemVer(version, { loose: true });
 		}
+
 		if (version instanceof semver.SemVer) {
 			version = new V8Version(version, []);
 		}
+
 		if (this._versionCache?.[0].compare(version) === 0) {
 			data = this._versionCache[1];
 		} else {
@@ -67,8 +72,10 @@ export class VersionedData<T> {
 					break;
 				}
 			}
+
 			this._versionCache = [version, data];
 		}
+
 		return data;
 	}
 }

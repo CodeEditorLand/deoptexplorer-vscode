@@ -56,6 +56,7 @@ export class FunctionName {
 			case "(hidden)":
 				return new FunctionName(text, /*location*/ undefined);
 		}
+
 		const match = functionFileRegExp.exec(text);
 
 		if (match?.groups) {
@@ -89,7 +90,9 @@ export class FunctionName {
 
 			for (
 				let i = nameAndLocation.lastIndexOf(" ");
+
 				i >= 0;
+
 				i = i === 0 ? -1 : nameAndLocation.lastIndexOf(" ", i - 1)
 			) {
 				cppFunctionNameRegExp.lastIndex = i + 1;
@@ -102,6 +105,7 @@ export class FunctionName {
 
 				if (uriOrPathStartRegExp.test(nameAndLocation)) {
 					pathname = nameAndLocation.slice(i + 1);
+
 					name = nameAndLocation.slice(0, i);
 
 					break;
@@ -113,6 +117,7 @@ export class FunctionName {
 
 				if (lastSpace >= 0) {
 					pathname = nameAndLocation.slice(lastSpace + 1);
+
 					name = nameAndLocation.slice(0, lastSpace);
 				}
 			}
@@ -127,6 +132,7 @@ export class FunctionName {
 
 					if (uriOrPathStartRegExp.test(nameAndLocation)) {
 						pathname = nameAndLocation;
+
 						name = path.basename(pathname);
 					} else {
 						name = nameAndLocation.trim();
@@ -147,6 +153,7 @@ export class FunctionName {
 								Uri.parse("unknown:", /*strict*/ true),
 								pathname,
 							);
+
 				location = new Location(getCanonicalUri(uri), range);
 			}
 
@@ -174,6 +181,7 @@ export class FunctionName {
 				/*state*/ undefined,
 			);
 		}
+
 		return new FunctionName(
 			text,
 			/*filePosition*/ undefined,
@@ -208,11 +216,14 @@ export class FunctionName {
 							: this.state === FunctionState.OptimizedMaglev
 								? "+"
 								: "";
+
 			s = `${this.type}: ${state}${s}`;
 		}
+
 		if (this.filePosition) {
 			s = `${s} ${this.filePosition}`;
 		}
+
 		return s;
 	}
 
@@ -264,7 +275,9 @@ declare global {
 			FunctionName,
 			{
 				$type: "FunctionName";
+
 				name: string;
+
 				filePosition: KnownSerializedType<"Location"> | undefined;
 			}
 		>;

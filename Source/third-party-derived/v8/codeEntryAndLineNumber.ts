@@ -31,10 +31,12 @@ export class CodeEntryAndLineNumber {
 
 	hash() {
 		let hash = 0;
+
 		hash = Equaler.combineHashes(
 			hash,
 			Equaler.defaultEqualer.hash(this.code_entry),
 		);
+
 		hash = Equaler.combineHashes(
 			hash,
 			Equaler.defaultEqualer.hash(this.line_number),

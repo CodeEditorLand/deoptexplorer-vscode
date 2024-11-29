@@ -37,9 +37,11 @@ export class MapNode extends BaseNode {
 	get provider() {
 		return super.provider as MapsTreeDataProvider;
 	}
+
 	get mapId() {
 		return this.mapRef.mapId;
 	}
+
 	get map() {
 		return this.mapRef.map;
 	}
@@ -92,6 +94,7 @@ export class MapNode extends BaseNode {
 				log: this.provider.log,
 				ignoreIfBasename: true,
 			};
+
 			lines.push(
 				markdown`**function:** ${source.functionName}  \n`,
 				markdown`**file:** ${formatLocationMarkdown(this.map.getMapFilePosition(), { as: "file", relativeTo, linkSources: this.provider.log?.sources })}  \n`,
@@ -113,6 +116,7 @@ export class MapNode extends BaseNode {
 			lines.push(
 				markdown`**inobject properties:** ${this.map.inobjectPropertiesCount}  \n`,
 			);
+
 		lines.push(
 			markdown`**ics:** ${count(this.map.referencedBy, (ref) => ref.kind === "ic")}  \n`,
 		);
@@ -121,6 +125,7 @@ export class MapNode extends BaseNode {
 			label: `${this.mapId}`,
 			title: `${this.mapId}`,
 		});
+
 		treeItem.tooltip = markdown`${header}\n\n${lines}`;
 
 		return treeItem;

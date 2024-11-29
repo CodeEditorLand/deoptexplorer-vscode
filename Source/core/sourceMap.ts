@@ -20,6 +20,7 @@ declare module "source-map" {
 	interface SourceMapConsumer {
 		/** Absolute sources */
 		readonly sources: readonly string[];
+
 		readonly sourcesContent?: readonly string[] | null;
 	}
 }
@@ -39,13 +40,16 @@ export class SourceLocation extends Location {
 
 	constructor(uri: Uri, rangeOrPosition: Range | Position, name?: string) {
 		super(uri, rangeOrPosition);
+
 		this.name = name;
 	}
 }
 
 export class SourceMap {
 	private _sourceMap: source_map.SourceMapConsumer;
+
 	private _sourceMapUri: Uri;
+
 	private _sources: readonly Uri[] | undefined;
 
 	constructor(
@@ -54,6 +58,7 @@ export class SourceMap {
 		sourceMapUri: Uri,
 	) {
 		this._sourceMapUri = sourceMapUri;
+
 		this._sourceMap = new (source_map.SourceMapConsumer as new (
 			sourceMap: source_map.RawSourceMap | string,
 			sourceMapUrl?: string,
@@ -61,6 +66,7 @@ export class SourceMap {
 			sourceMap,
 			this._sourceMapUri.toString(),
 		);
+
 		this._sourceMap.computeColumnSpans();
 	}
 
@@ -73,8 +79,10 @@ export class SourceMap {
 	toSourceLocation(value: Location | Position | Range, bias?: SourceMapBias) {
 		if (value instanceof Location) {
 			assert(UriEqualer.equals(value.uri, this.generatedUri));
+
 			value = value.range;
 		}
+
 		return value instanceof Range
 			? this._rangeToSourceLocation(value, bias)
 			: this._positionToSourceLocation(value, bias);
@@ -100,6 +108,7 @@ export class SourceMap {
 		for (const position of this.toAllGeneratedPositions(value, collapse)) {
 			result.push(new Location(this.generatedUri, position));
 		}
+
 		return result;
 	}
 
@@ -176,6 +185,7 @@ export class SourceMap {
 						sourcePosition,
 						baseMapping.name ?? undefined,
 					);
+
 					cb.call(
 						thisArg,
 						new SourceMapping(generatedLocation, sourceLocation),
@@ -198,12 +208,14 @@ export class SourceMap {
 			...PositionConverters.toSourceMapPosition(range.start),
 			bias: bias ?? SourceMapConsumer.LEAST_UPPER_BOUND,
 		};
+
 		assert(isValidSourceMapFindPosition(generatedStart));
 
 		const generatedEnd: FindPosition = {
 			...PositionConverters.toSourceMapPosition(range.end),
 			bias: bias ?? SourceMapConsumer.GREATEST_LOWER_BOUND,
 		};
+
 		assert(isValidSourceMapFindPosition(generatedEnd));
 
 		const mappedStart = this._sourceMap.originalPositionFor(generatedStart);
@@ -246,6 +258,7 @@ export class SourceMap {
 			...PositionConverters.toSourceMapPosition(position),
 			bias,
 		};
+
 		assert(isValidSourceMapFindPosition(generatedPosition));
 
 		const mappedPosition =
@@ -268,11 +281,13 @@ export class SourceMap {
 		if (range.isEmpty) {
 			return this._positionToGeneratedRange(source, range.start, bias);
 		}
+
 		const sourceStart: SourceFindPosition = {
 			source,
 			...PositionConverters.toSourceMapPosition(range.start),
 			bias: bias ?? SourceMapConsumer.LEAST_UPPER_BOUND,
 		};
+
 		assert(isValidSourceMapSourceFindPosition(sourceStart));
 
 		const sourceEnd: SourceFindPosition = {
@@ -280,6 +295,7 @@ export class SourceMap {
 			...PositionConverters.toSourceMapPosition(range.end),
 			bias: bias ?? SourceMapConsumer.GREATEST_LOWER_BOUND,
 		};
+
 		assert(isValidSourceMapSourceFindPosition(sourceEnd));
 
 		const mappedStart = this._sourceMap.generatedPositionFor(sourceStart);
@@ -315,6 +331,7 @@ export class SourceMap {
 			...PositionConverters.toSourceMapPosition(position),
 			bias,
 		};
+
 		assert(isValidSourceMapSourceFindPosition(sourcePosition));
 
 		const lineRange = this._sourceMap.generatedPositionFor(sourcePosition);
@@ -323,6 +340,7 @@ export class SourceMap {
 			if (isValidSourceMapLineRange(lineRange)) {
 				return LineRangeConverters.toVSCodeRange(lineRange);
 			}
+
 			if (isValidSourceMapPosition(lineRange)) {
 				const pos = PositionConverters.toVSCodePosition(lineRange);
 
@@ -336,6 +354,7 @@ export class SourceMap {
 			source,
 			...PositionConverters.toSourceMapPosition(position),
 		};
+
 		assert(isValidSourceMapMappedPosition(sourcePosition));
 
 		const generatedPositions =
@@ -350,6 +369,7 @@ export class SourceMap {
 				);
 			}
 		}
+
 		return result;
 	}
 }
@@ -393,19 +413,29 @@ export function getInlineSourceMapData(
 
 interface ValidMappingItemWithoutSource {
 	generatedLine: number;
+
 	generatedColumn: number;
+
 	source?: null;
+
 	originalLine?: null;
+
 	originalColumn?: null;
+
 	name?: null;
 }
 
 interface ValidMappingItemWithSource {
 	generatedLine: number;
+
 	generatedColumn: number;
+
 	source: string;
+
 	originalLine: number;
+
 	originalColumn: number;
+
 	name?: string | null;
 }
 
@@ -515,6 +545,7 @@ namespace PositionConverters {
 			line: position.line + 1,
 			column: position.character,
 		};
+
 		assert(isValidSourceMapPosition(result));
 
 		return result;
@@ -535,6 +566,7 @@ namespace LineRangeConverters {
 			...PositionConverters.toSourceMapPosition(range.start),
 			lastColumn: range.end.character,
 		};
+
 		assert(isValidSourceMapLineRange(result));
 
 		return result;

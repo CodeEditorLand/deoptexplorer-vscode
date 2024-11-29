@@ -18,16 +18,25 @@ import { LogFile } from "./logFile";
  */
 export class ProfileViewNodeSnapshot {
 	readonly log: LogFile | undefined;
+
 	readonly tokenPath: readonly symbol[];
+
 	readonly entry: CodeEntry;
+
 	readonly totalTime: number;
+
 	readonly totalPercent: number;
+
 	readonly selfTime: number;
+
 	readonly selfPercent: number;
+
 	readonly parentTotalPercent: number;
+
 	readonly lineTicks: readonly LineTick[];
 
 	private _fileLineTicks: readonly FileLineTick[] | undefined;
+
 	private _mappedLineTicks:
 		| readonly FileLineTick[]
 		| Promise<readonly FileLineTick[]>
@@ -35,13 +44,21 @@ export class ProfileViewNodeSnapshot {
 
 	constructor(log: LogFile | undefined, node: ProfileViewNode) {
 		this.log = log;
+
 		this.tokenPath = node.tokenPath;
+
 		this.entry = node.entry;
+
 		this.totalTime = node.totalTime;
+
 		this.totalPercent = node.totalPercent;
+
 		this.selfTime = node.selfTime;
+
 		this.selfPercent = node.selfPercent;
+
 		this.parentTotalPercent = node.parentTotalPercent;
+
 		this.lineTicks = node.lineTicks.map(
 			({ line, hitCount }) => new LineTick(line, hitCount),
 		);
@@ -141,6 +158,7 @@ export class ProfileViewNodeSnapshot {
 							UriEqualer.equals(sourceFile, canonicalSourceFile)
 						) {
 							sourceFile = canonicalSourceFile;
+
 							mappedLineTicks.push(
 								new FileLineTick(
 									sourceFile,
@@ -152,10 +170,12 @@ export class ProfileViewNodeSnapshot {
 							continue;
 						}
 					}
+
 					mappedLineTicks.push(lineTick);
 				}
 			}
 		}
+
 		return (this._mappedLineTicks = mappedLineTicks);
 	}
 }

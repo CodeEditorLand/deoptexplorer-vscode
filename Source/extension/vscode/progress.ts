@@ -22,6 +22,7 @@ export function scaleProgress(
 			if (typeof report === "number") {
 				return progress.report(report * scale);
 			}
+
 			return progress.report(
 				report.increment !== undefined
 					? { ...report, increment: report.increment * scale }

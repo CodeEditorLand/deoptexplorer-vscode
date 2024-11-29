@@ -28,6 +28,7 @@ export class TickSample {
 		readonly stack: readonly Address[],
 	) {
 		assert(pc >= kNullAddress);
+
 		assert(tosOrExternalCallbackEntry >= kNullAddress);
 	}
 

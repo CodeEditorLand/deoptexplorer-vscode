@@ -24,6 +24,7 @@ function getLocation(uriOrLocation: Uri | Location | undefined, range?: Range) {
 
 		return uriOrLocation;
 	}
+
 	if (uriOrLocation instanceof Uri && range instanceof Range) {
 		return new Location(uriOrLocation, range);
 	}
@@ -66,6 +67,7 @@ function setReferenceLocation(
 
 			break;
 	}
+
 	return true;
 }
 
@@ -151,6 +153,7 @@ function resolveLocations<T extends Entry>(
 				return true;
 			}
 		}
+
 		const range =
 			document.getWordRangeAtPosition(filePosition.range.start) ??
 			filePosition.range;
@@ -212,6 +215,7 @@ function setExtentLocation(
 
 			break;
 	}
+
 	return true;
 }
 
@@ -421,6 +425,7 @@ function tryResolveFunctionLocationsFallback(
 				token.parent,
 			);
 		}
+
 		if (ts.isConstructorDeclaration(token.parent)) {
 			//            ▼
 			// constructor() {}
@@ -432,6 +437,7 @@ function tryResolveFunctionLocationsFallback(
 				token.parent,
 			);
 		}
+
 		if (
 			ts.isMethodDeclaration(token.parent) ||
 			ts.isAccessor(token.parent)
@@ -450,6 +456,7 @@ function tryResolveFunctionLocationsFallback(
 				token.parent,
 			);
 		}
+
 		if (ts.isArrowFunction(token.parent)) {
 			// ▼
 			// () => {}
@@ -465,6 +472,7 @@ function tryResolveFunctionLocationsFallback(
 				token.parent,
 			);
 		}
+
 		if (
 			ts.isParenthesizedExpression(token.parent) &&
 			ts.isArrowFunction(token.parent.expression)
@@ -479,6 +487,7 @@ function tryResolveFunctionLocationsFallback(
 				token.parent.expression,
 			);
 		}
+
 		if (
 			ts.isCallExpression(token.parent) &&
 			token.parent.arguments.length &&
@@ -495,6 +504,7 @@ function tryResolveFunctionLocationsFallback(
 			);
 		}
 	}
+
 	if (
 		token.kind === ts.SyntaxKind.OpenBracketToken &&
 		ts.isArrayLiteralExpression(token.parent) &&
@@ -511,6 +521,7 @@ function tryResolveFunctionLocationsFallback(
 			token.parent.elements[0] as ts.ArrowFunction,
 		);
 	}
+
 	if (token.kind === ts.SyntaxKind.Identifier) {
 		if (ts.isParameter(token.parent)) {
 			if (ts.isArrowFunction(token.parent.parent)) {
@@ -524,6 +535,7 @@ function tryResolveFunctionLocationsFallback(
 					token.parent.parent,
 				);
 			}
+
 			if (
 				ts.isFunctionDeclaration(token.parent.parent) ||
 				ts.isFunctionExpression(token.parent.parent)
@@ -538,6 +550,7 @@ function tryResolveFunctionLocationsFallback(
 					token.parent.parent,
 				);
 			}
+
 			if (ts.isConstructorDeclaration(token.parent.parent)) {
 				//              ▼
 				// constructor (a) {}
@@ -549,6 +562,7 @@ function tryResolveFunctionLocationsFallback(
 					token.parent.parent,
 				);
 			}
+
 			if (
 				ts.isMethodDeclaration(token.parent.parent) ||
 				ts.isAccessor(token.parent.parent)
@@ -568,6 +582,7 @@ function tryResolveFunctionLocationsFallback(
 				);
 			}
 		}
+
 		if (
 			ts.isFunctionDeclaration(token.parent) ||
 			ts.isFunctionExpression(token.parent)
@@ -586,6 +601,7 @@ function tryResolveFunctionLocationsFallback(
 				token.parent,
 			);
 		}
+
 		if (ts.isConstructorDeclaration(token.parent)) {
 			//            ▼
 			// constructor() {}
@@ -597,6 +613,7 @@ function tryResolveFunctionLocationsFallback(
 				token.parent,
 			);
 		}
+
 		if (
 			ts.isMethodDeclaration(token.parent) ||
 			ts.isAccessor(token.parent)
@@ -615,6 +632,7 @@ function tryResolveFunctionLocationsFallback(
 				token.parent,
 			);
 		}
+
 		return setReferenceLocationFromNode(
 			locationKind,
 			entry,
@@ -622,6 +640,7 @@ function tryResolveFunctionLocationsFallback(
 			token,
 		);
 	}
+
 	return false;
 }
 
@@ -652,6 +671,7 @@ function tryResolveFunctionLocationsInJavaScript(
 				node,
 			);
 		}
+
 		if (ts.isConstructorDeclaration(node)) {
 			//            ▼
 			// constructor() {}
@@ -663,6 +683,7 @@ function tryResolveFunctionLocationsInJavaScript(
 				node,
 			);
 		}
+
 		if (ts.isMethodDeclaration(node) || ts.isAccessor(node)) {
 			//       ▼
 			// method() {}
@@ -678,6 +699,7 @@ function tryResolveFunctionLocationsInJavaScript(
 				node,
 			);
 		}
+
 		if (ts.isArrowFunction(node)) {
 			// ▼
 			// () => {}
@@ -693,6 +715,7 @@ function tryResolveFunctionLocationsInJavaScript(
 				node,
 			);
 		}
+
 		node = node.parent;
 	}
 
@@ -738,6 +761,7 @@ function tryResolveFunctionLocationsInTypeScript(
 					return true;
 				}
 			}
+
 			if (
 				setReferenceLocation(
 					locationKind,
@@ -755,6 +779,7 @@ function tryResolveFunctionLocationsInTypeScript(
 			}
 		}
 	}
+
 	return tryResolveFunctionLocationsFallback(
 		locationKind,
 		entry,
@@ -778,36 +803,46 @@ function tryResolveSymbolInfo(
 
 	if (ts.isModuleDeclaration(token.parent)) {
 		if (ts.isIdentifier(token.parent.name)) nameContext = token.parent;
+
 		entry.symbolKind = SymbolKind.Namespace;
 	} else if (ts.isEnumDeclaration(token.parent)) {
 		nameContext = token.parent;
+
 		entry.symbolKind = SymbolKind.Enum;
 	} else if (ts.isEnumMember(token.parent)) {
 		nameContext = token.parent.parent;
+
 		entry.symbolKind = SymbolKind.Enum;
 	} else if (ts.isClassLike(token.parent)) {
 		nameContext = token.parent;
+
 		entry.symbolKind = SymbolKind.Class;
 	} else if (ts.isConstructorDeclaration(token.parent)) {
 		nameContext = token.parent.parent;
+
 		entry.symbolKind = SymbolKind.Property;
 	} else if (ts.isClassStaticBlockDeclaration(token.parent)) {
 		nameContext = token.parent.parent;
+
 		entry.symbolKind = SymbolKind.Property;
 	} else if (ts.isMethodDeclaration(token.parent)) {
 		nameContext = ts.isClassLike(token.parent)
 			? token.parent
 			: ts.findAncestor(token.parent.parent, ts.isFunctionLike);
+
 		entry.symbolKind = SymbolKind.Method;
 	} else if (ts.isAccessor(token.parent)) {
 		nameContext = ts.isClassLike(token.parent)
 			? token.parent
 			: ts.findAncestor(token.parent.parent, ts.isFunctionLike);
+
 		entry.symbolKind = SymbolKind.Property;
 	} else if (ts.isPropertyDeclaration(token.parent)) {
 		nameContext = token.parent;
+
 		entry.symbolKind = SymbolKind.Field;
 	}
+
 	if (resolveName && nameContext) {
 		let functionName =
 			nameContext.name && ts.isIdentifier(nameContext.name)
@@ -820,11 +855,13 @@ function tryResolveSymbolInfo(
 			if (ts.isClassStaticBlockDeclaration(token.parent)) {
 				functionName += " static {}";
 			}
+
 			if (
 				!entry.generatedFunctionName &&
 				entry.functionName !== functionName
 			) {
 				entry.generatedFunctionName = entry.functionName;
+
 				entry.functionName = functionName;
 			}
 		}
@@ -858,6 +895,7 @@ function tryResolveFunctionLocations(
 			return true;
 		}
 	}
+
 	if (isTypeScriptFile(filePosition.uri)) {
 		if (
 			tryResolveFunctionLocationsInTypeScript(
@@ -878,6 +916,7 @@ function tryResolveFunctionLocations(
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -1010,6 +1049,7 @@ function tryResolveIcLocationInJavaScript(
 	sourceFile: ts.SourceFile,
 ): boolean {
 	const worst = from(entry.updates).maxBy((update) => update.newState);
+
 	assert(worst);
 
 	// NOTE: ▼ - Indicates current token
@@ -1039,6 +1079,7 @@ function tryResolveIcLocationInJavaScript(
 					node.name,
 				);
 			}
+
 			if (ts.isElementAccessExpression(node)) {
 				// ▼
 				// a[b]
@@ -1062,6 +1103,7 @@ function tryResolveIcLocationInJavaScript(
 					node.argumentExpression,
 				);
 			}
+
 			node = node.parent;
 		}
 	} else if (
@@ -1082,6 +1124,7 @@ function tryResolveIcLocationInJavaScript(
 					node.operatorToken,
 				);
 			}
+
 			if (ts.isPropertyAccessExpression(node)) {
 				// ▼
 				// a.b
@@ -1101,6 +1144,7 @@ function tryResolveIcLocationInJavaScript(
 					node.name,
 				);
 			}
+
 			if (ts.isElementAccessExpression(node)) {
 				// ▼
 				// a[b]
@@ -1124,6 +1168,7 @@ function tryResolveIcLocationInJavaScript(
 					node.argumentExpression,
 				);
 			}
+
 			if (ts.isPropertyAssignment(node)) {
 				//   ▼
 				// { a: b, }
@@ -1147,6 +1192,7 @@ function tryResolveIcLocationInJavaScript(
 					node.name,
 				);
 			}
+
 			if (ts.isShorthandPropertyAssignment(node)) {
 				//   ▼
 				// { a, }
@@ -1162,6 +1208,7 @@ function tryResolveIcLocationInJavaScript(
 					node.name,
 				);
 			}
+
 			if (ts.isSpreadAssignment(node)) {
 				//   ▼▼▼
 				// { ...a, }
@@ -1181,6 +1228,7 @@ function tryResolveIcLocationInJavaScript(
 					node.expression,
 				);
 			}
+
 			node = node.parent;
 		}
 	} else if (
@@ -1193,12 +1241,14 @@ function tryResolveIcLocationInJavaScript(
 			//        ~~~~~~
 			token = tokenAt(sourceFile, document.positionAt(token.end));
 		}
+
 		if (token.kind === ts.SyntaxKind.NewKeyword) {
 			// ▼▼▼
 			// new Map()
 			//     ~~~
 			token = tokenAt(sourceFile, document.positionAt(token.end));
 		}
+
 		if (ts.isIdentifier(token)) {
 			// ▼▼▼▼▼▼
 			// Object
@@ -1210,6 +1260,7 @@ function tryResolveIcLocationInJavaScript(
 				token,
 			);
 		}
+
 		let node = token;
 
 		while (node && !ts.isStatement(node)) {
@@ -1221,6 +1272,7 @@ function tryResolveIcLocationInJavaScript(
 					node.operatorToken,
 				);
 			}
+
 			node = node.parent;
 		}
 	} else if (worst.type === IcType.StoreInArrayLiteralIC) {
@@ -1238,9 +1290,11 @@ function tryResolveIcLocationInJavaScript(
 					node,
 				);
 			}
+
 			node = node.parent;
 		}
 	}
+
 	return false;
 
 	// TODO(rbuckton): This is old logic that I've preserved in case I need to reintroduce it...
@@ -1685,10 +1739,12 @@ function tryResolveIcLocationInTypeScript(
 						return true;
 					}
 				}
+
 				return setReferenceLocation(locationKind, entry, location);
 			}
 		}
 	}
+
 	return false;
 }
 
@@ -1708,6 +1764,7 @@ function tryResolveIcLocations(
 			sourceFile,
 		);
 	}
+
 	if (isTypeScriptFile(filePosition.uri)) {
 		return tryResolveIcLocationInTypeScript(
 			locationKind,
@@ -1717,6 +1774,7 @@ function tryResolveIcLocations(
 			sourceFile,
 		);
 	}
+
 	return false;
 }
 
@@ -1768,6 +1826,7 @@ function tryResolveDeoptLocationInJavaScript(
 				while (ts.isParenthesizedExpression(node)) {
 					node = node.expression;
 				}
+
 				return setReferenceLocationFromNode(
 					locationKind,
 					entry,
@@ -1780,6 +1839,7 @@ function tryResolveDeoptLocationInJavaScript(
 				while (ts.isParenthesizedExpression(node)) {
 					node = node.expression;
 				}
+
 				return setReferenceLocationFromNode(
 					locationKind,
 					entry,
@@ -1787,6 +1847,7 @@ function tryResolveDeoptLocationInJavaScript(
 					node,
 				);
 			}
+
 			node = node.parent;
 		}
 	} else if (
@@ -1804,6 +1865,7 @@ function tryResolveDeoptLocationInJavaScript(
 					node.operatorToken,
 				);
 			}
+
 			if (ts.isPropertyAccessExpression(node)) {
 				return setReferenceLocationFromNode(
 					locationKind,
@@ -1812,6 +1874,7 @@ function tryResolveDeoptLocationInJavaScript(
 					node.name,
 				);
 			}
+
 			if (ts.isElementAccessExpression(node)) {
 				return setReferenceLocationFromNode(
 					locationKind,
@@ -1820,6 +1883,7 @@ function tryResolveDeoptLocationInJavaScript(
 					node.argumentExpression,
 				);
 			}
+
 			node = node.parent;
 		}
 	} else if (
@@ -1837,6 +1901,7 @@ function tryResolveDeoptLocationInJavaScript(
 					node.operatorToken,
 				);
 			}
+
 			node = node.parent;
 		}
 	} else if (
@@ -1848,10 +1913,12 @@ function tryResolveDeoptLocationInJavaScript(
 		while (node && !ts.isStatement(node)) {
 			if (ts.isPrefixUnaryExpression(node)) {
 				const operatorToken = ts.factory.createToken(node.operator);
+
 				ts.setTextRange(operatorToken, {
 					pos: node.pos,
 					end: node.operand.end,
 				});
+
 				ts.setParent(operatorToken, node.parent);
 
 				return setReferenceLocationFromNode(
@@ -1861,12 +1928,15 @@ function tryResolveDeoptLocationInJavaScript(
 					operatorToken,
 				);
 			}
+
 			if (ts.isPostfixUnaryExpression(node)) {
 				const operatorToken = ts.factory.createToken(node.operator);
+
 				ts.setTextRange(operatorToken, {
 					pos: node.operand.end,
 					end: node.end,
 				});
+
 				ts.setParent(operatorToken, node.parent);
 
 				return setReferenceLocationFromNode(
@@ -1876,6 +1946,7 @@ function tryResolveDeoptLocationInJavaScript(
 					operatorToken,
 				);
 			}
+
 			node = node.parent;
 		}
 	}
@@ -1891,6 +1962,7 @@ function tryResolveDeoptLocationInJavaScript(
 				node.name,
 			);
 		}
+
 		if (ts.isElementAccessExpression(node)) {
 			return setReferenceLocationFromNode(
 				locationKind,
@@ -1899,6 +1971,7 @@ function tryResolveDeoptLocationInJavaScript(
 				node.argumentExpression,
 			);
 		}
+
 		if (ts.isNewExpression(node)) {
 			if (ts.isPropertyAccessExpression(node.expression)) {
 				return setReferenceLocationFromNode(
@@ -1908,6 +1981,7 @@ function tryResolveDeoptLocationInJavaScript(
 					node.expression.name,
 				);
 			}
+
 			if (ts.isElementAccessExpression(node.expression)) {
 				return setReferenceLocationFromNode(
 					locationKind,
@@ -1916,6 +1990,7 @@ function tryResolveDeoptLocationInJavaScript(
 					node.expression.argumentExpression,
 				);
 			}
+
 			if (ts.isIdentifier(node.expression)) {
 				return setReferenceLocationFromNode(
 					locationKind,
@@ -1925,6 +2000,7 @@ function tryResolveDeoptLocationInJavaScript(
 				);
 			}
 		}
+
 		node = node.parent;
 	}
 
@@ -2024,10 +2100,12 @@ function tryResolveDeoptLocationInTypeScript(
 						return true;
 					}
 				}
+
 				return setReferenceLocation(locationKind, entry, location);
 			}
 		}
 	}
+
 	return false;
 }
 
@@ -2047,6 +2125,7 @@ function tryResolveDeoptLocations(
 			sourceFile,
 		);
 	}
+
 	if (isTypeScriptFile(filePosition.uri)) {
 		return tryResolveDeoptLocationInTypeScript(
 			locationKind,
@@ -2056,6 +2135,7 @@ function tryResolveDeoptLocations(
 			sourceFile,
 		);
 	}
+
 	return false;
 }
 

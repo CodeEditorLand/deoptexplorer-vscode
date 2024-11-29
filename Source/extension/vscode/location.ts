@@ -113,21 +113,29 @@ export function formatLocation(
 			text += formatRange(location.range, { include, prefix: true });
 		}
 	}
+
 	return text;
 }
 
 export interface FormatLocationMarkdownOptions extends FormatUriOptions {
 	trusted?: boolean;
+
 	include?:
 		| FormatLocationOptions["include"]
 		| {
 				label?: FormatLocationOptions["include"];
+
 				link?: FormatLocationOptions["include"];
+
 				title?: FormatLocationOptions["include"];
 		  };
+
 	label?: string;
+
 	title?: string;
+
 	schemes?: { allow?: string[]; deny?: string[] };
+
 	linkSources?: Sources;
 }
 
@@ -157,6 +165,7 @@ export function formatLocationMarkdown(
 		typeof include === "object"
 			? (include.label ?? "position-or-range")
 			: include;
+
 	label ??= formatLocation(location, {
 		as,
 		skipEncoding,
@@ -198,6 +207,7 @@ export function formatLocationMarkdown(
 
 	const titleInclude =
 		typeof include === "object" ? (include.title ?? linkInclude) : include;
+
 	title ??= formatLocation(location, {
 		as: "file",
 		skipEncoding: true,
@@ -249,7 +259,9 @@ declare global {
 			Location,
 			{
 				$type: "Location";
+
 				uri: KnownSerializedType<"Uri">;
+
 				range: KnownSerializedType<"Range">;
 			}
 		>;

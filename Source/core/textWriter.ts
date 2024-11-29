@@ -5,8 +5,11 @@ import { Position, Range } from "vscode";
 
 export class TextWriter {
 	private text = "";
+
 	private lineStart = false;
+
 	private lineCount = 0;
+
 	private linePos = 0;
 
 	constructor(text = "") {
@@ -22,6 +25,7 @@ export class TextWriter {
 
 		while (pos < text.length) {
 			const ch = text.charCodeAt(pos);
+
 			pos++;
 
 			switch (ch) {
@@ -32,6 +36,7 @@ export class TextWriter {
 				// falls through
 				case 0x0a:
 					result.push(lineStart);
+
 					lineStart = pos;
 
 					break;
@@ -39,11 +44,14 @@ export class TextWriter {
 				default:
 					if (ch === 0x2028 || ch === 0x2029) {
 						result.push(lineStart);
+
 						lineStart = pos;
 					}
+
 					break;
 			}
 		}
+
 		result.push(lineStart);
 
 		return result;
@@ -54,10 +62,12 @@ export class TextWriter {
 
 		if (lineStartsOfS.length > 1) {
 			this.lineCount = this.lineCount + lineStartsOfS.length - 1;
+
 			this.linePos =
 				this.text.length -
 				s.length +
 				lineStartsOfS[lineStartsOfS.length - 1];
+
 			this.lineStart = this.linePos - this.text.length === 0;
 		} else {
 			this.lineStart = false;
@@ -67,9 +77,11 @@ export class TextWriter {
 	get length() {
 		return this.text.length;
 	}
+
 	get line() {
 		return this.lineCount;
 	}
+
 	get column() {
 		return this.text.length - this.linePos;
 	}
@@ -79,19 +91,26 @@ export class TextWriter {
 			if (this.lineStart) {
 				this.lineStart = false;
 			}
+
 			const startLine = this.line;
 
 			const startColumn = this.column;
+
 			this.text += text;
+
 			this.updateLineCountAndPosFor(text);
+
 			cb?.(new Range(startLine, startColumn, this.line, this.column));
 		}
 	}
 
 	writeLine() {
 		this.text += "\n";
+
 		this.lineCount++;
+
 		this.linePos = this.text.length;
+
 		this.lineStart = true;
 	}
 

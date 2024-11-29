@@ -27,6 +27,7 @@ function timestamp(level: "log" | "warn" | "error") {
 
 function logCore(level: "log" | "warn" | "error", args: any[]) {
 	const [format = "", ...rest] = args;
+
 	output.appendLine(
 		`${timestamp(level)}${formatWithOptions(inspectOptions, format, ...rest)}`,
 	);
@@ -50,6 +51,7 @@ export function measureSync<T>(name: string, cb: () => T) {
 	const result = cb();
 
 	const end = Date.now();
+
 	log(`${name} took ${formatMilliseconds(end - start)}`);
 
 	return result;
@@ -61,6 +63,7 @@ export async function measureAsync<T>(name: string, cb: () => PromiseLike<T>) {
 	const result = await cb();
 
 	const end = Date.now();
+
 	log(`${name} took ${formatMilliseconds(end - start)}`);
 
 	return result;

@@ -170,6 +170,7 @@ export function activateCommands(context: ExtensionContext) {
 					await openLogFile(uri);
 				} catch (e) {
 					closeLogFile();
+
 					log(e);
 
 					throw e;
@@ -184,6 +185,7 @@ export function activateCommands(context: ExtensionContext) {
 			const file = openedFile;
 
 			if (!file) return;
+
 			cancelPendingOperations();
 
 			const lock = await openMutex.lock(
@@ -194,6 +196,7 @@ export function activateCommands(context: ExtensionContext) {
 				await openLogFile(file);
 			} catch (e) {
 				closeLogFile();
+
 				log(e);
 
 				throw e;
@@ -213,7 +216,9 @@ export function activateCommands(context: ExtensionContext) {
 			async () => {
 				if (storage.getRecentFiles().length) {
 					emitters.willChangeRecentLogs();
+
 					await storage.setRecentFiles([]);
+
 					emitters.didChangeRecentLogs();
 				}
 			},
@@ -688,6 +693,7 @@ export function activateCommands(context: ExtensionContext) {
 			constants.commands.profile.hideLineTicks,
 			async () => {
 				await setShowLineTicks(false);
+
 				await setShowDecorations(
 					showDecorations.delete(constants.ShowDecorations.LineTicks),
 				);
@@ -700,6 +706,7 @@ export function activateCommands(context: ExtensionContext) {
 			async () => {
 				if (openedFile && openedLog) {
 					let file = openedFile.fsPath;
+
 					file = path.join(
 						path.dirname(file),
 						path.basename(file, ".log") + ".cpuprofile",
@@ -718,13 +725,21 @@ export function activateCommands(context: ExtensionContext) {
 						// rawProfile = SourceMapper.mapProfile(rawProfile);
 
 						let s = "";
+
 						s += `{\n`;
+
 						s += `  "startTime": ${JSON.stringify(rawProfile.startTime)},\n`;
+
 						s += `  "endTime": ${JSON.stringify(rawProfile.endTime)},\n`;
+
 						s += `  "samples": ${JSON.stringify(rawProfile.samples)},\n`;
+
 						s += `  "timeDeltas": ${JSON.stringify(rawProfile.timeDeltas)},\n`;
+
 						s += `  "nodes": ${JSON.stringify(rawProfile.nodes)}\n`;
+
 						s += `}\n`;
+
 						await writeFileAsync(result, s);
 					}
 				}

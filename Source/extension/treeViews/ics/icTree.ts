@@ -16,14 +16,20 @@ import { IcTreeDataProvider } from "./icTreeDataProvider";
  */
 export class IcsTree implements Disposable {
 	private provider: IcTreeDataProvider;
+
 	private treeView: TreeView<BaseNode>;
 
 	constructor() {
 		this.provider = new IcTreeDataProvider();
+
 		this.provider.suspendUpdates();
+
 		this.provider.sortBy = sortICs;
+
 		this.provider.showICStates = showICStates;
+
 		this.provider.resumeUpdates();
+
 		this.treeView = window.createTreeView(constants.treeviews.ics, {
 			treeDataProvider: this.provider,
 			showCollapseAll: true,
@@ -32,25 +38,36 @@ export class IcsTree implements Disposable {
 
 	openLog(uri: Uri, log: LogFile) {
 		this.provider.suspendUpdates();
+
 		this.provider.sortBy = sortICs;
+
 		this.provider.showICStates = showICStates;
+
 		this.provider.log = log;
+
 		this.provider.resumeUpdates();
+
 		this.updateTreeViewHeader();
 	}
 
 	closeLog() {
 		this.provider.suspendUpdates();
+
 		this.provider.sortBy = sortICs;
+
 		this.provider.showICStates = showICStates;
+
 		this.provider.log = undefined;
+
 		this.provider.resumeUpdates();
+
 		this.updateTreeViewHeader();
 	}
 
 	setSortBy(value: constants.SortICs) {
 		if (this.provider.sortBy !== value) {
 			this.provider.sortBy = value;
+
 			this.updateTreeViewHeader();
 		}
 	}
@@ -58,6 +75,7 @@ export class IcsTree implements Disposable {
 	setShowICStates(value: ImmutableEnumSet<constants.ShowICStates>) {
 		if (!this.provider.showICStates.equals(value)) {
 			this.provider.showICStates = value;
+
 			this.updateTreeViewHeader();
 		}
 	}

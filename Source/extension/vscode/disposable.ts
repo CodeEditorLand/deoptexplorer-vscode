@@ -24,6 +24,7 @@ export class VSDisposableStack extends DisposableStack {
 	 * @returns The resource provided.
 	 */
 	use<T>(value: T, onDispose: (value: T) => void): T;
+
 	use<T>(value: T, onDispose?: (value: T) => void): T {
 		if (
 			onDispose === undefined &&
@@ -34,6 +35,7 @@ export class VSDisposableStack extends DisposableStack {
 		) {
 			return super.use(value as T & VSDisposable, disposeVSDisposable);
 		}
+
 		return super.use(value, onDispose!);
 	}
 
@@ -46,7 +48,9 @@ export class VSDisposableStack extends DisposableStack {
 		if (stack instanceof VSDisposableStack) {
 			return stack;
 		}
+
 		const vsStack = new VSDisposableStack();
+
 		vsStack.use(stack);
 
 		return vsStack;

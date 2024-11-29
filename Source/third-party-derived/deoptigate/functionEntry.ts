@@ -47,6 +47,7 @@ export class FunctionEntry extends ReferenceableEntryBase {
 	 * Gets the name of the function for this entry.
 	 */
 	functionName: string;
+
 	generatedFunctionName?: string;
 
 	/**
@@ -90,14 +91,18 @@ export class FunctionEntry extends ReferenceableEntryBase {
 		filePosition: Location,
 	) {
 		super(sources, filePosition);
+
 		this.type = type;
+
 		this.codeKind = codeKind;
+
 		this.functionName = functionName;
 	}
 
 	protected onResolveLocations() {
 		// This resolves the reference and extent locations for the entry.
 		resolveFunctionLocations("generated", this);
+
 		resolveFunctionLocations("source", this);
 	}
 
@@ -128,11 +133,14 @@ export class FunctionEntry extends ReferenceableEntryBase {
 				this.generatedReferenceLocation ??
 				this.generatedFilePosition
 			);
+
 		assertNever(kind);
 	}
 
 	pickExtentLocation(file: Uri, exact?: false): Location;
+
 	pickExtentLocation(file: Uri, exact?: boolean): Location | undefined;
+
 	pickExtentLocation(file: Uri, exact?: boolean) {
 		const kind = this.getLocationKind(file, exact);
 
@@ -152,36 +160,55 @@ export class FunctionEntryUpdate {
 export type FunctionHistoryEvent =
 	| {
 			event: "created" | "updated";
+
 			timestamp: TimeTicks;
+
 			startAddress: Address;
+
 			funcStartAddress: Address;
+
 			size: number;
+
 			state: FunctionState;
+
 			type: string;
+
 			codeKind: number;
 	  }
 	| {
 			event: "moved";
+
 			timestamp: TimeTicks;
+
 			fromAddress: Address;
+
 			toAddress: Address;
 	  }
 	| { event: "deleted"; timestamp: TimeTicks; startAddress: Address }
 	| {
 			event: "sfi-moved";
+
 			timestamp: TimeTicks;
+
 			fromAddress: Address;
+
 			toAddress: Address;
 	  }
 	| {
 			event: "ic";
+
 			timestamp: TimeTicks;
+
 			entry: IcEntry;
+
 			update: IcEntryUpdate;
 	  }
 	| {
 			event: "deopt";
+
 			timestamp: TimeTicks;
+
 			entry: DeoptEntry;
+
 			update: DeoptEntryUpdate;
 	  };

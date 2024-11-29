@@ -17,6 +17,7 @@ export async function tryCreateDbghelpWrapper(extensionUri: Uri) {
 	} catch {
 		if (!hasReportedError) {
 			hasReportedError = true;
+
 			console.error(
 				"Failed to load win32 native binaries. They may be missing or may not match the current electron ABI.",
 			);

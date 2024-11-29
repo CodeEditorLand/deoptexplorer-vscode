@@ -40,7 +40,9 @@ function prepareDeopts(
 			const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), "dexnode-"));
 
 			const asmfile = path.join(tmpdir, "code.asm");
+
 			flags.push(`--redirect-code-traces-to=${asmfile}`);
+
 			cleanupSteps.push(() =>
 				fs.promises.rm(tmpdir, { recursive: true, force: true }),
 			);
@@ -82,16 +84,19 @@ function prepareMaps(argv: Options, version: V8Version, flags: string[]) {
 
 function prepareSources(argv: Options, flags: string[]) {
 	if (!argv.sources) return;
+
 	flags.push("--log-code", "--log-source-code");
 }
 
 function prepareProfile(argv: Options, flags: string[]) {
 	if (!argv.profile) return;
+
 	flags.push("--prof", "--log-internal-timer-events", "--detailed-line-info");
 }
 
 function prepareOut(argv: Options, flags: string[]) {
 	if (!argv.out) return;
+
 	flags.push(`--logfile=${path.resolve(argv.out)}`);
 
 	if (argv.host.flags & HostFlags.UseNoLogfilePerIsolate) {
@@ -124,11 +129,17 @@ export function prepareV8Flags(argv: Options, v8version: string) {
 	const flags: string[] = [];
 
 	const cleanup: CleanupCallback[] = [];
+
 	prepareDeopts(argv, version, flags, cleanup);
+
 	prepareICs(argv, version, flags);
+
 	prepareMaps(argv, version, flags);
+
 	prepareSources(argv, flags);
+
 	prepareProfile(argv, flags);
+
 	prepareOut(argv, flags);
 
 	return { flags, cleanup };

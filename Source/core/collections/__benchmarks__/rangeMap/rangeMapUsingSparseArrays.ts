@@ -11,6 +11,7 @@ type Entry<T> = [Range, T];
 
 export class RangeMap<T> {
 	private _ranges: StartLineMap<T> = [];
+
 	private _size: number = 0;
 
 	get size() {
@@ -25,6 +26,7 @@ export class RangeMap<T> {
 		if (entry) {
 			return !!findPosition(entry, end);
 		}
+
 		return false;
 	}
 
@@ -51,6 +53,7 @@ export class RangeMap<T> {
 
 		if (!entry) {
 			this._size++;
+
 			endCharacters[end.character] = [key, value];
 		} else {
 			entry[1] = value;
@@ -88,13 +91,16 @@ export class RangeMap<T> {
 					}
 				}
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
 	clear() {
 		this._ranges.length = 0;
+
 		this._size = 0;
 	}
 
@@ -112,37 +118,47 @@ export class RangeMap<T> {
 			if (!(startLine in this._ranges)) {
 				continue;
 			}
+
 			const startCharacters = this._ranges[startLine];
 
 			for (
 				let startCharacter = 0;
+
 				startCharacter < startCharacters.length;
+
 				startCharacter++
 			) {
 				if (!(startCharacter in startCharacters)) {
 					continue;
 				}
+
 				const endLines = startCharacters[startCharacter];
 
 				for (
 					let endLine = startLine;
+
 					endLine < endLines.length;
+
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
 						continue;
 					}
+
 					const endCharacters = endLines[endLine];
 
 					for (
 						let endCharacter =
 							endLine === startLine ? startCharacter : 0;
+
 						endCharacter < endCharacters.length;
+
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
 							continue;
 						}
+
 						const [key] = endCharacters[endCharacter];
 
 						yield key;
@@ -157,37 +173,47 @@ export class RangeMap<T> {
 			if (!(startLine in this._ranges)) {
 				continue;
 			}
+
 			const startCharacters = this._ranges[startLine];
 
 			for (
 				let startCharacter = 0;
+
 				startCharacter < startCharacters.length;
+
 				startCharacter++
 			) {
 				if (!(startCharacter in startCharacters)) {
 					continue;
 				}
+
 				const endLines = startCharacters[startCharacter];
 
 				for (
 					let endLine = startLine;
+
 					endLine < endLines.length;
+
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
 						continue;
 					}
+
 					const endCharacters = endLines[endLine];
 
 					for (
 						let endCharacter =
 							endLine === startLine ? startCharacter : 0;
+
 						endCharacter < endCharacters.length;
+
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
 							continue;
 						}
+
 						const [, value] = endCharacters[endCharacter];
 
 						yield value;
@@ -202,37 +228,47 @@ export class RangeMap<T> {
 			if (!(startLine in this._ranges)) {
 				continue;
 			}
+
 			const startCharacters = this._ranges[startLine];
 
 			for (
 				let startCharacter = 0;
+
 				startCharacter < startCharacters.length;
+
 				startCharacter++
 			) {
 				if (!(startCharacter in startCharacters)) {
 					continue;
 				}
+
 				const endLines = startCharacters[startCharacter];
 
 				for (
 					let endLine = startLine;
+
 					endLine < endLines.length;
+
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
 						continue;
 					}
+
 					const endCharacters = endLines[endLine];
 
 					for (
 						let endCharacter =
 							endLine === startLine ? startCharacter : 0;
+
 						endCharacter < endCharacters.length;
+
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
 							continue;
 						}
+
 						const [key, value] = endCharacters[endCharacter];
 
 						yield [key, value];
@@ -258,49 +294,63 @@ export class RangeMap<T> {
 		// Since all entries must contain the range, all entry starts must occur on or before the range start
 		startLoop: for (
 			let startLine = 0;
+
 			startLine < this._ranges.length;
+
 			startLine++
 		) {
 			if (lineIsAfter(startLine, start)) {
 				break;
 			}
+
 			if (!(startLine in this._ranges)) {
 				continue;
 			}
+
 			const startCharacters = this._ranges[startLine];
 
 			for (
 				let startCharacter = 0;
+
 				startCharacter < startCharacters.length;
+
 				startCharacter++
 			) {
 				if (characterIsAfter(startLine, startCharacter, start)) {
 					break startLoop;
 				}
+
 				if (!(startCharacter in startCharacters)) {
 					continue;
 				}
+
 				const endLines = startCharacters[startCharacter];
 				// Since all entries must contain the range, all entry ends must occur on or after the range end
 				for (
 					let endLine = end.line;
+
 					endLine < endLines.length;
+
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
 						continue;
 					}
+
 					const endCharacters = endLines[endLine];
 
 					for (
 						let endCharacter =
 							endLine === end.line ? end.character : 0;
+
 						endCharacter < endCharacters.length;
+
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
 							continue;
 						}
+
 						const [key, value] = endCharacters[endCharacter];
 
 						if (key.contains(range)) {
@@ -335,12 +385,15 @@ export class RangeMap<T> {
 		// Since all entries must contain the range, all entry starts must occur on or before the range start
 		for (
 			let startLine = Math.min(start.line, this._ranges.length - 1);
+
 			startLine >= 0;
+
 			startLine--
 		) {
 			if (!(startLine in this._ranges)) {
 				continue;
 			}
+
 			const startCharacters = this._ranges[startLine];
 
 			for (
@@ -348,33 +401,42 @@ export class RangeMap<T> {
 					startLine === start.line
 						? start.character
 						: startCharacters.length - 1;
+
 				startCharacter >= 0;
+
 				startCharacter--
 			) {
 				if (!(startCharacter in startCharacters)) {
 					continue;
 				}
+
 				const endLines = startCharacters[startCharacter];
 				// Since all entries must contain the range, all entry ends must occur on or after the range end
 				for (
 					let endLine = end.line;
+
 					endLine <= endLines.length;
+
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
 						continue;
 					}
+
 					const endCharacters = endLines[endLine];
 
 					for (
 						let endCharacter =
 							endLine === end.line ? end.character : 0;
+
 						endCharacter < endCharacters.length;
+
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
 							continue;
 						}
+
 						const [key, value] = endCharacters[endCharacter];
 
 						if (key.contains(range)) {
@@ -395,57 +457,74 @@ export class RangeMap<T> {
 		// Since all entries must be contained within the range, all entry starts must occur on or after the range start
 		for (
 			let startLine = start.line, l = this._ranges.length;
+
 			startLine < l;
+
 			startLine++
 		) {
 			if (lineIsAfter(startLine, end)) {
 				break;
 			}
+
 			if (!(startLine in this._ranges)) {
 				continue;
 			}
+
 			const startCharacters = this._ranges[startLine];
 
 			for (
 				let startCharacter =
 						startLine === start.line ? start.character : 0,
 					l = startCharacters.length;
+
 				startCharacter < l;
+
 				startCharacter++
 			) {
 				if (characterIsAfter(startLine, startCharacter, end)) {
 					break;
 				}
+
 				if (!(startCharacter in startCharacters)) {
 					continue;
 				}
+
 				const endLines = startCharacters[startCharacter];
+
 				endLoop: for (
 					let endLine = startLine, l = endLines.length;
+
 					endLine < l;
+
 					endLine++
 				) {
 					if (lineIsAfter(endLine, end)) {
 						break;
 					}
+
 					if (!(endLine in endLines)) {
 						continue;
 					}
+
 					const endCharacters = endLines[endLine];
 
 					for (
 						let endCharacter =
 								endLine === startLine ? startCharacter : 0,
 							l = endCharacters.length;
+
 						endCharacter < l;
+
 						endCharacter++
 					) {
 						if (characterIsAfter(endLine, endCharacter, end)) {
 							break endLoop;
 						}
+
 						if (!(endCharacter in endCharacters)) {
 							continue;
 						}
+
 						const [key, value] = endCharacters[endCharacter];
 
 						if (range.contains(key)) {
@@ -478,49 +557,63 @@ export class RangeMap<T> {
 		// Since all entries must intersect with the range, all entry starts must occur on or before the range end
 		startLoop: for (
 			let startLine = 0;
+
 			startLine < this._ranges.length;
+
 			startLine++
 		) {
 			if (lineIsAfter(startLine, end)) {
 				break;
 			}
+
 			if (!(startLine in this._ranges)) {
 				continue;
 			}
+
 			const startCharacters = this._ranges[startLine];
 
 			for (
 				let startCharacter = 0;
+
 				startCharacter < startCharacters.length;
+
 				startCharacter++
 			) {
 				if (characterIsAfter(startLine, startCharacter, end)) {
 					break startLoop;
 				}
+
 				if (!(startCharacter in startCharacters)) {
 					continue;
 				}
+
 				const endLines = startCharacters[startCharacter];
 				// Since all entries must intersect with the range, all entry ends must occur on or after the range start
 				for (
 					let endLine = Math.max(start.line, startLine);
+
 					endLine < endLines.length;
+
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
 						continue;
 					}
+
 					const endCharacters = endLines[endLine];
 
 					for (
 						let endCharacter =
 							endLine === start.line ? start.character : 0;
+
 						endCharacter < endCharacters.length;
+
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
 							continue;
 						}
+
 						const [key, value] = endCharacters[endCharacter];
 
 						if (intersects(key, range)) {
@@ -563,10 +656,12 @@ function remove<T>(ar: T[], index: number) {
 				break;
 			}
 		}
+
 		ar.length = i + 1;
 
 		return true;
 	}
+
 	return false;
 }
 

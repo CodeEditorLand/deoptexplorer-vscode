@@ -32,11 +32,14 @@ export async function activateTreeViewService(context: ExtensionContext) {
 				treeDataProvider: pickerProvider,
 			}),
 		);
+
 		pickerView.message =
 			"To use this extension, you must open a v8 trace log file.";
 
 		const pickerWatcher = stack.use(new WorkspaceWatcher(pickerProvider));
+
 		pickerWatcher.startWatching();
+
 		stack.use(
 			events.onDidChangeRecentLogs(() => {
 				pickerProvider.invalidate();
@@ -67,61 +70,73 @@ export async function activateTreeViewService(context: ExtensionContext) {
 				icsTree.setSortBy(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidShowICStatesChange((value) => {
 				icsTree.setShowICStates(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidGroupDeoptsChange((value) => {
 				deoptsTree.setGroupBy(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidSortDeoptsChange((value) => {
 				deoptsTree.setSortBy(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidSortMapsChange((value) => {
 				mapsTree.setSortBy(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidGroupMapsChange((value) => {
 				mapsTree.setGroupBy(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidShowMapsChange((value) => {
 				mapsTree.setFilter(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidSortProfileChange((value) => {
 				profileTree.setSortBy(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidShowProfileChange((value) => {
 				profileTree.setShowAs(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidShowProfileJustMyCodeChange((value) => {
 				profileTree.setShowJustMyCode(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidShowNativeCodeProfileNodesChange((value) => {
 				profileTree.setShowNativeCodeProfileNodes(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidShowNodeJsProfileNodesChange((value) => {
 				profileTree.setShowNodeJsProfileNodes(value);
 			}),
 		);
+
 		stack.use(
 			events.onDidShowNodeModulesProfileNodesChange((value) => {
 				profileTree.setShowNodeModulesProfileNodes(value);
@@ -134,11 +149,17 @@ export async function activateTreeViewService(context: ExtensionContext) {
 				pickerWatcher.stopWatching();
 
 				functionsTree.closeLog();
+
 				icsTree.closeLog();
+
 				deoptsTree.closeLog();
+
 				mapsTree.closeLog();
+
 				profileTree.closeLog();
+
 				lineTickTree.setProfileViewNodeSnapshot(undefined);
+
 				await Promise.all([
 					setSortProfile(constants.kDefaultProfileSortMode),
 					setShowProfile(constants.kDefaultProfileShowMode),
@@ -146,16 +167,23 @@ export async function activateTreeViewService(context: ExtensionContext) {
 				]);
 			}),
 		);
+
 		stack.use(
 			events.onDidOpenLogFile(async ({ uri, log }) => {
 				pickerWatcher.stopWatching();
 
 				functionsTree.openLog(uri, log);
+
 				icsTree.openLog(uri, log);
+
 				deoptsTree.openLog(uri, log);
+
 				mapsTree.openLog(uri, log);
+
 				profileTree.openLog(uri, log);
+
 				lineTickTree.setProfileViewNodeSnapshot(undefined);
+
 				await Promise.all([
 					setSortProfile(constants.kDefaultProfileSortMode),
 					setShowProfile(constants.kDefaultProfileShowMode),
@@ -163,17 +191,25 @@ export async function activateTreeViewService(context: ExtensionContext) {
 				]);
 			}),
 		);
+
 		stack.use(
 			events.onDidCloseLogFile(async () => {
 				pickerWatcher.startWatching();
+
 				pickerProvider.invalidate();
 
 				functionsTree.closeLog();
+
 				icsTree.closeLog();
+
 				deoptsTree.closeLog();
+
 				mapsTree.closeLog();
+
 				profileTree.closeLog();
+
 				lineTickTree.setProfileViewNodeSnapshot(undefined);
+
 				await Promise.all([
 					setSortProfile(constants.kDefaultProfileSortMode),
 					setShowProfile(constants.kDefaultProfileShowMode),
@@ -181,10 +217,12 @@ export async function activateTreeViewService(context: ExtensionContext) {
 				]);
 			}),
 		);
+
 		stack.use(
 			events.onDidChangeCurrentProfileViewNodeSnapshot(
 				async (snapshot) => {
 					lineTickTree.setProfileViewNodeSnapshot(snapshot);
+
 					await setShowLineTicks(snapshot !== undefined);
 				},
 			),

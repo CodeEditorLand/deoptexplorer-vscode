@@ -183,8 +183,11 @@ export class DeoptTreeDataProvider extends BaseNodeProvider {
 	};
 
 	private _log?: LogFile;
+
 	private _deopts?: DeoptNode[];
+
 	private _groupBy = constants.kDefaultGroupDeopts;
+
 	private _sortBy = constants.kDefaultSortDeopts;
 
 	constructor() {
@@ -207,10 +210,12 @@ export class DeoptTreeDataProvider extends BaseNodeProvider {
 							.through((q) => this._applyOrder(q))
 							.toArray();
 					}
+
 					return from(this._deopts)
 						.through((q) => this._applyGroups(q))
 						.toArray();
 				}
+
 				return [];
 			},
 			{ pageSize: PAGE_SIZE },
@@ -220,10 +225,13 @@ export class DeoptTreeDataProvider extends BaseNodeProvider {
 	get log() {
 		return this._log;
 	}
+
 	set log(value) {
 		if (this._log !== value) {
 			this._log = value;
+
 			this._deopts = undefined;
+
 			this.invalidate();
 		}
 	}
@@ -231,9 +239,11 @@ export class DeoptTreeDataProvider extends BaseNodeProvider {
 	get groupBy() {
 		return this._groupBy;
 	}
+
 	set groupBy(value) {
 		if (this._groupBy !== value) {
 			this._groupBy = value;
+
 			this.invalidate();
 		}
 	}
@@ -241,9 +251,11 @@ export class DeoptTreeDataProvider extends BaseNodeProvider {
 	get sortBy() {
 		return this._sortBy;
 	}
+
 	set sortBy(value) {
 		if (this._sortBy !== value) {
 			this._sortBy = value;
+
 			this.invalidate();
 		}
 	}

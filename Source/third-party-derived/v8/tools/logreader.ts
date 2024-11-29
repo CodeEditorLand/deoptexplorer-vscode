@@ -55,7 +55,9 @@ export const cancelTokenArg = "cancel-token-arg";
  */
 export interface ParserObject {
 	parser: ((s: string) => unknown) | typeof parseString | typeof parseInt32;
+
 	optional?: boolean;
+
 	rest?: boolean;
 
 	default?: () => unknown;
@@ -74,6 +76,7 @@ export type Parsers = readonly [] | readonly Parser[];
 
 export interface Dispatcher {
 	readonly parsers: Parsers;
+
 	processor(...args: any[]): void | Promise<void>;
 }
 
@@ -81,7 +84,9 @@ export type DispatchTable = Record<string, Dispatcher | null>;
 
 export class LogReader {
 	private dispatchTable_: DispatchTable;
+
 	private timedRange_: boolean;
+
 	private pairwiseTimedRange_: boolean;
 
 	/**
@@ -117,15 +122,21 @@ export class LogReader {
 		pairwiseTimedRange: boolean,
 	) {
 		this.dispatchTable_ = dispatchTable;
+
 		this.timedRange_ = timedRange;
+
 		this.pairwiseTimedRange_ = pairwiseTimedRange;
 
 		if (pairwiseTimedRange) {
 			this.timedRange_ = true;
 		}
+
 		this.lineNum_ = 0;
+
 		this.csvParser_ = new CsvParser();
+
 		this.hasSeenTimerMarker_ = false;
+
 		this.logLinesSinceLastTimerMarker_ = [];
 	}
 
@@ -164,12 +175,14 @@ export class LogReader {
 
 			return;
 		}
+
 		if (line.startsWith("current-time")) {
 			if (this.hasSeenTimerMarker_) {
 				await this.processLog_(
 					this.logLinesSinceLastTimerMarker_,
 					token,
 				);
+
 				this.logLinesSinceLastTimerMarker_ = [];
 				// In pairwise mode, a "current-time" line ends the timed range.
 				if (this.pairwiseTimedRange_) {
@@ -208,6 +221,7 @@ export class LogReader {
 			if (firstChar == "+" || firstChar == "-") {
 				// An offset from the previous frame.
 				prevFrame += parseAddress(frame);
+
 				fullStack.push(prevFrame);
 				// Filter out possible 'overflow' string.
 			} else if (firstChar != "o") {
@@ -216,6 +230,7 @@ export class LogReader {
 				this.printError("dropping: " + frame);
 			}
 		}
+
 		return fullStack;
 	}
 
@@ -264,7 +279,9 @@ export class LogReader {
 
 		for (
 			let parserIndex = 0, fieldIndex = 0;
+
 			parserIndex < dispatch.parsers.length;
+
 			parserIndex++, fieldIndex++
 		) {
 			let parser = dispatch.parsers[parserIndex];
@@ -277,22 +294,27 @@ export class LogReader {
 
 			if (typeof parser === "object") {
 				varArgs = !!parser.rest;
+
 				optional = varArgs || !!parser.optional;
 
 				defaultValue = parser.default;
+
 				parser = parser.parser;
 			} else if (parser === parseVarArgs) {
 				parser = parseString;
 
 				varArgs = true;
+
 				optional = true;
 			} else if (parser === commandNameArg) {
 				parsedFields.push(commandName);
+
 				fieldIndex--;
 
 				continue;
 			} else if (parser === cancelTokenArg) {
 				parsedFields.push(token);
+
 				fieldIndex--;
 
 				continue;
@@ -314,8 +336,10 @@ export class LogReader {
 						for (let j = parsedFields.length; j < fieldIndex; j++) {
 							parsedFields.push(undefined);
 						}
+
 						parsedFields.push(defaultValue());
 					}
+
 					continue;
 				}
 			} else if (fieldIndex >= fields.length) {
@@ -338,6 +362,7 @@ export class LogReader {
 				for (const field of restFields) {
 					parsedRestFields.push(this.parseField_(field, parser));
 				}
+
 				parsedFields.push(parsedRestFields);
 			}
 		}
@@ -396,8 +421,10 @@ export class LogReader {
 			if (token?.isCancellationRequested) {
 				throw new CancellationError();
 			}
+
 			try {
 				let fields = this.csvParser_.parseLine(line);
+
 				await this.dispatchLogRow_(fields, token);
 			} catch (e: any) {
 				if (
@@ -406,11 +433,13 @@ export class LogReader {
 				) {
 					throw e;
 				}
+
 				this.printError(
 					`line ${this.lineNum_ + 1}: ${e.message || e}\n${e.stack}`,
 				);
 			}
 		}
+
 		this.lineNum_++;
 	}
 }

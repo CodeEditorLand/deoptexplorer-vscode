@@ -36,6 +36,7 @@ declare module "typescript" {
 	): string;
 
 	function setParent<T extends Node>(node: T, parent: Node): T;
+
 	interface SourceFile {
 		getPositionOfLineAndCharacter(
 			line: number,
@@ -43,6 +44,7 @@ declare module "typescript" {
 			allowEdits?: boolean,
 		): number;
 	}
+
 	type GetCanonicalFileName = (fileName: string) => string;
 }
 export {};

@@ -17,8 +17,11 @@ export interface Serializer<
 	TSerialized extends object = object,
 > {
 	readonly builtin?: boolean;
+
 	canSerialize(object: object & Partial<T>): boolean;
+
 	canDeserialize(object: object & Partial<TSerialized>): boolean;
+
 	serialize(
 		object: T,
 		serialize: (
@@ -26,6 +29,7 @@ export interface Serializer<
 			newSerializers?: Iterable<Serializer>,
 		) => unknown,
 	): TSerialized;
+
 	deserialize(
 		object: TSerialized,
 		deserialize: (
@@ -72,6 +76,7 @@ export function registerKnownSerializer<K extends keyof KnownSerializers>(
 	serializer: KnownSerializer<K>,
 ) {
 	knownSerializersArray = undefined;
+
 	knownSerializers.set(key, serializer);
 
 	return serializer;
@@ -83,22 +88,27 @@ function isJsonSerializable(value: object): value is { toJSON(): unknown } {
 
 class SerializerCircularities {
 	nextId = 0;
+
 	map = new Map<object, CircularityRecord>();
 }
 
 interface CircularityRecord {
 	id?: number;
+
 	value?: unknown;
 }
 
 class DeserializerCircularities {
 	values = new Map<number, unknown>();
+
 	seen = new Set<object>();
 }
 
 interface Circularity {
 	$type: "circular";
+
 	id: number;
+
 	value?: unknown;
 }
 
@@ -155,6 +165,7 @@ function serializeCircularity(
 
 		return { $type: "circular", id: circularity.id, value };
 	}
+
 	return value;
 }
 
@@ -184,11 +195,13 @@ function serializeWorker(
 		if (circularity.id === undefined) {
 			circularity.id = circularities.nextId++;
 		}
+
 		return { $type: "circular", id: circularity.id };
 	}
 
 	// we haven't seen this value yet, so track it in case we have an eventual circularity.
 	circularity = {};
+
 	circularities.map.set(value, circularity);
 
 	for (const serializer of serializers) {
@@ -196,6 +209,7 @@ function serializeWorker(
 			if (serializer.builtin && ignoreBuiltins) {
 				return value;
 			}
+
 			const result = serializer.serialize(value, serialize);
 
 			if (circularity.id !== undefined)
@@ -228,9 +242,11 @@ function serializeWorker(
 				if (!result) {
 					result = value.slice(0, i);
 				}
+
 				result[i] = serialized;
 			}
 		}
+
 		return serializeCircularity(
 			result ?? value,
 			value,
@@ -255,11 +271,13 @@ function serializeWorker(
 						result[key] = value;
 					}
 				}
+
 				result[key] = serialized;
 			} else {
 				pairs.push([key, serialized]);
 			}
 		}
+
 		return serializeCircularity(
 			result ?? value,
 			value,
@@ -291,6 +309,7 @@ function deserializeWorker(
 			if (circularities.seen.has(value)) {
 				throw new TypeError("Circular reference in deserialization");
 			}
+
 			circularities.seen.add(value);
 
 			try {
@@ -311,6 +330,7 @@ function deserializeWorker(
 
 			return circularities.values.get(circularity.id);
 		}
+
 		value = circularity.value;
 
 		if (typeof value !== "object" || value === null) {
@@ -332,8 +352,10 @@ function deserializeWorker(
 
 			if (circularity) {
 				result = [];
+
 				circularities.values.set(circularity.id, result);
 			}
+
 			for (let i = 0; i < value.length; i++) {
 				const item = value[i];
 
@@ -343,9 +365,11 @@ function deserializeWorker(
 					if (!result) {
 						result = value.slice(0, i);
 					}
+
 					result[i] = deserialized;
 				}
 			}
+
 			return result ?? value;
 		} else {
 			const prototype = Object.getPrototypeOf(value);
@@ -361,6 +385,7 @@ function deserializeWorker(
 
 			if (circularity) {
 				result = {};
+
 				circularities.values.set(circularity.id, result);
 			}
 
@@ -377,11 +402,13 @@ function deserializeWorker(
 							result[key] = value;
 						}
 					}
+
 					result[key] = deserialized;
 				} else {
 					pairs.push([key, deserialized]);
 				}
 			}
+
 			return result ?? value;
 		}
 	} finally {
@@ -401,9 +428,11 @@ function combineSerializers(
 	for (const oldSerializer of oldSerializers) {
 		newSerializerSet.add(oldSerializer);
 	}
+
 	if (newSerializerSet.size === oldSerializers.length) {
 		return oldSerializers;
 	}
+
 	return [...newSerializerSet];
 }
 

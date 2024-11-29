@@ -14,8 +14,11 @@ export function activateDecorations(context: ExtensionContext) {
 
 	try {
 		stack.use(activateICDecorations(context));
+
 		stack.use(activateDeoptDecorations(context));
+
 		stack.use(activateFunctionStateDecorations(context));
+
 		stack.use(activateProfilerDecorations(context));
 
 		return stack.move();

@@ -63,22 +63,35 @@ export class CodeEntry extends EntryBase {
 	declare kind: "code";
 
 	private static _unresolvedEntry: CodeEntry | undefined;
+
 	private static _programEntry: CodeEntry | undefined;
+
 	private static _idleEntry: CodeEntry | undefined;
+
 	private static _gcEntry: CodeEntry | undefined;
+
 	private static _rootEntry: CodeEntry | undefined;
+
 	private static _hiddenEntry: CodeEntry | undefined;
 
 	used?: boolean;
+
 	bailout_reason?: string;
+
 	code_kind?: CodeKind;
+
 	line_info?: SourcePositionTable;
+
 	start_pos?: number;
+
 	end_pos?: number;
+
 	script?: Script;
 
 	private nameUpdated_: boolean;
+
 	private inline_stacks_?: Map<number, ProfileStackTrace>;
+
 	private _functionName?: FunctionName;
 
 	/**
@@ -95,7 +108,9 @@ export class CodeEntry extends EntryBase {
 		sources?: Sources,
 	) {
 		super(sources, /*filePosition*/ undefined);
+
 		this.used = undefined;
+
 		this.nameUpdated_ = false;
 
 		if (new.target === CodeEntry) {
@@ -169,6 +184,7 @@ export class CodeEntry extends EntryBase {
 			this.line_info?.getInliningId(pc_offset) ?? kNotInlined;
 
 		if (inlining_id === kNotInlined) return undefined;
+
 		assert(this.inline_stacks_);
 
 		return this.inline_stacks_.get(inlining_id);
@@ -250,6 +266,7 @@ export class CodeEntry extends EntryBase {
 				this.start_pos === other.start_pos
 			);
 		}
+
 		return (
 			this.name === other.name &&
 			this.type === other.type &&
@@ -267,18 +284,22 @@ export class CodeEntry extends EntryBase {
 
 	hash() {
 		let hc = 0;
+
 		hc = Equaler.combineHashes(hc, hashNullable(this.type));
 
 		if (this.scriptId !== kNoScriptId) {
 			hc = Equaler.combineHashes(hc, hashNullable(this.scriptId));
+
 			hc = Equaler.combineHashes(hc, hashNullable(this.start_pos));
 		} else {
 			hc = Equaler.combineHashes(hc, hashNullable(this.name));
+
 			hc = Equaler.combineHashes(
 				hc,
 				hashNullable(this.filePosition, LocationEqualer),
 			);
 		}
+
 		return hc;
 	}
 
@@ -340,7 +361,9 @@ export class DynamicCodeEntry extends CodeEntry {
 
 export class DynamicFuncCodeEntry extends DynamicCodeEntry {
 	func: SharedFunctionCodeEntry;
+
 	state: FunctionState;
+
 	fallbackFilePosition?: Location;
 
 	/**
@@ -359,8 +382,11 @@ export class DynamicFuncCodeEntry extends DynamicCodeEntry {
 		state: FunctionState,
 	) {
 		super(sources, size, type, /*name*/ "");
+
 		this.func = func;
+
 		this.state = state;
+
 		this.finishInitialize();
 	}
 
@@ -371,6 +397,7 @@ export class DynamicFuncCodeEntry extends DynamicCodeEntry {
 			this.fallbackFilePosition
 		);
 	}
+
 	set filePosition(value) {
 		super.filePosition = value;
 	}
@@ -378,6 +405,7 @@ export class DynamicFuncCodeEntry extends DynamicCodeEntry {
 	get generatedFilePosition() {
 		return super.generatedFilePosition ?? this.func.generatedFilePosition;
 	}
+
 	set generatedFilePosition(value) {
 		super.generatedFilePosition = value;
 	}
@@ -412,6 +440,7 @@ export class DynamicFuncCodeEntry extends DynamicCodeEntry {
 
 export class SharedFunctionCodeEntry extends CodeEntry {
 	private static _sfiUnresolvedEntry: SharedFunctionCodeEntry | undefined;
+
 	private declare _sharedFunctionCodeEntryBrand: never;
 
 	/**
@@ -421,6 +450,7 @@ export class SharedFunctionCodeEntry extends CodeEntry {
 	 */
 	constructor(sources: Sources | undefined, name: string) {
 		super(4, name, /*type*/ undefined, sources);
+
 		this.finishInitialize();
 	}
 
@@ -446,6 +476,7 @@ export class SharedFunctionCodeEntry extends CodeEntry {
 			// An anonymous function with location: " aaa.js:10".
 			name = "(anonymous)" + name;
 		}
+
 		return name;
 	}
 }

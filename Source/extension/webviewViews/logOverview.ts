@@ -36,9 +36,13 @@ const SHOW_MEMORY_BREAKDOWN = false;
 
 class OverviewWebviewViewProvider implements WebviewViewProvider {
 	private _extensionUri: Uri;
+
 	private _openedLog: LogFile | undefined;
+
 	private _openedFile: Uri | undefined;
+
 	private _webviewView: WebviewView | undefined;
+
 	private _waitForLog = new Deferred<void>();
 
 	constructor(extensionUri: Uri) {
@@ -47,21 +51,29 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 
 	openingLog(file: Uri) {
 		this._openedFile = file;
+
 		this._openedLog = undefined;
+
 		this.refreshWebview();
 	}
 
 	openLog(file: Uri, log: LogFile) {
 		this._openedFile = file;
+
 		this._openedLog = log;
+
 		this.refreshWebview();
+
 		this._waitForLog.resolve();
 	}
 
 	closeLog() {
 		this._openedFile = undefined;
+
 		this._openedLog = undefined;
+
 		this._waitForLog = new Deferred();
+
 		this.refreshWebview();
 	}
 
@@ -71,6 +83,7 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 		const title = this._openedFile
 			? path.basename(this._openedFile.fsPath)
 			: "Log";
+
 		this._webviewView.title = title;
 
 		const webview = this._webviewView.webview;
@@ -164,6 +177,7 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 					color: colors[3],
 				},
 			];
+
 			timeSlices.sort((a, b) => b.value - a.value);
 
 			const entryCategories = from(
@@ -178,6 +192,7 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 
 			for (const memoryCategory of entryCategories) {
 				totalEntrySize += memoryCategory.size;
+
 				memorySlices.push({
 					value: memoryCategory.size,
 					title: memoryCategory.name,
@@ -190,6 +205,7 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 				title: "Other",
 				color: getColor(4 + memorySlices.length),
 			});
+
 			memorySlices.sort((a, b) => b.value - a.value);
 
 			webview.html = html`
@@ -200,9 +216,13 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 						<meta
 							content="
                         default-src 'none';
+
                         img-src ${webview.cspSource} https: 'self' data:;
+
                         style-src ${webview.cspSource} ${codiconsUri} 'unsafe-inline';
+
                         font-src ${codiconsFontUri};
+
                         script-src 'nonce-${nonce}';
                     "
 							http-equiv="Content-Security-Policy" />
@@ -288,8 +308,11 @@ class OverviewWebviewViewProvider implements WebviewViewProvider {
 			enableCommandUris: true,
 			localResourceRoots: [this._extensionUri],
 		};
+
 		this._webviewView = webviewView;
+
 		this.refreshWebview();
+
 		await Promise.race([
 			new Promise<void>((resolve) =>
 				token.onCancellationRequested(resolve),

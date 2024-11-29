@@ -241,6 +241,7 @@ export class MarkdownString extends BaseMarkdownString {
 
 	trust(isTrusted = true) {
 		if (this._isFrozen) throw new TypeError();
+
 		this.isTrusted = isTrusted;
 
 		return this;
@@ -274,9 +275,13 @@ export class MarkdownString extends BaseMarkdownString {
 		if (this._isFrozen) return this;
 
 		const copy = new MarkdownString(undefined, this.supportThemeIcons);
+
 		copy.isTrusted = this.isTrusted;
+
 		copy.appendMarkdown(this.value);
+
 		copy._isFrozen = true;
+
 		Object.freeze(copy);
 
 		return copy;
@@ -289,12 +294,15 @@ export class MarkdownString extends BaseMarkdownString {
 
 export interface MarkdownTableHeader {
 	text: string | MarkdownString;
+
 	align?: "left" | "center" | "right";
+
 	onWrite?: (position: Position, text: string) => void;
 }
 
 export interface MarkdownTableCell {
 	text: string | MarkdownString;
+
 	onWrite?: (position: Position, text: string) => void;
 }
 
@@ -303,36 +311,45 @@ function appendArg(result: MarkdownString, arg: MarkdownValue) {
 		if (arg === null) {
 			return;
 		}
+
 		if (ToMarkdownString.hasInstance(arg)) {
 			arg = arg[ToMarkdownString.toMarkdownString]();
 		}
+
 		if (arg instanceof BaseMarkdownString) {
 			assert(
 				!result.isTrusted || arg.isTrusted,
 				"Cannot mix trusted and untrusted content",
 			);
+
 			assert(
 				result.supportThemeIcons || !arg.supportThemeIcons,
 				"Cannot mix markdown strings that support theme icons with ones that don't",
 			);
+
 			result.appendMarkdown(arg.value);
 
 			return;
 		}
+
 		if (Symbol.iterator in arg) {
 			for (const item of arg as Iterable<MarkdownValue>) {
 				appendArg(result, item);
 			}
+
 			return;
 		}
 	}
+
 	if (arg === undefined) return;
 
 	const markdownString = new MarkdownString(
 		undefined,
 		result.supportThemeIcons,
 	);
+
 	markdownString.appendText(`${arg}`);
+
 	result.appendMarkdown(markdownString.value.replace(/~/g, "\\~"));
 }
 
@@ -342,6 +359,7 @@ function interpolate(array: TemplateStringsArray, args: any[]) {
 	for (let i = 1; i < array.length; i++) {
 		result += `${args[i - 1]}${array[i]}`;
 	}
+
 	return result;
 }
 
@@ -351,12 +369,15 @@ function makeMarkdown(
 	args: MarkdownValue[],
 ) {
 	const result = new MarkdownString(array[0], /*supportThemeIcons*/ true);
+
 	result.isTrusted = isTrusted;
 
 	for (let i = 1; i < array.length; i++) {
 		appendArg(result, args[i - 1]);
+
 		result.appendMarkdown(array[i]);
 	}
+
 	return result;
 }
 
@@ -367,6 +388,7 @@ function makeMarkdownCode(
 	args: any[],
 ) {
 	const result = new MarkdownString(undefined, /*supportThemeIcons*/ true);
+
 	result.isTrusted = isTrusted;
 
 	return result.appendCodeblock(interpolate(array, args), language);
@@ -387,6 +409,7 @@ function makeMarkdownEscaped(
 	args: any[],
 ) {
 	const result = new MarkdownString(undefined, /*supportThemeIcons*/ true);
+
 	result.isTrusted = isTrusted;
 
 	return result.appendText(interpolate(array, args));
@@ -408,18 +431,23 @@ function makeMarkdownTable(
 	const headerNames = headers.map(getMarkdownString);
 
 	const headerAlignments = headers.map(getAlignment);
+
 	computeWidths(headerNames);
 
 	const rowsArray: (string | MarkdownString | MarkdownTableCell)[][] = [];
 
 	for (const row of rows) {
 		const rowArray = [...row];
+
 		rowsArray.push(rowArray);
+
 		computeWidths(rowArray);
 	}
 
 	const writer = new MarkdownTextWriter(undefined, isTrusted);
+
 	writeRow(headerNames);
+
 	writer.writeMarkdown("|");
 
 	for (let i = 0; i < columnWidths.length; i++) {
@@ -427,16 +455,22 @@ function makeMarkdownTable(
 
 		const align =
 			i < headerAlignments.length ? headerAlignments[i] : "left";
+
 		writer.writeMarkdown(align !== "right" ? ":" : "-");
+
 		writer.writeMarkdown("".padEnd(width, "-"));
+
 		writer.writeMarkdown(align !== "left" ? ":" : "-");
+
 		writer.writeMarkdown("|");
 	}
+
 	writer.writeLine();
 
 	for (const row of rowsArray) {
 		writeRow(row);
 	}
+
 	writer.writeLine();
 
 	return new MarkdownString(writer.toString(), /*supportThemeIcons*/ true);
@@ -453,13 +487,16 @@ function makeMarkdownTable(
 				undefined,
 				/*supportThemeIcons*/ true,
 			);
+
 			unescaped.appendMarkdown(
 				result.value
 					.replace(/\\(.)/g, (_, s) => s)
 					.replace(/&nbsp;/g, " "),
 			);
+
 			result = unescaped;
 		}
+
 		result.isTrusted = isTrusted;
 
 		return result;
@@ -471,6 +508,7 @@ function makeMarkdownTable(
 		let result = markdownStringCache.get(cell);
 
 		if (result) return result;
+
 		result =
 			typeof cell === "string"
 				? wrapUnsafe(cell)
@@ -481,7 +519,9 @@ function makeMarkdownTable(
 						: cell.text instanceof MarkdownString
 							? cell.text
 							: assertNever(cell.text);
+
 		result = result.asFrozen();
+
 		markdownStringCache.set(cell, result);
 
 		return result;
@@ -525,6 +565,7 @@ function makeMarkdownTable(
 			if (columnWidths.length <= i) {
 				columnWidths[i] = 0;
 			}
+
 			columnWidths[i] = Math.max(columnWidths[i], getLength(row[i]));
 		}
 	}
@@ -550,6 +591,7 @@ function makeMarkdownTable(
 
 			const align =
 				i < headerAlignments.length ? headerAlignments[i] : "left";
+
 			writer.writeMarkdown(" ");
 
 			const leftPad =
@@ -573,6 +615,7 @@ function makeMarkdownTable(
 								0,
 								width - markdownString.value.length - leftPad,
 							);
+
 			writer.writeMarkdown("".padEnd(leftPad, " "));
 
 			getOnWrite(header)?.(
@@ -584,10 +627,14 @@ function makeMarkdownTable(
 				new Position(writer.line, writer.column),
 				markdownString.value,
 			);
+
 			writer.write(markdownString);
+
 			writer.writeMarkdown("".padEnd(rightPad, " "));
+
 			writer.writeMarkdown(" |");
 		}
+
 		writer.writeLine();
 	}
 }

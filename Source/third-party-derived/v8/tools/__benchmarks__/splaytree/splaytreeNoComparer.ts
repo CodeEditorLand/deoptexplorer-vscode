@@ -72,17 +72,23 @@ export class SplayTree<K, T> {
 		if (this.root_.key === key) {
 			return;
 		}
+
 		let node = new SplayTree.Node<K, T>(key, value);
 
 		if (key > this.root_.key) {
 			node.left = this.root_;
+
 			node.right = this.root_.right;
+
 			this.root_.right = null;
 		} else {
 			node.right = this.root_;
+
 			node.left = this.root_.left;
+
 			this.root_.left = null;
 		}
+
 		this.root_ = node;
 	}
 
@@ -98,17 +104,20 @@ export class SplayTree<K, T> {
 		if (!this.root_) {
 			throw Error(`Key not found: ${key}`);
 		}
+
 		this.splay_(key);
 
 		if (this.root_.key !== key) {
 			throw Error(`Key not found: ${key}`);
 		}
+
 		let removed = this.root_;
 
 		if (!this.root_.left) {
 			this.root_ = this.root_.right;
 		} else {
 			var right = this.root_.right;
+
 			this.root_ = this.root_.left;
 			// Splay to make sure that the new root has an empty right child.
 			this.splay_(key);
@@ -116,6 +125,7 @@ export class SplayTree<K, T> {
 			// root.
 			this.root_.right = right;
 		}
+
 		return removed;
 	}
 
@@ -130,6 +140,7 @@ export class SplayTree<K, T> {
 		if (!this.root_) {
 			return null;
 		}
+
 		this.splay_(key);
 
 		return this.root_.key === key ? this.root_ : null;
@@ -142,11 +153,13 @@ export class SplayTree<K, T> {
 		if (!this.root_) {
 			return null;
 		}
+
 		let current = opt_startNode || this.root_;
 
 		while (current.left) {
 			current = current.left;
 		}
+
 		return current;
 	}
 
@@ -157,11 +170,13 @@ export class SplayTree<K, T> {
 		if (!this.root_) {
 			return null;
 		}
+
 		let current = opt_startNode || this.root_;
 
 		while (current.right) {
 			current = current.right;
 		}
+
 		return current;
 	}
 
@@ -215,6 +230,7 @@ export class SplayTree<K, T> {
 	 */
 	exportKeysAndValues() {
 		let result: [K, T][] = [];
+
 		this.traverse_((node) => result.push([node.key, node.value]));
 
 		return result;
@@ -225,6 +241,7 @@ export class SplayTree<K, T> {
 	 */
 	exportValues() {
 		let result: T[] = [];
+
 		this.traverse_((node) => result.push(node.value));
 
 		return result;
@@ -254,6 +271,7 @@ export class SplayTree<K, T> {
 		let left: SplayTree.Node<K, T>;
 
 		let right: SplayTree.Node<K, T>;
+
 		dummy = left = right = new SplayTree.Node<K, T>(null!, null!);
 
 		let current = this.root_;
@@ -263,11 +281,15 @@ export class SplayTree<K, T> {
 				if (!current.left) {
 					break;
 				}
+
 				if (key < current.left.key) {
 					// Rotate right.
 					var tmp = current.left;
+
 					current.left = tmp.right;
+
 					tmp.right = current;
+
 					current = tmp;
 
 					if (!current.left) {
@@ -276,17 +298,23 @@ export class SplayTree<K, T> {
 				}
 				// Link right.
 				right.left = current;
+
 				right = current;
+
 				current = current.left;
 			} else if (key > current.key) {
 				if (!current.right) {
 					break;
 				}
+
 				if (key > current.right.key) {
 					// Rotate left.
 					let tmp = current.right;
+
 					current.right = tmp.left;
+
 					tmp.left = current;
+
 					current = tmp;
 
 					if (!current.right) {
@@ -295,7 +323,9 @@ export class SplayTree<K, T> {
 				}
 				// Link left.
 				left.right = current;
+
 				left = current;
+
 				current = current.right;
 			} else {
 				break;
@@ -303,9 +333,13 @@ export class SplayTree<K, T> {
 		}
 		// Assemble.
 		left.right = current.left;
+
 		right.left = current.right;
+
 		current.left = dummy.right;
+
 		current.right = dummy.left;
+
 		this.root_ = current;
 	}
 
@@ -324,8 +358,11 @@ export class SplayTree<K, T> {
 			if (node === null || node === undefined) {
 				continue;
 			}
+
 			f(node);
+
 			nodesToVisit.push(node.left);
+
 			nodesToVisit.push(node.right);
 		}
 	}
@@ -334,6 +371,7 @@ export class SplayTree<K, T> {
 export namespace SplayTree {
 	export class Node<K, T> {
 		left: Node<K, T> | null = null;
+
 		right: Node<K, T> | null = null;
 
 		/**

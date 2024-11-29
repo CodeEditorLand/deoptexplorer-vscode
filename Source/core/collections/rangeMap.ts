@@ -11,6 +11,7 @@ import { Position, Range } from "vscode";
  */
 export class RangeMap<T> {
 	private _ranges = new SplayTree<Range, T>(compareRanges);
+
 	private _size = 0;
 
 	get size() {
@@ -33,6 +34,7 @@ export class RangeMap<T> {
 		} else {
 			this._ranges.insert(range, value);
 		}
+
 		return this;
 	}
 
@@ -42,6 +44,7 @@ export class RangeMap<T> {
 
 	clear() {
 		this._ranges.clear();
+
 		this._size = 0;
 	}
 
@@ -84,7 +87,9 @@ export class RangeMap<T> {
 
 		for (
 			let node = this._ranges.findMin();
+
 			node;
+
 			node = next ?? node.next, next = null
 		) {
 			const key = node.key;
@@ -92,6 +97,7 @@ export class RangeMap<T> {
 			if (key.start.isAfter(start)) {
 				break;
 			}
+
 			if (key.end.isBefore(end)) {
 				next = this._ranges.findLeastGreaterThan(
 					key.with(key.start, key.start),
@@ -100,8 +106,10 @@ export class RangeMap<T> {
 				if (next === node) {
 					next = null;
 				}
+
 				continue;
 			}
+
 			yield [key, node.value];
 		}
 	}
@@ -148,6 +156,7 @@ export class RangeMap<T> {
 			if (node.key.start.isAfter(end)) {
 				break;
 			}
+
 			if (range.contains(node.key)) {
 				yield [node.key, node.value];
 			}
@@ -177,6 +186,7 @@ export class RangeMap<T> {
 			if (node.key.start.isAfter(end)) {
 				break;
 			}
+
 			if (intersects(node.key, range)) {
 				yield [node.key, node.value];
 			}

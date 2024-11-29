@@ -9,15 +9,21 @@ import { assert } from "./assert";
 
 interface CacheNode<T> {
 	uri: string;
+
 	value: T;
+
 	next?: CacheNode<T>;
 }
 
 export class MruCache<T> {
 	readonly maxSize: number;
+
 	private _head: CacheNode<T> | undefined;
+
 	private _size: number = 0;
+
 	private _onRemove?: (value: T) => void;
+
 	private _onDispose?: (value: T) => void;
 
 	constructor(
@@ -26,7 +32,9 @@ export class MruCache<T> {
 		onDispose?: (value: T) => void,
 	) {
 		this.maxSize = maxSize;
+
 		this._onRemove = onRemove;
+
 		this._onDispose = onDispose;
 	}
 
@@ -37,7 +45,9 @@ export class MruCache<T> {
 	private getNode(uri: string, update: boolean) {
 		for (
 			let node = this._head, prev: CacheNode<T> | undefined;
+
 			node;
+
 			prev = node, node = node.next
 		) {
 			if (node.uri === uri) {
@@ -45,9 +55,12 @@ export class MruCache<T> {
 					if (prev) {
 						prev.next = node.next;
 					}
+
 					node.next = this._head;
+
 					this._head = node;
 				}
+
 				return node;
 			}
 		}
@@ -62,10 +75,13 @@ export class MruCache<T> {
 
 		if (node) {
 			(void 0, this._onRemove)?.(value);
+
 			node.value = value;
 		} else {
 			this._head = { uri: uri.toString(), value, next: this._head };
+
 			this._size++;
+
 			this.trim();
 		}
 	}
@@ -75,7 +91,9 @@ export class MruCache<T> {
 
 		for (
 			let node = this._head, prev: CacheNode<T> | undefined;
+
 			node;
+
 			prev = node, node = node.next
 		) {
 			if (node.uri === uriString) {
@@ -83,6 +101,7 @@ export class MruCache<T> {
 					prev.next = node.next;
 				} else {
 					assert(node === this._head);
+
 					this._head = node.next;
 				}
 				(void 0, this._onRemove)?.(node.value);
@@ -90,6 +109,7 @@ export class MruCache<T> {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -107,7 +127,9 @@ export class MruCache<T> {
 
 	private _clear(disposing: boolean) {
 		let head = this._head;
+
 		this._head = undefined;
+
 		this._size = 0;
 
 		if (this._onRemove || (disposing && this._onDispose)) {
@@ -131,13 +153,16 @@ export class MruCache<T> {
 		if (this._size >= this.maxSize) {
 			for (
 				let node = this._head, prev: CacheNode<T> | undefined;
+
 				node;
+
 				prev = node, node = node.next
 			) {
 				if (!node.next) {
 					if (prev) {
 						prev.next = undefined;
 					}
+
 					this._size--;
 					(void 0, this._onRemove)?.(node.value);
 

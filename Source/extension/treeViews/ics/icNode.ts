@@ -26,7 +26,9 @@ import { IcTreeDataProvider } from "./icTreeDataProvider";
 
 export class IcNode extends BaseNode {
 	private _functionReference: FunctionReference | null | undefined;
+
 	private _file: Uri | undefined;
+
 	private _state: IcState | undefined;
 
 	constructor(
@@ -40,25 +42,31 @@ export class IcNode extends BaseNode {
 	get provider(): IcTreeDataProvider {
 		return super.provider as IcTreeDataProvider;
 	}
+
 	get file() {
 		return (this._file ??= this.ic.filePosition.uri);
 	}
+
 	get state() {
 		return (this._state ??= this.ic.getWorstIcState());
 	}
+
 	get hitCount() {
 		return this.ic.updates.length;
 	}
+
 	get functionReference() {
 		if (this._functionReference === undefined) {
 			const functionEntry = from(this.ic.updates).maxBy(
 				(update) => update.newState,
 			)?.functionEntry;
+
 			this._functionReference =
 				(functionEntry &&
 					FunctionReference.fromFunctionEntry(functionEntry)) ||
 				null;
 		}
+
 		return this._functionReference || undefined;
 	}
 

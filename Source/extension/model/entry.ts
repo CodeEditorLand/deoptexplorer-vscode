@@ -24,6 +24,7 @@ export abstract class EntryBase {
 	private _sources: Sources | undefined;
 
 	private _filePosition: Location | undefined;
+
 	private _generatedFilePosition?: Location;
 
 	constructor(
@@ -31,6 +32,7 @@ export abstract class EntryBase {
 		filePosition: Location | undefined,
 	) {
 		this._sources = sources;
+
 		this._filePosition = filePosition;
 	}
 
@@ -49,6 +51,7 @@ export abstract class EntryBase {
 	get filePosition() {
 		return this._filePosition;
 	}
+
 	set filePosition(value) {
 		this._filePosition = value;
 	}
@@ -59,6 +62,7 @@ export abstract class EntryBase {
 	get generatedFilePosition() {
 		return this._generatedFilePosition;
 	}
+
 	set generatedFilePosition(value) {
 		this._generatedFilePosition = value;
 	}
@@ -76,6 +80,7 @@ export abstract class EntryBase {
 	protected resolveLocations() {
 		if (!this._hasResolvedLocations) {
 			this._hasResolvedLocations = true;
+
 			this.onResolveLocations();
 		}
 	}
@@ -90,6 +95,7 @@ export abstract class EntryBase {
 		if (kind === "source") return this.filePosition;
 
 		if (kind === "generated") return this.generatedFilePosition;
+
 		assertNever(kind);
 	}
 
@@ -172,6 +178,7 @@ export abstract class EntryBase {
 
 export abstract class ReferenceableEntryBase extends EntryBase {
 	private _referenceLocation?: Location;
+
 	private _generatedReferenceLocation?: Location;
 
 	constructor(sources: Sources | undefined, filePosition: Location) {
@@ -186,6 +193,7 @@ export abstract class ReferenceableEntryBase extends EntryBase {
 	get filePosition() {
 		return super.filePosition!;
 	}
+
 	set filePosition(value) {
 		super.filePosition = value;
 	}
@@ -202,6 +210,7 @@ export abstract class ReferenceableEntryBase extends EntryBase {
 
 		return this._referenceLocation;
 	}
+
 	set referenceLocation(value) {
 		this._referenceLocation = value;
 	}
@@ -217,6 +226,7 @@ export abstract class ReferenceableEntryBase extends EntryBase {
 
 		return this._generatedReferenceLocation;
 	}
+
 	set generatedReferenceLocation(value) {
 		this._generatedReferenceLocation = value;
 	}
@@ -236,8 +246,11 @@ export abstract class ReferenceableEntryBase extends EntryBase {
 	 * Unless an exact match is requested, falls back to `filePosition`
 	 */
 	pickLocation(uri: Uri, exact?: false): Location;
+
 	pickLocation(uri: Uri, exact: true): Location | undefined;
+
 	pickLocation(uri: Uri, exact?: boolean): Location | undefined;
+
 	pickLocation(uri: Uri, exact?: boolean) {
 		return super.pickLocation(uri, exact);
 	}
@@ -269,7 +282,9 @@ export abstract class ReferenceableEntryBase extends EntryBase {
 	 * Unless an exact match is requested, falls back to `filePosition`
 	 */
 	pickReferenceLocation(uri: Uri, exact?: false): Location;
+
 	pickReferenceLocation(uri: Uri, exact?: boolean): Location | undefined;
+
 	pickReferenceLocation(uri: Uri, exact?: boolean) {
 		const kind = this.getLocationKind(uri, exact);
 

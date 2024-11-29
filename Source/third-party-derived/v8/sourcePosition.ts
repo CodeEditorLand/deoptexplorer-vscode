@@ -18,16 +18,24 @@ import { SourcePositionInfo } from "./sourcePositionInfo";
 // https://github.com/v8/v8/blob/84f3877c15bc7f8956d21614da4311337525a3c8/src/codegen/source-position.h#L45
 export class SourcePosition {
 	private _scriptOffset: number;
+
 	private _inliningId: number;
+
 	private _isExternal: boolean;
+
 	private _externalLine: number = 0;
+
 	private _externalFileId: number = 0;
 
 	constructor(script_offset: number, inlining_id = kNotInlined) {
 		assert(script_offset >= 0);
+
 		assert(inlining_id >= kNotInlined);
+
 		this._isExternal = false;
+
 		this._scriptOffset = script_offset;
+
 		this._inliningId = inlining_id;
 	}
 
@@ -66,7 +74,9 @@ export class SourcePosition {
 
 	set externalLine(value: number) {
 		assert(this.isExternal);
+
 		assert(value >= 0 && value < 1 << 20);
+
 		this._externalLine = value;
 	}
 
@@ -78,7 +88,9 @@ export class SourcePosition {
 
 	set externalFileId(value: number) {
 		assert(this.isExternal);
+
 		assert(value >= 0 && value < 1 << 10);
+
 		this._externalFileId = value;
 	}
 
@@ -90,7 +102,9 @@ export class SourcePosition {
 
 	set scriptOffset(value: number) {
 		assert(this.isJavaScript);
+
 		assert(value >= kNoSourcePosition && value < (1 << 30) - 1);
+
 		this._scriptOffset = value;
 	}
 
@@ -100,14 +114,19 @@ export class SourcePosition {
 
 	set inliningId(value: number) {
 		assert(value >= kNotInlined && value < (1 << 16) - 1);
+
 		this._inliningId = value;
 	}
 
 	static external(line: number, file_id: number) {
 		const pos = new SourcePosition(kNoSourcePosition);
+
 		pos.isExternal = true;
+
 		pos.externalLine = line;
+
 		pos.externalFileId = file_id;
+
 		pos.inliningId = kNotInlined;
 
 		return pos;
@@ -129,9 +148,12 @@ export class SourcePosition {
 			let inl = deopt_data.inliningPositions[pos.inliningId];
 
 			let func = deopt_data.getInlinedFunction(inl.inlinedFunctionId);
+
 			stack.push(new SourcePositionInfo(pos, func, func.script));
+
 			pos = inl.position;
 		}
+
 		stack.push(
 			new SourcePositionInfo(
 				pos,

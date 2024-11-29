@@ -22,22 +22,32 @@ export type VersionedDispatchTable = Record<string, DispatchTable>;
  */
 export class VersionedLogReader extends LogReader {
 	private readonly _versionedDispatchTable: VersionedDispatchTable;
+
 	private readonly _defaultDispatchTable: DispatchTable;
+
 	private readonly _versionRanges: readonly (readonly [
 		string,
 		semver.Range,
 	])[];
+
 	private readonly _v8VersionCommand: Dispatcher;
+
 	private readonly _onDidVersionChange: EventEmitter<V8Version>;
+
 	private readonly _onError: EventEmitter<string>;
+
 	private _version: V8Version | undefined;
+
 	private _matchingVersionRangeDispatchTables:
 		| readonly DispatchTable[]
 		| undefined;
+
 	private _versionDispatcherCache: Map<string, Dispatcher | null | "missing">;
+
 	private _versionCommandCache: readonly string[] | undefined;
 
 	public readonly onDidVersionChange: Event<V8Version>;
+
 	public readonly onError: Event<string>;
 
 	constructor(
@@ -83,9 +93,11 @@ export class VersionedLogReader extends LogReader {
 		super(dispatchTableProxy, timedRange, pairwiseTimedRange);
 
 		this._onDidVersionChange = new EventEmitter<V8Version>();
+
 		this._onError = new EventEmitter<string>();
 
 		this.onDidVersionChange = this._onDidVersionChange.event;
+
 		this.onError = this._onError.event;
 
 		// Validate version ranges
@@ -98,20 +110,28 @@ export class VersionedLogReader extends LogReader {
 			const range = new semver.Range(key, { loose: true });
 
 			const normalizedKey = range.range || "*";
+
 			normalizedVersionedDispatchTable[normalizedKey] = {
 				...normalizedVersionedDispatchTable[normalizedKey],
 				...versionedDispatchTable[key],
 			};
 
 			if (normalizedKey === "*") continue;
+
 			versionRanges.push([normalizedKey, range]);
 		}
+
 		this._versionedDispatchTable = normalizedVersionedDispatchTable;
+
 		this._defaultDispatchTable =
 			this._versionedDispatchTable["*"] ?? Object.create(null);
+
 		this._versionRanges = versionRanges;
+
 		this._matchingVersionRangeDispatchTables = [];
+
 		this._versionDispatcherCache = new Map();
+
 		this._v8VersionCommand = {
 			parsers: [parseInt32, parseInt32, parseInt32, parseVarArgs],
 			processor: this._processV8Version.bind(this),
@@ -135,9 +155,11 @@ export class VersionedLogReader extends LogReader {
 					}
 				}
 			}
+
 			this._matchingVersionRangeDispatchTables =
 				matchingVersionDispatchTables;
 		}
+
 		return this._matchingVersionRangeDispatchTables;
 	}
 
@@ -151,12 +173,15 @@ export class VersionedLogReader extends LogReader {
 					...Object.getOwnPropertyNames(dispatchTable),
 				];
 			}
+
 			commands = [
 				...commands,
 				...Object.getOwnPropertyNames(this._defaultDispatchTable),
 			];
+
 			this._versionCommandCache = [...new Set(commands)];
 		}
+
 		return this._versionCommandCache;
 	}
 
@@ -173,14 +198,18 @@ export class VersionedLogReader extends LogReader {
 
 				if (dispatcher !== undefined) break;
 			}
+
 			if (dispatcher === undefined) {
 				dispatcher = Reflect.get(this._defaultDispatchTable, command);
 			}
+
 			if (dispatcher === undefined) {
 				dispatcher = "missing";
 			}
+
 			this._versionDispatcherCache.set(command, dispatcher);
 		}
+
 		return dispatcher === "missing" ? undefined : dispatcher;
 	}
 
@@ -196,9 +225,13 @@ export class VersionedLogReader extends LogReader {
 
 		if (version) {
 			this._version = new V8Version(version, extra);
+
 			this._versionDispatcherCache.clear();
+
 			this._versionCommandCache = undefined;
+
 			this._matchingVersionRangeDispatchTables = undefined;
+
 			this._onDidVersionChange.fire(this._version);
 		}
 	}

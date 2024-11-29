@@ -21,6 +21,7 @@ export function cancellationTokenToCancelable(
 
 	if (!cancelable) {
 		let cancelError: vscode.CancellationError | undefined;
+
 		weakCancelables.set(
 			token,
 			(cancelable = {
@@ -49,6 +50,7 @@ export function cancellationTokenToCancelable(
 			}),
 		);
 	}
+
 	return cancelable;
 }
 
@@ -66,6 +68,7 @@ export function raceCancellationTokens(
 			return source.token;
 		}
 	}
+
 	const subscriptions: vscode.Disposable[] = [];
 
 	for (const token of tokensArray) {
@@ -77,6 +80,7 @@ export function raceCancellationTokens(
 	}
 
 	const container = vscode.Disposable.from(...subscriptions);
+
 	source.token.onCancellationRequested(() => {
 		container.dispose();
 	});

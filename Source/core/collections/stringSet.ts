@@ -6,6 +6,7 @@
  */
 export class StringSet<T> {
 	private _map = new Map<string, T>();
+
 	private _toKey: (key: T) => string;
 
 	constructor(toKey: (key: T) => string) {
@@ -61,14 +62,18 @@ export class StringSet<T> {
 
 export interface ReadonlyStringSet<T> {
 	get size(): number;
+
 	has(value: T): boolean;
 
 	forEach(
 		cb: (value: T, key: T, map: ReadonlyStringSet<T>) => void,
 		thisArg?: any,
 	): void;
+
 	keys(): IterableIterator<T>;
+
 	values(): IterableIterator<T>;
+
 	entries(): IterableIterator<[T, T]>;
 	[Symbol.iterator](): IterableIterator<T>;
 }

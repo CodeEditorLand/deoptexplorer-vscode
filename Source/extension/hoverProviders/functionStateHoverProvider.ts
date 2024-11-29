@@ -85,17 +85,23 @@ export class FunctionStateHoverProvider implements HoverProvider {
 
 			for (const entry of functions) {
 				const functionRange = entry.pickReferenceLocation(file).range;
+
 				range = range?.intersection(functionRange) ?? functionRange;
+
 				messages.push(...getHoverMessageForFunctionEntry(entry, file));
 			}
+
 			if (messages) {
 				if (!hoverCache) {
 					hoverCache = new RangeMap();
+
 					this._perFileHoverCache.set(document.uri, hoverCache);
 				}
+
 				range ??= new Range(position, position);
 
 				const hover = new Hover(messages, range);
+
 				hoverCache.set(range, hover);
 
 				return hover;

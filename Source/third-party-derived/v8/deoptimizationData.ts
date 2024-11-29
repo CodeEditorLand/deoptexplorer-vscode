@@ -65,6 +65,7 @@ export class DeoptimizationData {
 		//      where
 		//         <function-id> is an index into the <fns> function table
 		const inliningPositionsArray: InliningPosition[] = [];
+
 		inliningPositionRegExp.lastIndex = 0;
 
 		while ((match = inliningPositionRegExp.exec(inliningPositions))) {
@@ -81,6 +82,7 @@ export class DeoptimizationData {
 				: kNotInlined;
 
 			const position = new SourcePosition(script_offset, inlining_id);
+
 			inliningPositionsArray.push(
 				new InliningPosition(position, inlined_function_id),
 			);
@@ -89,6 +91,7 @@ export class DeoptimizationData {
 		//   <fns> is the function table encoded as a sequence of strings
 		//      S<shared-function-info-address>
 		const inlinedFunctionsArray: SharedFunctionCodeEntry[] = [];
+
 		inlinedFunctionsRegExp.lastIndex = 0;
 
 		while ((match = inlinedFunctionsRegExp.exec(inlinedFunctions))) {
@@ -100,13 +103,16 @@ export class DeoptimizationData {
 			// if (entry?.type === "SHARED_LIB" && entry.name.includes("node.exe")) {
 			//     debugger;
 			// }
+
 			let sharedEntry =
 				entry instanceof SharedFunctionCodeEntry ? entry : undefined;
 
 			if (!sharedEntry) {
 				sharedEntry = SharedFunctionCodeEntry.unresolved_entry();
+
 				codeMap.addCode(address, sharedEntry);
 			}
+
 			inlinedFunctionsArray.push(sharedEntry);
 		}
 

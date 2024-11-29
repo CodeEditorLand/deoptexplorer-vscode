@@ -82,8 +82,11 @@ function generateReportViewHtml(context: ExtensionContext, webview: Webview) {
 				<meta
 					content="
         default-src 'none';
+
         img-src ${webview.cspSource} https: 'self' data:;
+
         script-src 'nonce-${nonce}';
+
         style-src ${webview.cspSource} 'unsafe-inline';
     "
 					http-equiv="Content-Security-Policy" />
@@ -107,6 +110,7 @@ export function showReportView(
 		| ViewColumn
 		| {
 				viewColumn: ViewColumn;
+
 				preserveFocus?: boolean;
 		  } = ViewColumn.Active,
 ) {
@@ -121,6 +125,7 @@ export function showReportView(
 				retainContextWhenHidden: true,
 			},
 		));
+
 		reportViewOnDidReceiveMessageSubscription =
 			view.webview.onDidReceiveMessage((e) => {
 				if (e.command === "openFile") {
@@ -135,11 +140,15 @@ export function showReportView(
 					});
 				}
 			});
+
 		reportViewOnDidDisposeSubscription = reportView.onDidDispose(() => {
 			if (reportView === view) {
 				currentTitle = undefined;
+
 				currentContent = undefined;
+
 				reportView = undefined;
+
 				reportViewOnDidDisposeSubscription = undefined;
 			}
 		});
@@ -153,6 +162,7 @@ export function showReportView(
 			typeof showOptions === "object"
 				? showOptions.preserveFocus
 				: undefined;
+
 		reportView.reveal(viewColumn, preserveFocus);
 	}
 
@@ -165,13 +175,16 @@ function updateReportView() {
 			currentTitle = openedFile
 				? `Deoptimization Report: ${path.basename(openedFile.fsPath)}`
 				: "Deoptimization Report";
+
 			currentContent = currentContext
 				? generateReportViewHtml(currentContext, reportView.webview)
 				: "";
 		}
+
 		if (reportView.title !== currentTitle) {
 			reportView.title = currentTitle;
 		}
+
 		if (reportView.webview.html !== currentContent) {
 			reportView.webview.html = currentContent;
 		}
@@ -180,13 +193,21 @@ function updateReportView() {
 
 function destroy() {
 	reportViewOnDidReceiveMessageSubscription?.dispose();
+
 	reportViewOnDidReceiveMessageSubscription = undefined;
+
 	reportViewOnDidDisposeSubscription?.dispose();
+
 	reportViewOnDidDisposeSubscription = undefined;
+
 	reportView?.dispose();
+
 	reportView = undefined;
+
 	currentContext = undefined;
+
 	currentTitle = undefined;
+
 	currentContent = undefined;
 }
 
@@ -197,14 +218,20 @@ export function activateReportWebview(context: ExtensionContext) {
 		new Disposable(destroy),
 		events.onDidOpenLogFile(() => {
 			currentTitle = undefined;
+
 			currentContent = undefined;
+
 			updateReportView();
 		}),
 		events.onDidCloseLogFile(() => {
 			currentTitle = undefined;
+
 			currentContent = undefined;
+
 			reportView?.dispose();
+
 			reportView = undefined;
+
 			updateReportView();
 		}),
 	);

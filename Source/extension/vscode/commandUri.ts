@@ -12,6 +12,7 @@ import { CommandArgumentValue } from "../types";
  */
 export class CommandUri {
 	private _uri?: Uri;
+
 	private _uriString?: string;
 
 	/**

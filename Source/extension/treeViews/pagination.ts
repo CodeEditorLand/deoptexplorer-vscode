@@ -11,7 +11,9 @@ const PAGE_SIZE = 100;
 
 export interface PaginationOptions {
 	pageSize?: number;
+
 	label?: (start: number, page: BaseNode[]) => string | undefined;
+
 	description?: (start: number, page: BaseNode[]) => string | undefined;
 }
 

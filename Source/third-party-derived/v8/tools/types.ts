@@ -56,30 +56,44 @@ export class SampleInfo {
 
 export interface JsonProfile {
 	nodes: JsonProfileNode[];
+
 	startTime: number;
+
 	endTime: number;
+
 	samples?: number[];
+
 	timeDeltas?: number[];
 }
 
 export interface JsonProfileNode {
 	id: number;
+
 	callFrame: JsonProfileCallFrame;
+
 	hitCount?: number;
+
 	children?: number[];
+
 	deoptReason?: string;
+
 	positionTicks?: JsonProfilePositionTickInfo[];
 }
 
 export interface JsonProfileCallFrame {
 	functionName: string;
+
 	scriptId: string;
+
 	url: string;
+
 	lineNumber: number;
+
 	columnNumber: number;
 }
 
 export interface JsonProfilePositionTickInfo {
 	line: number;
+
 	ticks: number;
 }

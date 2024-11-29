@@ -16,22 +16,29 @@ import { html, HtmlString } from "#core/html.js";
 
 export interface Slice {
 	value: number;
+
 	color: string;
+
 	title: string;
+
 	tabIndex?: number;
 }
 
 export interface PieOptions {
 	size: number;
+
 	cspStyleHashesOut?: string[];
+
 	cutout?: boolean | number | string | Cutout;
 
 	formatter?: (value: number) => string;
+
 	legend?: boolean;
 }
 
 export interface Cutout {
 	readonly color: string;
+
 	readonly radius: number;
 }
 
@@ -183,11 +190,13 @@ function getPathStringForSlice(
 	if (!isFinite(sliceAngle)) {
 		return;
 	}
+
 	sliceAngle = Math.min(sliceAngle, 2 * Math.PI * 0.9999);
 
 	const x1 = Math.cos(ref_lastAngle.value);
 
 	const y1 = Math.sin(ref_lastAngle.value);
+
 	ref_lastAngle.value += sliceAngle;
 
 	const x2 = Math.cos(ref_lastAngle.value);

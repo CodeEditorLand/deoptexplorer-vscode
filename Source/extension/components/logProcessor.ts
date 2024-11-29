@@ -141,47 +141,83 @@ const enum CodeType {
 
 export interface LogProcessorOptions {
 	cppEntriesProvider?: CppEntriesProvider;
+
 	excludeIc?: boolean;
+
 	excludeBytecodes?: boolean;
+
 	excludeBuiltins?: boolean;
+
 	excludeStubs?: boolean;
+
 	excludeNatives?: boolean;
+
 	timedRange?: boolean;
+
 	pairwiseTimedRange?: boolean;
+
 	globalStorageUri?: Uri;
 }
 
 export class LogProcessor {
 	private _cppEntriesProvider: CppEntriesProvider;
+
 	private _reader: VersionedLogReader;
+
 	private _processed = false;
+
 	private _version = V8Version.MIN;
+
 	private _codeMap = new CodeMap();
+
 	private _sources = new Sources();
+
 	private _profile: Profile;
+
 	private _files = new StringMap<Uri, FileEntry>(uriToString);
+
 	private _entries = new LocationMap<{
 		function?: FunctionEntry;
+
 		ic?: IcEntry;
+
 		deopt?: DeoptEntry;
 	}>();
+
 	private _functions = new LocationMap<FunctionEntry>();
+
 	private _ics = new LocationMap<IcEntry>();
+
 	private _deopts = new LocationMap<DeoptEntry>();
+
 	private _maps = new SplayTree<Address, MapEntry[]>();
+
 	private _heapCapacity = 0;
+
 	private _heapAvailable = 0;
+
 	private _memory = new SplayTree<Address, MemoryEntry>();
+
 	private _memorySize = 0;
+
 	private _maxMemorySize = 0;
+
 	private _memorySizes = new Map<string, MemoryCategory>();
+
 	private _entrySizes = new Map<string, MemoryCategory>();
+
 	private _codeTypes = new Map<string, CodeType>();
+
 	private _lastTimestamp = TimeTicks.Zero;
+
 	private _mapReferences = new Map<MapEntry, Set<IcEntry>>();
+
 	private _seenFiles = new StringSet(uriToString);
+
 	private _generatedPaths = new StringSet(uriToString);
+
 	private _sourcePaths = new StringSet(uriToString);
+
 	private _messageOnlyProgress: Progress<string> | undefined;
 
 	constructor({
@@ -196,6 +232,7 @@ export class LogProcessor {
 		pairwiseTimedRange = false,
 	}: LogProcessorOptions = {}) {
 		this._cppEntriesProvider = cppEntriesProvider;
+
 		this._profile = new Profile({
 			codeMap: this._codeMap,
 			sources: this._sources,
@@ -205,6 +242,7 @@ export class LogProcessor {
 			excludeStubs,
 			excludeNatives,
 		});
+
 		this._profile.onError((message) => {
 			output.error(message);
 		});
@@ -782,10 +820,13 @@ export class LogProcessor {
 			timedRange,
 			pairwiseTimedRange,
 		);
+
 		this._reader.onDidVersionChange((version) => {
 			this._version = version;
+
 			output.log(`Detected log for V8 ${version.toFullString()}`);
 		});
+
 		this._reader.onError((message) => {
 			output.error(message);
 		});
@@ -814,6 +855,7 @@ export class LogProcessor {
 				if (result) {
 					await result;
 				}
+
 				if (estimatedLogSize) {
 					progress.report({
 						increment: ((line.length + 1) * 100) / estimatedLogSize,
@@ -824,6 +866,7 @@ export class LogProcessor {
 		}
 
 		this._profile.finalize();
+
 		this._messageOnlyProgress = undefined;
 	}
 
@@ -842,6 +885,7 @@ export class LogProcessor {
 		estimatedLogSize?: number,
 	) {
 		if (this._processed) throw new Error("Processing already completed");
+
 		this._processed = true;
 
 		try {
@@ -853,6 +897,7 @@ export class LogProcessor {
 
 			await measureAsync("resolveFiles", async () => {
 				const workQueue = new ConsArray<Uri>();
+
 				workQueue.concat([...this._seenFiles]);
 
 				const resolvedFiles = new StringSet(uriToString);
@@ -862,6 +907,7 @@ export class LogProcessor {
 						throw new CancellationError();
 
 					if (resolvedFiles.has(file)) continue;
+
 					resolvedFiles.add(file);
 
 					// Resolve the file
@@ -946,6 +992,7 @@ export class LogProcessor {
 					const uri = entry.filePosition.uri;
 
 					const resolution = this._sources.getExistingResolution(uri);
+
 					assert(
 						resolution,
 						`Should have resolved source file for ${uri.toString()} in an earlier step.`,
@@ -968,6 +1015,7 @@ export class LogProcessor {
 
 								break;
 						}
+
 						entry.filePosition = new Location(
 							resolution.file,
 							entry.filePosition.range,
@@ -994,6 +1042,7 @@ export class LogProcessor {
 					if (resolution.result !== "skip") {
 						const sourceMap =
 							this._sources.getExistingSourceMap(uri);
+
 						assert(
 							sourceMap,
 							"Should have resolved source-map in an earlier step.",
@@ -1014,6 +1063,7 @@ export class LogProcessor {
 									this._sources.getExistingResolution(
 										canonicalUri,
 									);
+
 								assert(
 									resolution,
 									"Should have resolved source location in an earlier step",
@@ -1025,8 +1075,10 @@ export class LogProcessor {
 										sourceLocation.range,
 									);
 								}
+
 								entry.generatedFilePosition =
 									entry.filePosition;
+
 								entry.filePosition = sourceLocation;
 
 								switch (entry.kind) {
@@ -1042,9 +1094,11 @@ export class LogProcessor {
 										) {
 											entry.generatedFunctionName =
 												entry.functionName;
+
 											entry.functionName =
 												sourceLocation.name;
 										}
+
 										break;
 								}
 
@@ -1154,10 +1208,12 @@ export class LogProcessor {
 					.orderBy((entry) => entry.filePosition, LocationComparer)
 					.distinct()
 					.toArray();
+
 				fileEntry.ics = from(fileEntry.ics)
 					.orderBy((entry) => entry.filePosition, LocationComparer)
 					.distinct()
 					.toArray();
+
 				fileEntry.deopts = from(fileEntry.deopts)
 					.orderBy((entry) => entry.filePosition, LocationComparer)
 					.distinct()
@@ -1200,7 +1256,9 @@ export class LogProcessor {
 			if (e instanceof CancellationError || e instanceof CancelError) {
 				throw e;
 			}
+
 			console.error(e);
+
 			debugger;
 
 			throw e;
@@ -1281,7 +1339,9 @@ export class LogProcessor {
 			startAddress,
 			endAddress,
 		);
+
 		this._codeTypes.set(entry.getName(), CodeType.SharedLib);
+
 		await this._cppEntriesProvider.parseVmSymbols(
 			libName,
 			startAddress,
@@ -1293,14 +1353,17 @@ export class LogProcessor {
 					startAddress,
 					endAddress,
 				);
+
 				this._codeTypes.set(name, CodeType.Cpp);
 			},
 			this._messageOnlyProgress,
 			token,
 		);
+
 		this._messageOnlyProgress?.report("Processing log...");
 
 		const size = Number(endAddress - startAddress);
+
 		this.changeMemoryCategorySize(
 			this._entrySizes,
 			"Shared Library Code",
@@ -1333,6 +1396,7 @@ export class LogProcessor {
 				funcStartAddress,
 				state,
 			);
+
 			code.code_kind = kind;
 
 			let entry: FunctionEntry | undefined;
@@ -1348,10 +1412,14 @@ export class LogProcessor {
 						code.functionName.name,
 						code.functionName.filePosition,
 					);
+
 					this._functions.set(code.functionName.filePosition, entry);
 				}
+
 				entry.lastSfiAddress = funcStartAddress;
+
 				entry.updates.push(new FunctionEntryUpdate(timestamp, state));
+
 				entry.timeline.push({
 					event: entry.timeline.length ? "updated" : "created",
 					timestamp,
@@ -1375,7 +1443,9 @@ export class LogProcessor {
 				startAddress,
 				size,
 			);
+
 			code.code_kind = kind;
+
 			this._codeEntries.push(code);
 
 			if (code.functionName.filePosition) {
@@ -1398,6 +1468,7 @@ export class LogProcessor {
 			const { filePosition } = code.func.functionName;
 
 			const entry = filePosition && this._functions.get(filePosition);
+
 			entry?.timeline.push({
 				event: "moved",
 				timestamp: this._lastTimestamp,
@@ -1405,6 +1476,7 @@ export class LogProcessor {
 				toAddress,
 			});
 		}
+
 		this._profile.moveCode(fromAddress, toAddress);
 	}
 
@@ -1424,6 +1496,7 @@ export class LogProcessor {
 
 			if (entry) {
 				entry.lastSfiAddress = toAddress;
+
 				entry.timeline.push({
 					event: "sfi-moved",
 					timestamp: this._lastTimestamp,
@@ -1432,6 +1505,7 @@ export class LogProcessor {
 				});
 			}
 		}
+
 		this._profile.moveFunc(fromAddress, toAddress);
 	}
 
@@ -1453,6 +1527,7 @@ export class LogProcessor {
 				});
 			}
 		}
+
 		this._profile.deleteCode(startAddress);
 
 		if (code) {
@@ -1485,6 +1560,7 @@ export class LogProcessor {
 		if (uri) {
 			this._seenFiles.add(uri);
 		}
+
 		this._profile.addScriptSource(scriptId, uri, source);
 	}
 
@@ -1598,6 +1674,7 @@ export class LogProcessor {
 
 				if (!entry) {
 					entry = new IcEntry(this._sources, name, icFilePosition);
+
 					this._ics.set(icFilePosition, entry);
 				}
 
@@ -1609,7 +1686,9 @@ export class LogProcessor {
 					const maps = this._maps.find(mapAddress)?.value;
 
 					const mapIndex = maps ? maps.length - 1 : 0;
+
 					map = maps?.[mapIndex];
+
 					mapId = new MapId(mapAddress, mapIndex);
 				}
 
@@ -1623,7 +1702,9 @@ export class LogProcessor {
 					map,
 					code.isJSFunction() ? code.state : undefined,
 				);
+
 				update.functionEntry = this._functions.get(codeFilePosition);
+
 				entry.updates.push(update);
 
 				if (codeFilePosition) {
@@ -1646,6 +1727,7 @@ export class LogProcessor {
 
 					if (!mapReferences.has(entry)) {
 						mapReferences.add(entry);
+
 						map.referencedBy.push(
 							new MapReferencedByIcEntryUpdate(entry, update),
 						);
@@ -1671,6 +1753,7 @@ export class LogProcessor {
 		deoptReason: string,
 	) {
 		const code = this.findProfileEntry(pc);
+
 		assert(code);
 
 		const { name, filePosition: codeFilePosition } = code.functionName;
@@ -1693,6 +1776,7 @@ export class LogProcessor {
 
 		if (!entry) {
 			entry = new DeoptEntry(this._sources, name, filePosition);
+
 			this._deopts.set(filePosition, entry);
 		}
 
@@ -1704,8 +1788,10 @@ export class LogProcessor {
 			inliningId,
 			scriptOffset,
 		);
+
 		update.functionEntry =
 			codeFilePosition && this._functions.get(codeFilePosition);
+
 		entry.updates.push(update);
 
 		if (update.functionEntry) {
@@ -1727,6 +1813,7 @@ export class LogProcessor {
 		let maps = this._maps.find(startAddress)?.value;
 
 		if (!maps) this._maps.insert(startAddress, (maps = []));
+
 		maps.push(new MapEntry(timestamp));
 	}
 
@@ -1737,9 +1824,11 @@ export class LogProcessor {
 		details: string,
 	) {
 		const maps = this._maps.find(startAddress)?.value;
+
 		assert(maps);
 
 		const map = maps[maps.length - 1];
+
 		map.details = details;
 
 		const constructorMatch = constructorRegExp.exec(details);
@@ -1771,9 +1860,11 @@ export class LogProcessor {
 		}
 
 		map.mapType = typeRegExp.exec(details)?.[1];
+
 		map.elementsKind = elementsKindRegExp.exec(details)?.[1];
 
 		const instanceSize = instanceSizeRegExp.exec(details)?.[1];
+
 		map.instanceSize = instanceSize
 			? parseInt(instanceSize, 10)
 			: undefined;
@@ -1787,12 +1878,14 @@ export class LogProcessor {
 		}
 
 		const inobjectProperties = inobjectPropertiesRegExp.exec(details)?.[1];
+
 		map.inobjectPropertiesCount = inobjectProperties
 			? parseInt(inobjectProperties, 10)
 			: undefined;
 
 		const unusedPropertyFields =
 			unusedPropertyFieldsRegExp.exec(details)?.[1];
+
 		map.unusedPropertyFields = unusedPropertyFields
 			? parseInt(unusedPropertyFields, 10)
 			: undefined;
@@ -1830,9 +1923,12 @@ export class LogProcessor {
 
 			if (attrs) {
 				property.writable = attrs.charAt(0) === "W";
+
 				property.enumerable = attrs.charAt(1) === "E";
+
 				property.configurable = attrs.charAt(2) === "C";
 			}
+
 			switch (mnemonic) {
 				case undefined:
 					break;
@@ -1864,10 +1960,12 @@ export class LogProcessor {
 						const maps = this._maps.find(address)?.value;
 
 						const index = maps ? maps.length - 1 : 0;
+
 						property.type = new MapId(address, index);
 					} else {
 						property.type = "heap";
 					}
+
 					break;
 
 				default:
@@ -1877,6 +1975,7 @@ export class LogProcessor {
 
 					break;
 			}
+
 			if (isAddress(property.type)) {
 				const targetMaps = this._maps.find(property.type)?.value;
 
@@ -1927,6 +2026,7 @@ export class LogProcessor {
 				`LogProcessor.processMapEvent(): Map not found for source map address ${formatAddress(fromAddress)}`,
 			);
 		}
+
 		if (!(toAddress === kNullAddress || to)) {
 			warn(
 				`LogProcessor.processMapEvent(): Map not found for target map address ${formatAddress(toAddress)}`,
@@ -1953,9 +2053,12 @@ export class LogProcessor {
 			if (code) {
 				const { name, filePosition: codeFilePosition } =
 					code.functionName;
+
 				update.functionName = name;
+
 				update.functionEntry =
 					codeFilePosition && this._functions.get(codeFilePosition);
+
 				update.filePosition =
 					codeFilePosition &&
 					new Location(
@@ -1992,11 +2095,13 @@ export class LogProcessor {
 
 				if (existingProperty) {
 					existingProperty.map ??= sourceProperty.map;
+
 					existingProperty.source ??= sourceProperty.source;
 				} else {
 					to.properties.push(sourceProperty.clone());
 				}
 			}
+
 			if (event === MapEvent.Transition) {
 				const existingProperty = to.properties.find((property) =>
 					PropertyNameEqualer.equals(property.name, name),
@@ -2009,6 +2114,7 @@ export class LogProcessor {
 						to,
 						reason,
 					);
+
 					existingProperty.source ??= update.functionEntry;
 				} else {
 					to.properties.push(
@@ -2071,6 +2177,7 @@ export class LogProcessor {
 			vmState,
 			this._reader.processStack(pc, kNullAddress, stack),
 		);
+
 		this._profile.recordTick(sample);
 	}
 
@@ -2117,6 +2224,7 @@ export class LogProcessor {
 			if (name !== "CodeRange") {
 				log(`skipping 'new' event for category '${name}' with size 0`);
 			}
+
 			return;
 		}
 
@@ -2126,9 +2234,12 @@ export class LogProcessor {
 			log(
 				`'new' event for category '${name}' at address ${formatAddress(object)} replaced an existing entry.`,
 			);
+
 			this._memory.remove(object);
 		}
+
 		this._memory.insert(object, new MemoryEntry(name, size));
+
 		this._memorySize += size;
 
 		if (this._maxMemorySize < this._memorySize) {
@@ -2157,7 +2268,9 @@ export class LogProcessor {
 		}
 
 		this._memory.remove(object);
+
 		this._memorySize -= existing.size;
+
 		this.changeMemoryCategorySize(
 			this._memorySizes,
 			existing.name,
@@ -2176,16 +2289,19 @@ export type ProcessorParameter<T extends Parser> = T extends (
 		? U[]
 		: T extends {
 					readonly parser: (s: string) => infer U;
+
 					readonly optional: true;
 			  }
 			? U | undefined
 			: T extends {
 						readonly parser: typeof parseString;
+
 						readonly rest: true;
 				  }
 				? string[]
 				: T extends {
 							readonly parser: typeof parseString;
+
 							readonly optional: true;
 					  }
 					? string | undefined
@@ -2208,6 +2324,7 @@ type ProcessorParameters<A extends Parsers> = Extract<
 
 interface TypedDispatcher<T extends Parsers> {
 	parsers: T;
+
 	processor(...args: ProcessorParameters<T>): void;
 }
 

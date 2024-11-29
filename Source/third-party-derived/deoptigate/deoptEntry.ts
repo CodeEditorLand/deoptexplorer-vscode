@@ -32,6 +32,7 @@ export class DeoptEntry extends ReferenceableEntryBase {
 	 * Gets the name of the function for this entry.
 	 */
 	functionName: string;
+
 	generatedFunctionName?: string;
 
 	/**
@@ -45,12 +46,14 @@ export class DeoptEntry extends ReferenceableEntryBase {
 		filePosition: Location,
 	) {
 		super(sources, filePosition);
+
 		this.functionName = functionName;
 	}
 
 	protected onResolveLocations() {
 		// This resolves the reference locations for the entry.
 		resolveDeoptLocations("generated", this);
+
 		resolveDeoptLocations("source", this);
 	}
 }

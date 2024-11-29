@@ -41,9 +41,13 @@ import { CancellationToken, Location, Progress, Uri, workspace } from "vscode";
 
 export interface FuncInfo {
 	name: string;
+
 	start: Address;
+
 	size?: number;
+
 	end?: Address;
+
 	filePosition?: Location;
 }
 
@@ -65,6 +69,7 @@ export class CppEntriesProvider {
 
 		function inRange(funcInfo: FuncInfo, start: Address, end: Address) {
 			assert(end !== undefined);
+
 			assert(funcInfo.end !== undefined);
 
 			return funcInfo.start >= start && funcInfo.end <= end;
@@ -93,9 +98,11 @@ export class CppEntriesProvider {
 						lastUnknownSize.start,
 						lastUnknownSize.end,
 					);
+
 					lastAdded = lastUnknownSize;
 				}
 			}
+
 			lastUnknownSize = undefined;
 
 			if (funcInfo.end) {
@@ -105,6 +112,7 @@ export class CppEntriesProvider {
 					inRange(funcInfo, libStart, libEnd)
 				) {
 					processorFunc(funcInfo.name, funcInfo.start, funcInfo.end);
+
 					lastAdded = funcInfo;
 				}
 			} else {
@@ -122,6 +130,7 @@ export class CppEntriesProvider {
 			} else if (funcInfo === false) {
 				break;
 			}
+
 			if (
 				funcInfo.start < libStart - toAddress(libASLRSlide) &&
 				funcInfo.start < libEnd - libStart
@@ -130,11 +139,14 @@ export class CppEntriesProvider {
 			} else {
 				funcInfo.start += toAddress(libASLRSlide);
 			}
+
 			if (funcInfo.size) {
 				funcInfo.end = funcInfo.start + toAddress(funcInfo.size);
 			}
+
 			addEntry(funcInfo);
 		}
+
 		addEntry({ name: "", start: libEnd } as FuncInfo);
 	}
 
@@ -155,16 +167,23 @@ export class CppEntriesProvider {
 
 export interface UnixCppEntriesProviderOptions {
 	nmExec?: string;
+
 	targetRootFS?: string;
+
 	apkEmbeddedLibrary?: string;
 }
 
 export class UnixCppEntriesProvider extends CppEntriesProvider {
 	parsePos: number;
+
 	nmExec?: string;
+
 	targetRootFS?: string;
+
 	apkEmbeddedLibrary?: string;
+
 	FUNC_RE: RegExp;
+
 	symbols: string[];
 
 	constructor({
@@ -173,11 +192,17 @@ export class UnixCppEntriesProvider extends CppEntriesProvider {
 		apkEmbeddedLibrary,
 	}: UnixCppEntriesProviderOptions = {}) {
 		super();
+
 		this.symbols = [];
+
 		this.parsePos = 0;
+
 		this.nmExec = nmExec;
+
 		this.targetRootFS = targetRootFS;
+
 		this.apkEmbeddedLibrary = apkEmbeddedLibrary;
+
 		this.FUNC_RE = /^([0-9a-fA-F]{8,16}) ([0-9a-fA-F]{8,16} )?[tTwW] (.*)$/;
 	}
 
@@ -193,10 +218,13 @@ export class UnixCppEntriesProvider extends CppEntriesProvider {
 		if (this.apkEmbeddedLibrary && libName.endsWith(".apk")) {
 			libName = this.apkEmbeddedLibrary;
 		}
+
 		if (this.targetRootFS) {
 			libName = libName.substring(libName.lastIndexOf("/") + 1);
+
 			libName = this.targetRootFS + libName;
 		}
+
 		try {
 			if (this.nmExec) {
 				this.symbols = [
@@ -218,16 +246,19 @@ export class UnixCppEntriesProvider extends CppEntriesProvider {
 		if (this.symbols.length == 0) {
 			return false;
 		}
+
 		var lineEndPos = this.symbols[0].indexOf("\n", this.parsePos);
 
 		if (lineEndPos == -1) {
 			this.symbols.shift();
+
 			this.parsePos = 0;
 
 			return this.parseNextLine();
 		}
 
 		var line = this.symbols[0].substring(this.parsePos, lineEndPos);
+
 		this.parsePos = lineEndPos + 1;
 
 		var fields = line.match(this.FUNC_RE);
@@ -244,6 +275,7 @@ export class UnixCppEntriesProvider extends CppEntriesProvider {
 				funcInfo.size = parseInt(fields[2], 16);
 			}
 		}
+
 		return funcInfo;
 	}
 }
@@ -286,10 +318,15 @@ export class MacCppEntriesProvider extends UnixCppEntriesProvider {
 
 export interface WindowsCppEntriesProviderOptions {
 	targetRootFS?: string;
+
 	removeTemplates?: boolean;
+
 	globalStorageUri?: Uri;
+
 	dumpbinExe?: string;
+
 	useDbghelp?: boolean;
+
 	unmangleNames?: boolean;
 }
 
@@ -299,20 +336,28 @@ export interface WindowsCppEntriesProviderOptions {
 
 export class WindowsCppEntriesProvider extends CppEntriesProvider {
 	protected targetRootFS?: string;
+
 	private symbols: string = "";
+
 	protected parsePos: number = 0;
+
 	private moduleType_?: string;
 
 	constructor({ targetRootFS }: WindowsCppEntriesProviderOptions) {
 		super();
+
 		this.targetRootFS = targetRootFS;
+
 		this.symbols = "";
+
 		this.parsePos = 0;
 	}
 
 	static FILENAME_RE = /^(.*)\.([^.]+)$/;
+
 	static FUNC_RE =
 		/^\s+0001:[0-9a-fA-F]{8}\s+([_\?@$0-9a-zA-Z]+)\s+([0-9a-fA-F]{8}).*$/;
+
 	static IMAGE_BASE_RE =
 		/^\s+0000:00000000\s+___ImageBase\s+([0-9a-fA-F]{8}).*$/;
 	// This is almost a constant on Windows.
@@ -334,6 +379,7 @@ export class WindowsCppEntriesProvider extends CppEntriesProvider {
 		if (!fileNameFields) return;
 
 		const mapFileName = `${fileNameFields[1]}.map`;
+
 		this.moduleType_ = fileNameFields[2].toLowerCase();
 
 		try {
@@ -352,6 +398,7 @@ export class WindowsCppEntriesProvider extends CppEntriesProvider {
 		}
 
 		const line = this.symbols.substring(this.parsePos, lineEndPos);
+
 		this.parsePos = lineEndPos + 2;
 
 		// Image base entry is above all other symbols, so we can just
@@ -396,6 +443,7 @@ export class WindowsCppEntriesProvider extends CppEntriesProvider {
 		const nameEndPos = name.indexOf("@@");
 
 		const components = name.substring(1, nameEndPos).split("@");
+
 		components.reverse();
 
 		return components.join("::");

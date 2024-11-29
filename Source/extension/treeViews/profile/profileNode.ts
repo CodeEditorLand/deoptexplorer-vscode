@@ -150,6 +150,7 @@ export class ProfileNode extends BaseNode {
 			setCurrentProfileViewNodeSnapshot(
 				new ProfileViewNodeSnapshot(this.provider.log, this.node),
 			);
+
 			await Promise.all([
 				// show the "Line Ticks" tree view
 				setShowLineTicks(true),
@@ -168,6 +169,7 @@ export class ProfileNode extends BaseNode {
 
 			return;
 		}
+
 		return super.onCommand(commandName);
 	}
 
@@ -185,6 +187,7 @@ export class ProfileNode extends BaseNode {
 			const inlined =
 				entry instanceof DynamicFuncCodeEntry &&
 				entry.state === FunctionState.Inlined;
+
 			item.tooltip = markdown.trusted`${[
 				entry.type === "CPP"
 					? markdown.trusted.code("cpp")`${functionName.name}`
@@ -214,6 +217,7 @@ export class ProfileNode extends BaseNode {
 					: null,
 			]}`;
 		}
+
 		if (item.command === undefined && location) {
 			const uri = getScriptSourceUri(
 				location.uri,
@@ -231,6 +235,7 @@ export class ProfileNode extends BaseNode {
 				});
 			}
 		}
+
 		return item;
 	}
 

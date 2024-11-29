@@ -13,7 +13,9 @@ import { PickerTreeDataProvider } from "./pickerTreeDataProvider";
 
 export class WorkspaceWatcher {
 	private watching = false;
+
 	private watchers = new Map<string, FileSystemWatcher>();
+
 	private workspaceFoldersChangedSubscription?: Disposable;
 
 	constructor(readonly provider: PickerTreeDataProvider) {}
@@ -26,7 +28,9 @@ export class WorkspaceWatcher {
 				this.watchFolder(workspaceFolder);
 			}
 		}
+
 		this.workspaceFoldersChangedSubscription?.dispose();
+
 		this.workspaceFoldersChangedSubscription =
 			workspace.onDidChangeWorkspaceFolders((e) => {
 				this.provider.invalidate();
@@ -34,6 +38,7 @@ export class WorkspaceWatcher {
 				for (const workspaceFolder of e.added) {
 					this.watchFolder(workspaceFolder);
 				}
+
 				for (const workspaceFolder of e.removed) {
 					this.unwatchFolder(workspaceFolder);
 				}
@@ -46,8 +51,11 @@ export class WorkspaceWatcher {
 		for (const watcher of this.watchers.values()) {
 			watcher.dispose();
 		}
+
 		this.watchers.clear();
+
 		this.workspaceFoldersChangedSubscription?.dispose();
+
 		this.workspaceFoldersChangedSubscription = undefined;
 	}
 
@@ -63,15 +71,19 @@ export class WorkspaceWatcher {
 		const watcher = workspace.createFileSystemWatcher(
 			new RelativePattern(workspaceFolder, `*v8.log`),
 		);
+
 		watcher.onDidChange(() => {
 			this.provider.invalidate();
 		});
+
 		watcher.onDidCreate(() => {
 			this.provider.invalidate();
 		});
+
 		watcher.onDidDelete(() => {
 			this.provider.invalidate();
 		});
+
 		this.watchers.set(key, watcher);
 	}
 
@@ -82,6 +94,7 @@ export class WorkspaceWatcher {
 
 		if (watcher) {
 			watcher.dispose();
+
 			this.watchers.delete(key);
 		}
 	}

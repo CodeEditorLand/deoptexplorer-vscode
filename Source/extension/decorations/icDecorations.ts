@@ -19,15 +19,25 @@ import { createDecorationType, getTextEditors } from "./utils";
 export class ICDecorations {
 	private _showDecorations: "active" | "visible" | "none" =
 		showDecorations.has(ShowDecorations.ICs) ? "visible" : "none";
+
 	private _maxDecorations = 10_000;
+
 	private _disposables: VSDisposableStack;
+
 	private _noFeedbackIcDecorationType: TextEditorDecorationType;
+
 	private _uninitializedIcDecorationType: TextEditorDecorationType;
+
 	private _monomorphicIcDecorationType: TextEditorDecorationType;
+
 	private _premonomorphicIcDecorationType: TextEditorDecorationType;
+
 	private _polymorphicIcDecorationType: TextEditorDecorationType;
+
 	private _recomputeHandlerIcDecorationType: TextEditorDecorationType;
+
 	private _megamorphicIcDecorationType: TextEditorDecorationType;
+
 	private _genericIcDecorationType: TextEditorDecorationType;
 
 	constructor() {
@@ -37,42 +47,57 @@ export class ICDecorations {
 			this._noFeedbackIcDecorationType = stack.use(
 				createDecorationType("noFeedbackIc"),
 			);
+
 			this._uninitializedIcDecorationType = stack.use(
 				createDecorationType("uninitializedIc"),
 			);
+
 			this._premonomorphicIcDecorationType = stack.use(
 				createDecorationType("premonomorphicIc"),
 			);
+
 			this._monomorphicIcDecorationType = stack.use(
 				createDecorationType("monomorphicIc"),
 			);
+
 			this._polymorphicIcDecorationType = stack.use(
 				createDecorationType("polymorphicIc"),
 			);
+
 			this._recomputeHandlerIcDecorationType = stack.use(
 				createDecorationType("recomputeHandlerIc"),
 			);
+
 			this._megamorphicIcDecorationType = stack.use(
 				createDecorationType("megamorphicIc"),
 			);
+
 			this._genericIcDecorationType = stack.use(
 				createDecorationType("genericIc"),
 			);
+
 			stack.use(events.onDidOpenLogFile(() => this.update()));
+
 			stack.use(events.onDidCloseLogFile(() => this._hide()));
+
 			stack.use(
 				events.onDidShowDecorationsChange(() => {
 					this._onDidShowDecorationsChange();
 				}),
 			);
+
 			stack.use(window.onDidChangeActiveTextEditor(() => this.update()));
+
 			stack.use(
 				window.onDidChangeVisibleTextEditors(() => this.update()),
 			);
+
 			stack.use(() => {
 				this._hide();
 			});
+
 			this._show();
+
 			this._disposables = stack.move();
 		} finally {
 			stack.dispose();
@@ -82,9 +107,11 @@ export class ICDecorations {
 	get showDecorations() {
 		return this._showDecorations;
 	}
+
 	set showDecorations(value) {
 		if (this._showDecorations !== value) {
 			this._hide();
+
 			this._showDecorations = value;
 
 			if (this._showDecorations !== "none") {
@@ -102,12 +129,19 @@ export class ICDecorations {
 	private _hide() {
 		for (const editor of getTextEditors(this._showDecorations)) {
 			editor.setDecorations(this._noFeedbackIcDecorationType, []);
+
 			editor.setDecorations(this._uninitializedIcDecorationType, []);
+
 			editor.setDecorations(this._premonomorphicIcDecorationType, []);
+
 			editor.setDecorations(this._monomorphicIcDecorationType, []);
+
 			editor.setDecorations(this._polymorphicIcDecorationType, []);
+
 			editor.setDecorations(this._recomputeHandlerIcDecorationType, []);
+
 			editor.setDecorations(this._megamorphicIcDecorationType, []);
+
 			editor.setDecorations(this._genericIcDecorationType, []);
 		}
 	}
@@ -206,6 +240,7 @@ export class ICDecorations {
 
 	update() {
 		this._hide();
+
 		this._show();
 	}
 
@@ -216,6 +251,7 @@ export class ICDecorations {
 
 export function activateICDecorations(context: ExtensionContext) {
 	const stack = new VSDisposableStack();
+
 	stack.use(new ICDecorations());
 
 	return stack;

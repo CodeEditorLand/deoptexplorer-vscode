@@ -19,6 +19,7 @@ export function parseAddress(text: string): Address {
 			return BigInt(text);
 		}
 	}
+
 	return BigInt(`0x${text}`);
 }
 

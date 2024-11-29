@@ -20,14 +20,21 @@ export interface GroupingOptions<T extends BaseNode, K = any, C = any> {
 	context?: (values: readonly T[], parent: GroupingNode<T> | undefined) => C;
 
 	keyEqualer?: Equaler<K>;
+
 	keySelector: (value: T, context: C) => K;
 
 	label: Buildable<string | Uri, T, K, C>;
+
 	description?: Buildable<TypeSafeTreeItemOptions["description"], T, K, C>;
+
 	tooltip?: Buildable<TypeSafeTreeItemOptions["tooltip"], T, K, C>;
+
 	iconPath?: Buildable<TypeSafeTreeItemOptions["iconPath"], T, K, C>;
+
 	command?: Buildable<TypeSafeTreeItemOptions["command"], T, K, C>;
+
 	contextValue?: Buildable<TypeSafeTreeItemOptions["contextValue"], T, K, C>;
+
 	accessibilityInformation?: Buildable<
 		TypeSafeTreeItemOptions["contextValue"],
 		T,
@@ -36,6 +43,7 @@ export interface GroupingOptions<T extends BaseNode, K = any, C = any> {
 	>;
 
 	pageSize?: number;
+
 	sorter?: (query: Query<GroupingNode<T, K>>) => Iterable<GroupingNode<T, K>>;
 }
 
@@ -112,6 +120,7 @@ export class GroupingNode<
 		token: CancellationToken,
 	): ProviderResult<TreeItem> {
 		const options = this.groupings[this.groupingIndex];
+
 		treeItem.tooltip = build(
 			options.tooltip,
 			this.key,
@@ -145,6 +154,7 @@ export class GroupingNode<
 		if (elements.length === 0) {
 			return from([]);
 		}
+
 		if (groupingIndex >= groupings.length) {
 			return from(elements).select(
 				(element) =>
@@ -153,6 +163,7 @@ export class GroupingNode<
 					}) as T,
 			);
 		}
+
 		const provider = elements[0].provider;
 
 		const nextGrouping = groupings[groupingIndex];

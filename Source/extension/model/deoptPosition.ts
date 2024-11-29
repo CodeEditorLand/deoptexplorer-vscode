@@ -37,16 +37,21 @@ export class DeoptPosition {
 
 			while (rest) {
 				assert((match = inlinedAtRegExp.exec(rest)));
+
 				inlinedAt ??= [];
+
 				inlinedAt.push(
 					getCanonicalLocation(
 						parseLocation(match[1], /*strict*/ false),
 					),
 				);
+
 				rest = rest.slice(match[0].length);
 			}
+
 			return new DeoptPosition(filePosition, inlinedAt);
 		}
+
 		return new DeoptPosition(
 			getCanonicalLocation(parseLocation(text, /*strict*/ false)),
 		);
@@ -60,6 +65,7 @@ export class DeoptPosition {
 				text += ` inlined at <${formatLocation(location, { as: "file", include: "position" })}>`;
 			}
 		}
+
 		return text;
 	}
 }

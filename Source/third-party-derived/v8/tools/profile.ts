@@ -87,12 +87,19 @@ import {
 
 export interface ProfileOptions {
 	codeMap?: CodeMap;
+
 	sources?: Sources;
+
 	callTree?: CallTree;
+
 	excludeIc?: boolean;
+
 	excludeBytecodes?: boolean;
+
 	excludeBuiltins?: boolean;
+
 	excludeStubs?: boolean;
+
 	excludeNatives?: boolean;
 }
 
@@ -113,30 +120,47 @@ const NATIVES_RE = /\.(exe|dll)$/i;
  */
 export class Profile {
 	protected codeMap_: CodeMap;
+
 	protected topDownTree_: CallTree;
 
 	private onUnknownCodeEmitter_ = new EventEmitter<{
 		operation: "move" | "delete" | "tick";
+
 		address: Address;
+
 		stackPos?: number | undefined;
 	}>();
+
 	readonly onUnknownCode = this.onUnknownCodeEmitter_.event;
 
 	private onErrorEmitter_ = new EventEmitter<string>();
+
 	readonly onError = this.onErrorEmitter_.event;
 
 	private c_entries_: Record<string, number> = Object.create(null);
+
 	private sources_: Sources;
+
 	private start_time_: TimeTicks | undefined;
+
 	private end_time_: TimeTicks | undefined;
+
 	private duration_: TimeDelta | undefined;
+
 	private averageSampleDuration_: TimeDelta | undefined;
+
 	private samples_: SampleInfo[] = [];
+
 	private skipThisFunctionRegExps_: RegExp[] = [];
+
 	private finalized_ = false;
+
 	private programWeight_ = 0;
+
 	private idleWeight_ = 0;
+
 	private gcWeight_ = 0;
+
 	private functionWeight_ = 0;
 
 	constructor(options: ProfileOptions = {}) {
@@ -152,37 +176,48 @@ export class Profile {
 
 		if (options.excludeNatives)
 			this.skipThisFunctionRegExps_.push(NATIVES_RE);
+
 		this.codeMap_ = options.codeMap ?? new CodeMap();
+
 		this.topDownTree_ = options.callTree ?? new CallTree();
+
 		this.sources_ = options.sources ?? new Sources();
 	}
 
 	get startTime() {
 		return this.start_time_ ?? TimeTicks.Zero;
 	}
+
 	get endTime() {
 		return this.end_time_ ?? TimeTicks.Zero;
 	}
+
 	get duration() {
 		return (this.duration_ ??= this.endTime.subtract(this.startTime));
 	}
+
 	get averageSampleDuration() {
 		return (this.averageSampleDuration_ ??= this.duration.divide(
 			this.samples.length,
 		));
 	}
+
 	get samples(): readonly SampleInfo[] {
 		return this.samples_;
 	}
+
 	get totalProgramTime() {
 		return this.averageSampleDuration.multiply(this.programWeight_);
 	}
+
 	get totalIdleTime() {
 		return this.averageSampleDuration.multiply(this.idleWeight_);
 	}
+
 	get totalGcTime() {
 		return this.averageSampleDuration.multiply(this.gcWeight_);
 	}
+
 	get totalFunctionTime() {
 		return this.averageSampleDuration.multiply(this.functionWeight_);
 	}
@@ -198,6 +233,7 @@ export class Profile {
 		for (let i = 0; i < this.skipThisFunctionRegExps_.length; i++) {
 			if (this.skipThisFunctionRegExps_[i].test(name)) return true;
 		}
+
 		return false;
 	}
 
@@ -245,6 +281,7 @@ export class Profile {
 			name,
 			"SHARED_LIB",
 		);
+
 		this.codeMap_.addLibrary(startAddr, entry);
 
 		return entry;
@@ -261,6 +298,7 @@ export class Profile {
 		this.throwIfFinalized_();
 
 		let entry = new CodeEntry(Number(endAddr - startAddr), name, "CPP");
+
 		this.codeMap_.addStaticCode(startAddr, entry);
 
 		return entry;
@@ -284,6 +322,7 @@ export class Profile {
 		this.throwIfFinalized_();
 
 		let entry = new DynamicCodeEntry(this.sources_, size, type, name);
+
 		this.codeMap_.addCode(start, entry);
 
 		return entry;
@@ -315,11 +354,13 @@ export class Profile {
 
 		if (!func) {
 			func = new SharedFunctionCodeEntry(this.sources_, name);
+
 			this.codeMap_.addCode(funcAddr, func);
 		} else if (func.name !== name) {
 			// Function object has been overwritten with a new one.
 			func.name = name;
 		}
+
 		let entry = this.codeMap_.findDynamicEntryByStartAddress(start);
 
 		if (entry) {
@@ -332,11 +373,14 @@ export class Profile {
 				entry.state = state;
 			} else {
 				this.codeMap_.deleteCode(start);
+
 				entry = null;
 			}
 		}
+
 		if (!entry) {
 			assert(func instanceof SharedFunctionCodeEntry);
+
 			entry = new DynamicFuncCodeEntry(
 				this.sources_,
 				size,
@@ -344,8 +388,10 @@ export class Profile {
 				func,
 				state,
 			);
+
 			this.codeMap_.addCode(start, entry);
 		}
+
 		return entry;
 	}
 
@@ -354,6 +400,7 @@ export class Profile {
 	 */
 	addScriptSource(scriptId: number, url: Uri | undefined, source: string) {
 		this.throwIfFinalized_();
+
 		this.sources_.addScript(new Script(scriptId, url, source));
 	}
 
@@ -390,8 +437,10 @@ export class Profile {
 
 					if (text !== undefined) {
 						script = new Script(scriptId, uri, text);
+
 						this.sources_.addScript(script);
 					}
+
 					this.addSourcePositionsWorker(
 						entry,
 						script,
@@ -404,6 +453,7 @@ export class Profile {
 				});
 			}
 		}
+
 		return this.addSourcePositionsWorker(
 			entry,
 			script,
@@ -425,8 +475,11 @@ export class Profile {
 		inlinedFunctions: string,
 	) {
 		entry.start_pos ??= startPos;
+
 		entry.end_pos ??= endPos;
+
 		entry.script ??= script;
+
 		entry.filePosition ??=
 			script?.uri &&
 			new Location(script.uri, script.lineMap.positionAt(startPos));
@@ -434,8 +487,11 @@ export class Profile {
 		if (!entry?.isJSFunction?.()) return;
 
 		entry.func.script ??= script;
+
 		entry.func.start_pos ??= startPos;
+
 		entry.func.end_pos ??= endPos;
+
 		entry.func.filePosition ??= entry.filePosition;
 
 		const line_table = new SourcePositionTable();
@@ -463,9 +519,11 @@ export class Profile {
 
 			if (inlining_id === kNotInlined) {
 				let line_number = script?.getV8LineNumber(scriptOffset) ?? 1;
+
 				line_table.setPosition(code_offset, line_number, inlining_id);
 			} else {
 				const stack = source_position.inliningStack(deopt_data);
+
 				assert(stack.length);
 
 				// When we have an inlining id and we are doing cross-script inlining,
@@ -476,6 +534,7 @@ export class Profile {
 				let line_number = stack[0].position
 					? stack[0].position.line + 1
 					: 1;
+
 				line_table.setPosition(code_offset, line_number, inlining_id);
 
 				let inline_stack: ProfileStackTrace = [];
@@ -516,6 +575,7 @@ export class Profile {
 							pos_info.shared,
 							FunctionState.Inlined,
 						);
+
 						inline_entry.fallbackFilePosition =
 							start_pos_info.position &&
 							pos_info.script.uri &&
@@ -523,19 +583,27 @@ export class Profile {
 								pos_info.script.uri,
 								start_pos_info.position,
 							);
+
 						inline_entry.start_pos = pos_info.shared.start_pos;
+
 						inline_entry.end_pos = pos_info.shared.end_pos;
+
 						inline_entry.script = pos_info.script;
+
 						cached_inline_entries.set(cache_key, inline_entry);
 					}
+
 					inline_stack.push(
 						new CodeEntryAndLineNumber(inline_entry, line_number),
 					);
 				}
+
 				inline_stacks.set(inlining_id, inline_stack);
 			}
 		}
+
 		entry.line_info = line_table;
+
 		entry.setInlineStacks(inline_stacks);
 	}
 
@@ -611,12 +679,15 @@ export class Profile {
 
 		if (!this.end_time_ || this.end_time_.compareTo(sample.timestamp) < 0)
 			this.end_time_ = sample.timestamp;
+
 		this.duration_ = undefined;
+
 		this.averageSampleDuration_ = undefined;
 
 		const { stack_trace, src_line } = this.symbolizeTickSample_(sample);
 
 		const node = this.topDownTree_.addPathFromEnd(stack_trace, src_line);
+
 		this.samples_.push(new SampleInfo(node, sample.timestamp, src_line));
 
 		switch (node.entry) {
@@ -674,13 +745,16 @@ export class Profile {
 				) {
 					look_for_first_c_function = true;
 				}
+
 				if (look_for_first_c_function && entry.type === "CPP") {
 					last_seen_c_function = entry.getName();
 				}
+
 				pushEntry(new CodeEntryAndLineNumber(entry, line_number));
 			} else {
 				this.handleUnknownCode("tick", address, this_frame_id);
 			}
+
 			if (
 				look_for_first_c_function &&
 				this_frame_id > 0 &&
@@ -688,7 +762,9 @@ export class Profile {
 				last_seen_c_function !== ""
 			) {
 				this.c_entries_[last_seen_c_function] ??= 0;
+
 				this.c_entries_[last_seen_c_function]++;
+
 				look_for_first_c_function = false;
 			}
 		};
@@ -737,6 +813,7 @@ export class Profile {
 				// function, meaning that we have encountered a frameless invocation.
 				if (!pc_entry && !sample.has_external_callback) {
 					attributed_pc = sample.tos;
+
 					pc_entry = this.findEntry(
 						attributed_pc,
 						ref_pc_entry_instruction_start,
@@ -749,12 +826,15 @@ export class Profile {
 				// caller's frame. Check for this case and just skip such samples.
 				if (pc_entry) {
 					let pc_offset = attributed_pc - pc_entry_instruction_start;
+
 					src_line = pc_entry.getSourceLine(pc_offset);
 
 					if (src_line === kNoLineNumberInfo) {
 						src_line = pc_entry.line_number;
 					}
+
 					src_line_not_found = false;
+
 					pushFrame(attributed_pc, pc_entry, src_line);
 
 					if (
@@ -817,6 +897,7 @@ export class Profile {
 						assert(inline_stack.length);
 
 						let index = stack_trace.length - inline_stack.length;
+
 						stack_trace[index].line_number =
 							most_inlined_frame_line_number;
 					}
@@ -828,8 +909,10 @@ export class Profile {
 						if (src_line === kNoLineNumberInfo) {
 							src_line = entry.line_number;
 						}
+
 						src_line_not_found = false;
 					}
+
 					line_number = entry.getSourceLine(pc_offset);
 
 					// The inline stack contains the top-level function i.e. the same
@@ -838,6 +921,7 @@ export class Profile {
 					// so we use it instead of pushing entry to stack_trace.
 					if (inline_stack) continue;
 				}
+
 				pushFrame(stack_pos, entry, line_number);
 			}
 		}
@@ -903,9 +987,12 @@ export class Profile {
 
 		for (var f in this.c_entries_) {
 			let ticks = this.c_entries_[f];
+
 			total_ticks += ticks;
+
 			result.push(new CEntryNode(f, ticks));
 		}
+
 		result[0].ticks = total_ticks; // Sorting will keep this at index 0.
 		result.sort(function (n1, n2) {
 			return n2.ticks - n1.ticks || (n2.name < n1.name ? -1 : 1);
@@ -958,9 +1045,13 @@ export class Profile {
 
 	finalize() {
 		if (this.finalized_) return;
+
 		this.finalized_ = true;
+
 		this.cleanUpFuncEntries();
+
 		this.fixMissingSamples();
+
 		this.topDownTree_.computeTotalWeights();
 	}
 
@@ -977,6 +1068,7 @@ export class Profile {
 				entry.used = false;
 			}
 		}
+
 		for (let i = 0, l = entries.length; i < l; ++i) {
 			const entry = entries[i][1];
 
@@ -984,6 +1076,7 @@ export class Profile {
 				entry.func.used = true;
 			}
 		}
+
 		for (let i = 0, l = entries.length; i < l; ++i) {
 			const entry = entries[i][1];
 
@@ -1019,7 +1112,9 @@ export class Profile {
 
 		for (
 			let sampleIndex = 1;
+
 			sampleIndex < samplesCount - 1;
+
 			sampleIndex++
 		) {
 			const nextNode = samples[sampleIndex + 1].node;
@@ -1033,21 +1128,31 @@ export class Profile {
 				bottomNode(prevNode) === bottomNode(nextNode)
 			) {
 				samples[sampleIndex].node = prevNode;
+
 				samples[sampleIndex].line = prevLine;
+
 				samples[sampleIndex].node.selfWeight++;
+
 				samples[sampleIndex].node.totalWeight++;
 			}
+
 			prevNode = node;
+
 			prevLine = line;
+
 			node = nextNode;
+
 			line = nextLine;
 		}
+
 		function bottomNode(node: CallTreeNode): CallTreeNode {
 			while (node.parent?.parent) {
 				node = node.parent;
 			}
+
 			return node;
 		}
+
 		function isSystemNode(node: CallTreeNode): boolean {
 			return (
 				node.entry === CodeEntry.program_entry() ||
@@ -1067,6 +1172,7 @@ export class Profile {
 		this.throwIfNotFinalized_();
 
 		const nodes: JsonProfileNode[] = [];
+
 		flattenJsonProfileNodes(this.topDownTree_.getRoot(), nodes);
 
 		const samples: number[] = [];
@@ -1079,7 +1185,9 @@ export class Profile {
 			samples.push(sample.node.id);
 
 			const ts = sample.timestamp.sinceOrigin().inMicroseconds();
+
 			timeDeltas.push(Number(ts - lastTime));
+
 			lastTime = ts;
 		}
 
@@ -1120,6 +1228,7 @@ function buildJsonProfileNode(node: CallTreeNode): JsonProfileNode {
 
 	for (const child of node.childNodes()) {
 		children ??= [];
+
 		children.push(child.id);
 	}
 

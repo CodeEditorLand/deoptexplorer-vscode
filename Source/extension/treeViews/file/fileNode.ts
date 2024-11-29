@@ -38,6 +38,7 @@ export class FileNode extends BaseNode {
 		readonly base: Uri | undefined,
 	) {
 		super(provider, /*parent*/ undefined);
+
 		provider.fileNodes.set(file, this);
 	}
 
@@ -86,6 +87,7 @@ export class FileNode extends BaseNode {
 		);
 
 		const deoptCount = this.fileEntry.deopts.length;
+
 		treeItem.tooltip = markdown`${[
 			markdown`${formatUri(this.file, { as: "file" })}  \n`,
 			markdown`**Megamorphic ICs:** ${megamorphicIcCount}  \n`,

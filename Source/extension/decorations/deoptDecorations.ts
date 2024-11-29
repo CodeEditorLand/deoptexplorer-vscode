@@ -19,10 +19,15 @@ import { createDecorationType, getTextEditors } from "./utils";
 export class DeoptDecorations {
 	private _showDecorations: "active" | "visible" | "none" =
 		showDecorations.has(ShowDecorations.Deopts) ? "visible" : "none";
+
 	private _maxDecorations = 2_000;
+
 	private _disposables: VSDisposableStack;
+
 	private _eagerDeoptDecorationType: TextEditorDecorationType;
+
 	private _lazyDeoptDecorationType: TextEditorDecorationType;
+
 	private _softDeoptDecorationType: TextEditorDecorationType;
 
 	constructor() {
@@ -32,27 +37,37 @@ export class DeoptDecorations {
 			this._eagerDeoptDecorationType = stack.use(
 				createDecorationType("eagerDeopt"),
 			);
+
 			this._lazyDeoptDecorationType = stack.use(
 				createDecorationType("lazyDeopt"),
 			);
+
 			this._softDeoptDecorationType = stack.use(
 				createDecorationType("softDeopt"),
 			);
+
 			stack.use(events.onDidOpenLogFile(() => this.update()));
+
 			stack.use(events.onDidCloseLogFile(() => this._hide()));
+
 			stack.use(
 				events.onDidShowDecorationsChange(() => {
 					this._onDidShowDecorationsChange();
 				}),
 			);
+
 			stack.use(window.onDidChangeActiveTextEditor(() => this.update()));
+
 			stack.use(
 				window.onDidChangeVisibleTextEditors(() => this.update()),
 			);
+
 			stack.use(() => {
 				this._hide();
 			});
+
 			this._show();
+
 			this._disposables = stack.move();
 		} finally {
 			stack.dispose();
@@ -62,9 +77,11 @@ export class DeoptDecorations {
 	get showDecorations() {
 		return this._showDecorations;
 	}
+
 	set showDecorations(value) {
 		if (this._showDecorations !== value) {
 			this._hide();
+
 			this._showDecorations = value;
 
 			if (this._showDecorations !== "none") {
@@ -82,7 +99,9 @@ export class DeoptDecorations {
 	private _hide() {
 		for (const editor of getTextEditors(this._showDecorations)) {
 			editor.setDecorations(this._eagerDeoptDecorationType, []);
+
 			editor.setDecorations(this._lazyDeoptDecorationType, []);
+
 			editor.setDecorations(this._softDeoptDecorationType, []);
 		}
 	}
@@ -169,6 +188,7 @@ export class DeoptDecorations {
 
 	update() {
 		this._hide();
+
 		this._show();
 	}
 
@@ -179,6 +199,7 @@ export class DeoptDecorations {
 
 export function activateDeoptDecorations(context: ExtensionContext) {
 	const stack = new VSDisposableStack();
+
 	stack.use(new DeoptDecorations());
 
 	return stack;

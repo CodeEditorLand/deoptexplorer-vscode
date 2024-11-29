@@ -30,11 +30,13 @@ import {
 
 export type OkLocalFileResolution = {
 	readonly result: "ok";
+
 	readonly local: true;
 };
 
 export type OkNonlocalFileResolution = {
 	readonly result: "ok";
+
 	readonly local: false;
 };
 
@@ -44,6 +46,7 @@ export type SkipFileResolution = { readonly result: "skip" };
 
 export type RedirectFileResolution = {
 	readonly result: "redirect";
+
 	readonly file: Uri;
 };
 
@@ -62,12 +65,16 @@ type MissingFileResolution = { readonly result: "missing" };
 
 type RedirectTargetLocalFileResolution = {
 	readonly result: "target";
+
 	readonly from: StringSet<Uri>;
+
 	readonly local: true;
 };
 type RedirectTargetNonlocalFileResolution = {
 	readonly result: "target";
+
 	readonly from: StringSet<Uri>;
+
 	readonly local: false;
 };
 type RedirectTargetFileResolution =
@@ -103,29 +110,39 @@ const ignoreAllFileItem: MessageItem = { title: "Skip all" };
 
 interface DirectoryRedirection {
 	readonly dirname: Uri;
+
 	readonly originalFiles: StringSet<Uri>;
 }
 
 export class Sources {
 	private _scriptUrlToScript = new StringMap<Uri, Script>(uriToString);
+
 	private _scriptIdToScript = new Map<number, Script>();
+
 	private _resolvedSources = new StringMap<Uri, string>(uriToString);
+
 	private _resolvedLineMaps = new StringMap<Uri, LineMap>(uriToString);
+
 	private _resolvedSourceFiles = new StringMap<Uri, ts.SourceFile>(
 		uriToString,
 	);
+
 	private _sourceMaps = new StringMap<Uri, SourceMap | Uri | "no-sourcemap">(
 		uriToString,
 	);
+
 	private _resolutions = new StringMap<Uri, InternalFileResolution>(
 		uriToString,
 	);
+
 	private _directoryRedirections = new StringMap<Uri, DirectoryRedirection>(
 		uriToString,
 	);
+
 	private _ignoreMissing = false;
 
 	static readonly FILE_OK = nonlocalFileOk;
+
 	static readonly FILE_SKIP = fileSkip;
 
 	constructor(scripts?: Iterable<Script>) {
@@ -180,6 +197,7 @@ export class Sources {
 
 	addScript(script: Script) {
 		if (script.uri) this.delete(script.uri);
+
 		this._scriptIdToScript.set(script.scriptId, script);
 
 		if (script.uri) this._scriptUrlToScript.set(script.uri, script);
@@ -202,6 +220,7 @@ export class Sources {
 
 		while (resolution?.result === "redirect") {
 			file = resolution.file;
+
 			resolution = this._resolutions.get(file);
 		}
 
@@ -440,13 +459,18 @@ export class Sources {
 				from: new StringSet(uriToString),
 				local: existing.local && resolution.local,
 			};
+
 			mergeResolution(merged, file, existing);
+
 			mergeResolution(merged, file, resolution);
+
 			this._resolvedSources.set(file, content);
 
 			return this._recordResolution(file, merged);
 		}
+
 		this.delete(file);
+
 		this._resolvedSources.set(file, content);
 
 		return this._recordResolution(file, resolution);
@@ -474,6 +498,7 @@ export class Sources {
 				},
 				content,
 			);
+
 			this.delete(file);
 
 			const fileDirname = getCanonicalUri(resolveUri(file, "."));
@@ -490,6 +515,7 @@ export class Sources {
 						originalFiles: new StringSet(uriToString),
 					}),
 				);
+
 			directory.originalFiles.add(file);
 
 			return this._recordResolution(file, {
@@ -504,7 +530,9 @@ export class Sources {
 
 		if (script !== undefined) {
 			this._scriptIdToScript.delete(script.scriptId);
+
 			this._scriptUrlToScript.delete(file);
+
 			this._sourceMaps.delete(file);
 
 			return true;
@@ -514,8 +542,11 @@ export class Sources {
 
 		if (resolution !== undefined) {
 			this._resolutions.delete(file);
+
 			this._resolvedSources.delete(file);
+
 			this._resolvedLineMaps.delete(file);
+
 			this._sourceMaps.delete(file);
 
 			if (resolution.result === "redirect") {
@@ -547,18 +578,26 @@ export class Sources {
 					}
 				}
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
 	clear() {
 		this._scriptUrlToScript.clear();
+
 		this._resolutions.clear();
+
 		this._resolvedSources.clear();
+
 		this._resolvedLineMaps.clear();
+
 		this._sourceMaps.clear();
+
 		this._scriptIdToScript.clear();
+
 		this._directoryRedirections.clear();
 	}
 
@@ -588,9 +627,11 @@ export class Sources {
 
 			if (content !== undefined) {
 				lineMap = new LineMap(content);
+
 				this._resolvedLineMaps.set(resolved, lineMap);
 			}
 		}
+
 		return lineMap;
 	}
 
@@ -603,6 +644,7 @@ export class Sources {
 			}
 
 			await this.resolveAsync(file, onMissing);
+
 			resolved = this._resolveFile(file);
 
 			if (resolved === undefined) {
@@ -668,6 +710,7 @@ export class Sources {
 
 					throw e;
 				}
+
 				this._sourceMaps.set(resolved, sourceMap);
 
 				return sourceMap;
@@ -693,6 +736,7 @@ export class Sources {
 			}
 
 			await this.resolveAsync(file, onMissing);
+
 			resolved = this._resolveFile(file);
 
 			if (resolved === undefined) {
@@ -764,6 +808,7 @@ export class Sources {
 			default:
 				return undefined;
 		}
+
 		let sourceFile = this._resolvedSourceFiles.get(resolved);
 
 		if (sourceFile === undefined) {
@@ -778,9 +823,11 @@ export class Sources {
 					ts.ScriptTarget.ESNext,
 					/*setParentNodes*/ true,
 				);
+
 				this._resolvedSourceFiles.set(resolved, sourceFile);
 			}
 		}
+
 		return sourceFile;
 	}
 
@@ -796,6 +843,7 @@ export class Sources {
 			}
 
 			await this.resolveAsync(file, onMissing);
+
 			resolved = this._resolveFile(file);
 
 			if (resolved === undefined) {
@@ -822,6 +870,7 @@ export class Sources {
 				yield key;
 			}
 		}
+
 		for (const key of this._resolvedSources.keys()) {
 			if (!seen.has(key)) {
 				seen.add(key);

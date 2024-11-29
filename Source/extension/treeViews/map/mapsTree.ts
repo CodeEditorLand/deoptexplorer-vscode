@@ -13,15 +13,22 @@ import { MapsTreeDataProvider } from "./mapsTreeDataProvider";
 
 export class MapsTree implements Disposable {
 	private provider: MapsTreeDataProvider;
+
 	private treeView: TreeView<BaseNode>;
 
 	constructor() {
 		this.provider = new MapsTreeDataProvider();
+
 		this.provider.suspendUpdates();
+
 		this.provider.sortBy = sortMaps;
+
 		this.provider.filter = showMaps;
+
 		this.provider.groupBy = groupMaps;
+
 		this.provider.resumeUpdates();
+
 		this.treeView = window.createTreeView(constants.treeviews.maps, {
 			treeDataProvider: this.provider,
 			showCollapseAll: true,
@@ -30,27 +37,40 @@ export class MapsTree implements Disposable {
 
 	openLog(uri: Uri, log: LogFile) {
 		this.provider.suspendUpdates();
+
 		this.provider.sortBy = sortMaps;
+
 		this.provider.filter = showMaps;
+
 		this.provider.groupBy = groupMaps;
+
 		this.provider.log = log;
+
 		this.provider.resumeUpdates();
+
 		this.updateTreeViewHeader();
 	}
 
 	closeLog() {
 		this.provider.suspendUpdates();
+
 		this.provider.sortBy = sortMaps;
+
 		this.provider.filter = showMaps;
+
 		this.provider.groupBy = groupMaps;
+
 		this.provider.log = undefined;
+
 		this.provider.resumeUpdates();
+
 		this.updateTreeViewHeader();
 	}
 
 	setSortBy(value: constants.MapSortMode) {
 		if (this.provider.sortBy !== value) {
 			this.provider.sortBy = value;
+
 			this.updateTreeViewHeader();
 		}
 	}
@@ -58,6 +78,7 @@ export class MapsTree implements Disposable {
 	setGroupBy(value: ImmutableEnumSet<constants.GroupMaps>) {
 		if (!this.provider.groupBy.equals(value)) {
 			this.provider.groupBy = value;
+
 			this.updateTreeViewHeader();
 		}
 	}
@@ -65,6 +86,7 @@ export class MapsTree implements Disposable {
 	setFilter(value: ImmutableEnumSet<constants.ShowMaps>) {
 		if (!this.provider.filter.equals(value)) {
 			this.provider.filter = value;
+
 			this.updateTreeViewHeader();
 		}
 	}
@@ -98,6 +120,7 @@ export class MapsTree implements Disposable {
 		const segments: string[] = [];
 
 		if (groupBy) segments.push(groupBy);
+
 		segments.push(`${sortBy}${filtered}`);
 
 		const description = `By ${segments.join(", ")}`;

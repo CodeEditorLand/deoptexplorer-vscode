@@ -67,11 +67,15 @@ export class DiscoveredLogFileNode extends BaseNode {
 
 			if (filtered.length !== recent.length) {
 				emitters.willChangeRecentLogs();
+
 				await storage.setRecentFiles(filtered);
+
 				emitters.didChangeRecentLogs();
 			}
+
 			return;
 		}
+
 		return super.onCommand(commandName);
 	}
 }

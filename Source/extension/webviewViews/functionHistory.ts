@@ -42,7 +42,9 @@ function generateFunctionViewHtml(
 				<meta
 					content="
         default-src 'none';
+
         img-src ${webview.cspSource} https: 'self' data:;
+
         style-src ${webview.cspSource} 'unsafe-inline';
     "
 					http-equiv="Content-Security-Policy" />
@@ -253,6 +255,7 @@ export async function showFunctionHistory(entry: FunctionEntry) {
 					enableCommandUris: true,
 				},
 			));
+
 			panel.onDidDispose(() => {
 				if (panel === view) {
 					panel = undefined;
@@ -263,6 +266,7 @@ export async function showFunctionHistory(entry: FunctionEntry) {
 		}
 
 		panel.title = `Function History: ${entry.functionName}`;
+
 		panel.webview.html = generateFunctionViewHtml(
 			entry,
 			openedLog,

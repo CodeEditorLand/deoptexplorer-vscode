@@ -70,6 +70,7 @@ const _kernel32 = lazy(() => {
 			//   HANDLE hFile,
 			//   DWORD  dwFlags
 			// );
+
 			LoadLibraryExA: [
 				HANDLE,
 				[
@@ -83,6 +84,7 @@ const _kernel32 = lazy(() => {
 			// BOOL FreeLibrary(
 			//   HMODULE hLibModule
 			// );
+
 			FreeLibrary: [
 				BOOL,
 				[
@@ -92,6 +94,7 @@ const _kernel32 = lazy(() => {
 
 			// https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocess
 			// HANDLE GetCurrentProcess();
+
 			GetCurrentProcess: [HANDLE, []],
 
 			// https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-formatmessagea
@@ -104,6 +107,7 @@ const _kernel32 = lazy(() => {
 			//   DWORD   nSize,
 			//   va_list *Arguments
 			// );
+
 			FormatMessageA: [
 				DWORD,
 				[
@@ -144,6 +148,7 @@ export class Win32Error extends Error {
 				? `${message}${/[.:-]$/.test(message) ? " " : /[.:-]\s+$/.test(message) ? "" : ". "}${FormatErrorMessage(errno)}`
 				: FormatErrorMessage(errno),
 		);
+
 		this.errno = errno;
 	}
 

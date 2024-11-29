@@ -205,6 +205,7 @@ export function formatRange(
 			}
 		}
 	}
+
 	return text;
 }
 
@@ -241,7 +242,9 @@ declare global {
 			Range,
 			{
 				$type: "Range";
+
 				start: KnownSerializedType<"Position">;
+
 				end: KnownSerializedType<"Position">;
 			}
 		>;

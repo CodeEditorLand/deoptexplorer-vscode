@@ -45,8 +45,11 @@ import { LineTick } from "./types";
  */
 export class CallTree {
 	private totalsComputed_ = false;
+
 	private next_id_ = 0;
+
 	private nodes_by_id_ = new Map<number, CallTreeNode>();
+
 	private root_ = new CallTreeNode(this, CodeEntry.root_entry());
 
 	/**
@@ -65,13 +68,17 @@ export class CallTree {
 		if (path.length == 0) {
 			return this.root_;
 		}
+
 		let curr = this.root_;
 
 		for (let i = path.length - 1; i >= 0; --i) {
 			curr = curr.findOrAddChild(path[i].code_entry);
 		}
+
 		curr.incrementSelfTicks();
+
 		curr.incrementLineTicks(src_line);
+
 		this.totalsComputed_ = false;
 
 		return curr;
@@ -104,11 +111,14 @@ export class CallTree {
 	 */
 	cloneSubtree(label: string) {
 		let subTree = new CallTree();
+
 		this.traverse<CallTreeNode>(function (node, parent) {
 			if (!parent && node.label !== label) {
 				return null;
 			}
+
 			let child = (parent ?? subTree).findOrAddChild(node.entry);
+
 			child.selfWeight += node.selfWeight;
 
 			return child;
@@ -124,7 +134,9 @@ export class CallTree {
 		if (this.totalsComputed_) {
 			return;
 		}
+
 		this.root_.computeTotalWeight();
+
 		this.totalsComputed_ = true;
 	}
 
@@ -147,8 +159,10 @@ export class CallTree {
 	traverse<T>(f: (node: CallTreeNode, param: T | null) => T | null) {
 		let pairsToProcess = new ConsArray<{
 			node: CallTreeNode;
+
 			param: T | null;
 		}>();
+
 		pairsToProcess.concat([{ node: this.root_, param: null }]);
 
 		while (!pairsToProcess.atEnd()) {
@@ -160,9 +174,11 @@ export class CallTree {
 
 			let morePairsToProcess: { node: CallTreeNode; param: T | null }[] =
 				[];
+
 			node.forEachChild((child) => {
 				morePairsToProcess.push({ node: child, param: newParam });
 			});
+
 			pairsToProcess.concat(morePairsToProcess);
 		}
 	}
@@ -179,9 +195,12 @@ export class CallTree {
 	) {
 		const traverse = (node: CallTreeNode) => {
 			enter(node);
+
 			node.forEachChild(traverse);
+
 			exit(node);
 		};
+
 		traverse(this.root_);
 	}
 
@@ -196,10 +215,15 @@ export class CallTree {
 
 export class CallTreeNode {
 	tree: CallTree;
+
 	entry: CodeEntry;
+
 	id: number;
+
 	parent: CallTreeNode | null;
+
 	children: Record<string, CallTreeNode>;
+
 	private _line_ticks?: Record<number, number>;
 
 	/**
@@ -225,10 +249,15 @@ export class CallTreeNode {
 		opt_parent: CallTreeNode | null = null,
 	) {
 		this.tree = tree;
+
 		this.entry = entry;
+
 		this.id = tree["next_node_id"]();
+
 		this.parent = opt_parent;
+
 		this.children = Object.create(null);
+
 		tree["nodes_by_id_"].set(this.id, this);
 	}
 
@@ -242,11 +271,15 @@ export class CallTreeNode {
 
 	incrementLineTicks(src_line: number, amount = 1) {
 		assert(src_line >= kNoLineNumberInfo);
+
 		assert(amount >= 1);
 
 		if (src_line === kNoLineNumberInfo) return;
+
 		this._line_ticks ??= Object.create(null) as Record<number, number>;
+
 		this._line_ticks[src_line] ??= 0;
+
 		this._line_ticks[src_line] += amount;
 	}
 
@@ -261,6 +294,7 @@ export class CallTreeNode {
 	 */
 	addChild(entry: CodeEntry) {
 		let child = new CallTreeNode(this.tree, entry, this);
+
 		this.children[child.label] = child;
 
 		return child;
@@ -271,6 +305,7 @@ export class CallTreeNode {
 	 */
 	computeTotalWeight() {
 		let totalWeight = this.selfWeight;
+
 		this.forEachChild((child) => {
 			totalWeight += child.computeTotalWeight();
 		});
@@ -283,6 +318,7 @@ export class CallTreeNode {
 	 */
 	exportChildren() {
 		let result: CallTreeNode[] = [];
+
 		this.forEachChild((node) => result.push(node));
 
 		return result;
@@ -330,7 +366,9 @@ export class CallTreeNode {
 	walkUpToRoot(f: (node: CallTreeNode) => void) {
 		for (
 			let curr: CallTreeNode | null = this;
+
 			curr !== null;
+
 			curr = curr.parent
 		) {
 			f(curr);
@@ -355,8 +393,10 @@ export class CallTreeNode {
 			if (child !== null && opt_f) {
 				opt_f(child, pos);
 			}
+
 			curr = child;
 		}
+
 		return curr;
 	}
 }

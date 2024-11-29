@@ -6,6 +6,7 @@
  */
 export class StringMap<K, V> {
 	private _map = new Map<string, { key: K; value: V }>();
+
 	private _toKey: (key: K) => string;
 
 	constructor(toKey: (key: K) => string, iterable?: Iterable<[K, V]>) {
@@ -40,6 +41,7 @@ export class StringMap<K, V> {
 		} else {
 			entry.value = value;
 		}
+
 		return this;
 	}
 

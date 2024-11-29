@@ -101,12 +101,14 @@ function getNanosecondsFromDecimal(value: Decimal, scale: Scale): bigint {
 									: scale === "microseconds"
 										? 1000
 										: assertNever(scale);
+
 			nanoseconds += getNanosecondsFromDecimal(
 				fraction.times(operand),
 				newScale,
 			);
 		}
 	}
+
 	return negative ? -nanoseconds : nanoseconds;
 }
 
@@ -188,11 +190,14 @@ export class TimeTicks {
 	}
 
 	subtract(delta: TimeTicks): TimeDelta;
+
 	subtract(delta: TimeDelta): TimeTicks;
+
 	subtract(delta: TimeDelta | TimeTicks) {
 		if (delta instanceof TimeDelta) {
 			return new TimeTicks(this._nanoseconds - delta.inNanoseconds());
 		}
+
 		return TimeDelta.fromNanoseconds(
 			this._nanoseconds - delta._nanoseconds,
 		);
@@ -394,11 +399,14 @@ export class TimeDelta {
 	}
 
 	add(other: TimeTicks): TimeTicks;
+
 	add(other: TimeDelta): TimeDelta;
+
 	add(other: TimeDelta | TimeTicks) {
 		if (other instanceof TimeDelta) {
 			return new TimeDelta(this._delta + other._delta);
 		}
+
 		return TimeTicks.sinceOrigin(other.sinceOrigin().add(this));
 	}
 

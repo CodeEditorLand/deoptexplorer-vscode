@@ -19,6 +19,7 @@ export const isNodeJS = !!process.versions.node && !isElectron && !isDeno;
 export function canAccess(file: string, mode: "write" | "exec") {
 	try {
 		const modenum = mode === "exec" ? fs.constants.X_OK : fs.constants.W_OK;
+
 		fs.accessSync(file, modenum);
 
 		return true;
@@ -63,6 +64,7 @@ export function unquote(candidate: string) {
 	) {
 		return candidate.slice(1, -1);
 	}
+
 	return candidate;
 }
 

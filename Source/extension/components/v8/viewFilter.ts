@@ -6,13 +6,17 @@ import { CodeEntry } from "#v8/tools/codeentry.js";
 
 export interface ViewFilterOptions {
 	hideNativeCode?: boolean;
+
 	hideNodeJsCode?: boolean;
+
 	hideNodeModulesCode?: boolean;
 }
 
 export class ViewFilter {
 	readonly hideNativeCode: boolean;
+
 	readonly hideNodeJsCode: boolean;
+
 	readonly hideNodeModulesCode: boolean;
 
 	constructor({
@@ -21,7 +25,9 @@ export class ViewFilter {
 		hideNodeModulesCode = false,
 	}: ViewFilterOptions = {}) {
 		this.hideNativeCode = hideNativeCode;
+
 		this.hideNodeJsCode = hideNodeJsCode;
+
 		this.hideNodeModulesCode = hideNodeModulesCode;
 	}
 
@@ -53,6 +59,7 @@ export class ViewFilter {
 		const newCallTree = new CallTree();
 
 		const newRoot = newCallTree.getRoot();
+
 		callTree.traverse<CallTreeNode>((node, parentNode) => {
 			const newParent = parentNode || newRoot;
 
@@ -60,12 +67,14 @@ export class ViewFilter {
 				if (parentNode) {
 					parentNode.selfWeight += node.selfWeight;
 				}
+
 				return newParent;
 			} else {
 				let newNode = newParent.findChild(node.entry);
 
 				if (!newNode) {
 					newNode = newParent.addChild(node.entry);
+
 					newNode.selfWeight = node.selfWeight;
 
 					for (const lineTick of node.getLineTicks()) {
@@ -75,6 +84,7 @@ export class ViewFilter {
 						);
 					}
 				}
+
 				return newNode;
 			}
 		});

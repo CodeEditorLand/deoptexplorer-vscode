@@ -19,7 +19,9 @@ const USE_MS_PUBLIC_SYMBOL_STORE = false;
 
 export interface LoadSymbolsOptions {
 	progress?: Progress<string>;
+
 	token?: CancellationToken;
+
 	globalStorageUri?: Uri;
 }
 
@@ -131,6 +133,7 @@ export class DbghelpWrapper {
 								recursive: true,
 							});
 						} catch {}
+
 						searchPaths.push(
 							`srv*${symbolStoragePath}*https://msdl.microsoft.com/download/symbols`,
 						);
@@ -143,6 +146,7 @@ export class DbghelpWrapper {
 						) {
 							throw new kernel32.Win32Error();
 						}
+
 						deferrals.use(() => {
 							if (
 								!this.#dbghelp.SymSetSearchPath(
@@ -250,15 +254,18 @@ export class DbghelpWrapper {
 				) {
 					throw new kernel32.Win32Error();
 				}
+
 				return symbols;
 			} catch (e) {
 				fail(e);
 			}
+
 		throw new Error("Unreachable");
 	}
 
 	private undecorateSymbolName(name: string, flags: number) {
 		this.#symbolNameBuffer ??= Buffer.alloc(4096);
+
 		this.#symbolNameBuffer.type ??= ref.types.byte;
 
 		const bytesWritten = this.#dbghelp.UnDecorateSymbolName(

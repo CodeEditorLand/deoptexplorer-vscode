@@ -27,6 +27,7 @@ export abstract class EntryNode<TEntry extends Entry> extends BaseNode {
 		readonly entry: TEntry,
 	) {
 		super(parent.provider, parent);
+
 		this.recordEntry();
 	}
 
@@ -89,6 +90,7 @@ export abstract class EntryNode<TEntry extends Entry> extends BaseNode {
 		if (relative && /^\.[\\/]/.test(relative)) {
 			relative = relative.slice(2);
 		}
+
 		return `${relative || uriBasename(this.file)}${formatPosition(range.start)}`;
 	}
 

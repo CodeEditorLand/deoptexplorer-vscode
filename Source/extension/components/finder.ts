@@ -15,6 +15,7 @@ import { CanonicalUri } from "../services/canonicalPaths";
 export function createFinder(file: CanonicalUri, entries: Entry[]) {
 	interface PositionInfo {
 		position: Position;
+
 		index: number;
 	}
 
@@ -38,6 +39,7 @@ export function createFinder(file: CanonicalUri, entries: Entry[]) {
 		if (!lastStart || !lastStart.position.isEqual(start)) {
 			starts.push((lastStart = { position: start, index: i }));
 		}
+
 		if (!lastEnd || !lastEnd.position.isEqual(end)) {
 			ends.push((lastEnd = { position: end, index: i }));
 		} else {
@@ -54,6 +56,7 @@ export function createFinder(file: CanonicalUri, entries: Entry[]) {
 				return starts[i].index;
 			}
 		}
+
 		return ranges.length;
 	}
 
@@ -64,6 +67,7 @@ export function createFinder(file: CanonicalUri, entries: Entry[]) {
 				return ends[i].index + 1;
 			}
 		}
+
 		return 0;
 	}
 

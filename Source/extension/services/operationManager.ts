@@ -25,30 +25,43 @@ let uiOperationSubscription = extensionToken.onCancellationRequested(
 
 export function cancelPendingOperations() {
 	const oldExtensionSource = extensionSource;
+
 	extensionSource = new CancellationTokenSource();
+
 	extensionToken = extensionSource.token;
+
 	oldExtensionSource.cancel();
 }
 
 export function cancelPendingIOOperation() {
 	const oldDiskOperationSource = diskOperationSource;
+
 	diskOperationSubscription.dispose();
+
 	diskOperationSource = new CancellationTokenSource();
+
 	diskOperationToken = diskOperationSource.token;
+
 	diskOperationSubscription = extensionToken.onCancellationRequested(
 		cancelPendingIOOperation,
 	);
+
 	oldDiskOperationSource.cancel();
 }
 
 export function cancelPendingUIOperation() {
 	const oldUIOperationSource = uiOperationSource;
+
 	uiOperationSubscription.dispose();
+
 	uiOperationSource = new CancellationTokenSource();
+
 	uiOperationToken = uiOperationSource.token;
+
 	uiOperationSubscription = extensionToken.onCancellationRequested(
 		cancelPendingUIOperation,
 	);
+
 	oldUIOperationSource.cancel();
 }
 

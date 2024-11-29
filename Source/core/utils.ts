@@ -27,7 +27,9 @@ export function binarySearchKey<T, K>(
 	end = array.length,
 ): number {
 	assert(start >= 0 && start <= array.length);
+
 	assert(end >= 0 && end <= array.length);
+
 	assert(start <= end);
 
 	if (end - start <= 0) return -1;

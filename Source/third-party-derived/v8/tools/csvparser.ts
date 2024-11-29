@@ -53,13 +53,16 @@ export class CsvParser {
 
 		while (nextPos !== -1) {
 			let escapeIdentifier = string.charAt(nextPos + 1);
+
 			pos = nextPos + 2;
 
 			if (escapeIdentifier === "n") {
 				result += "\n";
+
 				nextPos = pos;
 			} else if (escapeIdentifier === "\\") {
 				result += "\\";
+
 				nextPos = pos;
 			} else {
 				if (escapeIdentifier === "x") {
@@ -81,6 +84,7 @@ export class CsvParser {
 
 			// Continue looking for the next escape sequence.
 			pos = nextPos;
+
 			nextPos = string.indexOf("\\", pos);
 			// If there are no more escape sequences consume the rest of the string.
 			if (nextPos === -1) {
@@ -89,6 +93,7 @@ export class CsvParser {
 				result += string.substring(pos, nextPos);
 			}
 		}
+
 		return result;
 	}
 
@@ -118,9 +123,12 @@ export class CsvParser {
 			} else {
 				field = line.substring(pos, nextPos);
 			}
+
 			fields.push(this.escapeField(field));
+
 			pos = nextPos + 1;
 		}
+
 		return fields;
 	}
 }

@@ -19,7 +19,9 @@ import { FunctionsTreeDataProvider } from "./functionTreeDataProvider";
 
 export class FunctionNode extends BaseNode {
 	private _functionReference: FunctionReference | null | undefined;
+
 	private _file: Uri | undefined;
+
 	private _state: FunctionState | -1 | undefined;
 
 	constructor(
@@ -33,14 +35,17 @@ export class FunctionNode extends BaseNode {
 	get provider(): FunctionsTreeDataProvider {
 		return super.provider as FunctionsTreeDataProvider;
 	}
+
 	get file() {
 		return (this._file ??= this.func.filePosition.uri);
 	}
+
 	get functionReference() {
 		return (this._functionReference ??= FunctionReference.fromFunctionEntry(
 			this.func,
 		));
 	}
+
 	get state() {
 		return (this._state ??=
 			from(this.func.updates).count((update) =>

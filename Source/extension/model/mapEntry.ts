@@ -108,6 +108,7 @@ export class MapId implements ToMarkdownString {
  */
 export class MapEntry {
 	declare kind: "map";
+
 	static {
 		this.prototype.kind = "map";
 	}
@@ -117,15 +118,23 @@ export class MapEntry {
 	details: string = "";
 
 	constructorEntry?: FunctionEntry;
+
 	baseMap?: MapReference;
+
 	mapType?: string;
+
 	elementsKind?: string;
+
 	instanceSize?: number;
+
 	inobjectPropertiesCount?: number;
+
 	unusedPropertyFields?: number;
 
 	readonly updates: MapEntryUpdate[] = [];
+
 	readonly properties: MapProperty[] = [];
+
 	readonly referencedBy: MapReferencedBy[] = [];
 
 	constructor(readonly timestamp: TimeTicks) {}
@@ -181,6 +190,7 @@ export class MapEntry {
 
 			if (source !== thisSource) return false;
 		}
+
 		return true;
 	}
 
@@ -204,6 +214,7 @@ export class MapEntry {
 				return update.filePosition;
 			}
 		}
+
 		if (update?.event === MapEvent.Transition) {
 			return update.fromMap?.getMapFilePosition();
 		}
@@ -219,6 +230,7 @@ export class MapEntry {
 				return update.functionEntry;
 			}
 		}
+
 		if (update?.event === MapEvent.Transition) {
 			return update.fromMap?.getMapSource();
 		}
@@ -232,6 +244,7 @@ export class MapEntryUpdate extends EntryBase {
 	declare kind: "map-update";
 
 	functionEntry?: FunctionEntry;
+
 	generatedFunctionName?: string;
 
 	private _functionName?: string;
@@ -350,11 +363,17 @@ export const PropertyNameComparer = Comparer.create<string | SymbolName>(
  */
 export class MapProperty {
 	map?: MapReference;
+
 	type?: "none" | "tagged" | "smi" | "double" | "heap" | MapId;
+
 	writable?: boolean;
+
 	enumerable?: boolean;
+
 	configurable?: boolean;
+
 	source?: FunctionEntry;
+
 	update?: MapEntryUpdate;
 
 	constructor(
@@ -371,17 +390,24 @@ export class MapProperty {
 		>,
 	) {
 		this.map = options?.map;
+
 		this.type = options?.type;
+
 		this.writable = options?.writable;
+
 		this.enumerable = options?.enumerable;
+
 		this.configurable = options?.configurable;
+
 		this.source = options?.source;
+
 		this.update = options?.update;
 	}
 
 	get filePosition() {
 		return this.update?.filePosition;
 	}
+
 	get generatedFilePosition() {
 		return this.update?.generatedFilePosition;
 	}
@@ -451,6 +477,7 @@ export class MapReference {
 
 	static fromMapId(mapId: MapId, map: MapEntry) {
 		const result = new MapReference(mapId.address, mapId.index, map);
+
 		result._mapId = mapId;
 
 		return result;

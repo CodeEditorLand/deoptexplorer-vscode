@@ -14,6 +14,7 @@ const minArray: readonly string[] = Object.freeze([]);
  */
 export class V8Version {
 	private _fullString: string | undefined;
+
 	private _extra: readonly string[];
 
 	constructor(
@@ -30,6 +31,7 @@ export class V8Version {
 		),
 		maxArray,
 	);
+
 	static readonly MIN = new V8Version(
 		new SemVer(`0.0.0`, { loose: true }),
 		minArray,
@@ -50,10 +52,12 @@ export class V8Version {
 
 		if (version instanceof V8Version) {
 			extra = version._extra;
+
 			version = version.semver;
 		} else {
 			extra = emptyArray;
 		}
+
 		const result = this.semver.compare(version);
 
 		if (result) return result;
@@ -77,6 +81,7 @@ export class V8Version {
 
 			if (left > right) return +1;
 		}
+
 		if (this._extra.length < extra.length) return -1;
 
 		if (this._extra.length > extra.length) return +1;
@@ -100,16 +105,20 @@ export class V8Version {
 						component.startsWith("-") ? component : `.${component}`,
 					);
 				}
+
 				while (
 					components.length &&
 					components[components.length - 1] === ".0"
 				) {
 					components.pop();
 				}
+
 				s += components.join("");
 			}
+
 			this._fullString = s;
 		}
+
 		return this._fullString;
 	}
 

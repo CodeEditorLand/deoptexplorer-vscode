@@ -40,8 +40,10 @@ export function tryReaddirSync(dir: string | URL | Uri) {
 	try {
 		if (dir instanceof Uri) {
 			if (dir.scheme !== "file") return;
+
 			dir = dir.fsPath;
 		}
+
 		return fs.readdirSync(dir);
 	} catch {}
 }
@@ -84,6 +86,7 @@ export async function* readLines(file: string | Uri) {
 
 	for await (chunk of reader) {
 		const lines = chunk.split("\n");
+
 		assert(lines.length > 0);
 
 		// yield all but the last line as it may be continued in the next chunk
@@ -92,15 +95,20 @@ export async function* readLines(file: string | Uri) {
 			// if we are resuming a line from a previous chunk, prepend it before yielding
 			if (hasRemaining) {
 				line = remaining + line;
+
 				remaining = "";
+
 				hasRemaining = false;
 			}
+
 			yield line;
 		}
 
 		remaining += lines[lines.length - 1];
+
 		hasRemaining = true;
 	}
+
 	if (hasRemaining) {
 		yield remaining;
 	}
@@ -124,9 +132,11 @@ async function* vscodeReadLines(file: Uri) {
 			) {
 				pos++;
 			}
+
 			start = pos + 1;
 		}
 	}
+
 	if (start < data.length) {
 		yield decoder.decode(data.slice(start));
 	}
@@ -142,6 +152,7 @@ export async function readFileAsync(uri: Uri | string) {
 			? Uri.parse(uri, /*strict*/ true)
 			: Uri.file(uri);
 	}
+
 	const data = await workspace.fs.readFile(uri);
 
 	return Buffer.from(data).toString("utf8");
@@ -167,5 +178,6 @@ export async function writeFileAsync(uri: Uri | string, content: string) {
 			? Uri.parse(uri, /*strict*/ true)
 			: Uri.file(uri);
 	}
+
 	await workspace.fs.writeFile(uri, Buffer.from(content, "utf8"));
 }

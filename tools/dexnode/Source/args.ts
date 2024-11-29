@@ -13,16 +13,27 @@ export type HostOptions = Partial<Record<HostFlagKey, boolean>>;
 
 export interface Options extends HostOptions {
 	maps?: boolean;
+
 	ics?: boolean;
+
 	deopts?: boolean;
+
 	profile?: boolean;
+
 	sources?: boolean;
+
 	quiet?: boolean;
+
 	help?: boolean;
+
 	v8_version?: string;
+
 	exec_path?: string;
+
 	out?: string;
+
 	host: Host;
+
 	_: string[];
 }
 
@@ -79,6 +90,7 @@ function parse(args: string[]) {
 			arg = arg.slice(1, 2);
 			// stop parsing if arg is not an alias
 			if (!(arg in ALIASES)) break;
+
 			arg = (ALIASES as any)[arg];
 		} else {
 			// stop parsing if argument is not an option
@@ -88,6 +100,7 @@ function parse(args: string[]) {
 		// negate if starts with no-
 		if (arg.startsWith("no-") || arg.startsWith("no_")) {
 			arg = arg.slice(3);
+
 			value = false;
 		}
 
@@ -96,6 +109,7 @@ function parse(args: string[]) {
 
 		if (eqIndex >= 0) {
 			value = arg.slice(eqIndex + 1);
+
 			arg = arg.slice(0, eqIndex);
 		}
 
@@ -111,7 +125,9 @@ function parse(args: string[]) {
 			if (value === true) {
 				// stop parsing if there is no next argument
 				if (args.length <= 1) break;
+
 				value = args[1];
+
 				args.shift();
 			}
 		} else if (BOOLEANS.has(arg)) {
@@ -123,6 +139,7 @@ function parse(args: string[]) {
 		}
 
 		(argv as any)[arg] = value;
+
 		args.shift();
 	}
 
@@ -142,7 +159,9 @@ function validateConflicts(argv: Options) {
 			if (argv[option]) {
 				for (
 					let j = i + 1;
+
 					j < mutuallyExclusiveBooleanGroup.length;
+
 					j++
 				) {
 					const other = mutuallyExclusiveBooleanGroup[j];
@@ -209,6 +228,7 @@ function autodetectV8Version(argv: Options, host: Host) {
 					env: host.v8VersionDetection.env,
 				},
 			);
+
 			argv.v8_version = result.stdout.trim();
 		}
 	}
@@ -222,10 +242,13 @@ export async function parseArgs(args: string[]): Promise<Options> {
 	if (!args.length) showHelpAndExit();
 
 	const argv = parse(args);
+
 	validateConflicts(argv);
 
 	const host = detectHost(argv);
+
 	await autodetectExecPath(argv, host);
+
 	autodetectV8Version(argv, host);
 
 	return { ...argv, host };
@@ -257,10 +280,12 @@ function showHelp() {
 		`     --out FILE             write all log output to FILE (default: isolate-<pid>-<isolate id>-v8.log)`,
 		`     --                     pass all remaining arguments to node`,
 	];
+
 	console.log(lines.join("\n"));
 }
 
 function showHelpAndExit(): never {
 	showHelp();
+
 	process.exit(0);
 }

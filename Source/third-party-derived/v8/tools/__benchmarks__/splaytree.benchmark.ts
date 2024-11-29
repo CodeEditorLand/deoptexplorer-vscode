@@ -28,6 +28,7 @@ describe("splaytree", () => {
 
 	describe(`set() ${count} elements`, () => {
 		let entries: [number, number][];
+
 		beforeAll(() => {
 			entries = [
 				...generate(
@@ -40,6 +41,7 @@ describe("splaytree", () => {
 				),
 			];
 		});
+
 		afterAll(() => {
 			entries = undefined!;
 		});

@@ -39,7 +39,9 @@ export function getRecentFiles() {
 
 export async function setRecentFiles(files: Uri[]) {
 	if (!currentContext) return;
+
 	recentFiles = files.slice();
+
 	await currentContext.globalState.update(
 		constants.storage.recentFiles,
 		serialize(recentFiles),
@@ -52,7 +54,9 @@ export function getShowJustMyCode() {
 
 export async function setShowJustMyCode(value: boolean) {
 	if (!currentContext) return;
+
 	showJustMyCode = value;
+
 	await currentContext.globalState.update(
 		constants.storage.showJustMyCode,
 		value,
@@ -65,7 +69,9 @@ export function getShowNativeCodeProfileNodes() {
 
 export async function setShowNativeCodeProfileNodes(value: boolean) {
 	if (!currentContext) return;
+
 	showNativeCodeProfileNodes = value;
+
 	await currentContext.globalState.update(
 		constants.storage.showNativeCodeProfileNodes,
 		value,
@@ -78,7 +84,9 @@ export function getShowNodeJsProfileNodes() {
 
 export async function setShowNodeJsProfileNodes(value: boolean) {
 	if (!currentContext) return;
+
 	showNodeJsProfileNodes = value;
+
 	await currentContext.globalState.update(
 		constants.storage.showNodeJsProfileNodes,
 		value,
@@ -91,7 +99,9 @@ export function getShowNodeModulesProfileNodes() {
 
 export async function setShowNodeModulesProfileNodes(value: boolean) {
 	if (!currentContext) return;
+
 	showNodeModulesProfileNodes = value;
+
 	await currentContext.globalState.update(
 		constants.storage.showNodeModulesProfileNodes,
 		value,
@@ -104,7 +114,9 @@ export function getSortDeopts() {
 
 export async function setSortDeopts(value: constants.SortDeopts) {
 	if (!currentContext) return;
+
 	sortDeopts = value;
+
 	await currentContext.globalState.update(
 		constants.storage.sortDeopts,
 		value,
@@ -119,7 +131,9 @@ export async function setGroupDeopts(
 	value: ImmutableEnumSet<constants.GroupDeopts>,
 ) {
 	if (!currentContext) return;
+
 	groupDeopts = value;
+
 	await currentContext.globalState.update(constants.storage.groupDeopts, [
 		...value,
 	]);
@@ -131,7 +145,9 @@ export function getSortICs() {
 
 export async function setSortICs(value: constants.SortICs) {
 	if (!currentContext) return;
+
 	sortICs = value;
+
 	await currentContext.globalState.update(constants.storage.sortICs, value);
 }
 
@@ -143,7 +159,9 @@ export async function setShowICStates(
 	value: ImmutableEnumSet<constants.ShowICStates>,
 ) {
 	if (!currentContext) return;
+
 	showICStates = value;
+
 	await currentContext.globalState.update(constants.storage.showICStates, [
 		...value,
 	]);
@@ -157,7 +175,9 @@ export async function setGroupMaps(
 	value: ImmutableEnumSet<constants.GroupMaps>,
 ) {
 	if (!currentContext) return;
+
 	groupMaps = value;
+
 	await currentContext.globalState.update(constants.storage.groupMaps, [
 		...value,
 	]);
@@ -169,7 +189,9 @@ export function getShowMaps() {
 
 export async function setShowMaps(value: ImmutableEnumSet<constants.ShowMaps>) {
 	if (!currentContext) return;
+
 	showMaps = value;
+
 	await currentContext.globalState.update(constants.storage.showMaps, [
 		...value,
 	]);
@@ -181,7 +203,9 @@ export function getSortMaps() {
 
 export async function setSortMaps(value: constants.MapSortMode) {
 	if (!currentContext) return;
+
 	sortMaps = value;
+
 	await currentContext.globalState.update(constants.storage.sortMaps, value);
 }
 
@@ -194,50 +218,61 @@ export function activateStorageService(context: ExtensionContext) {
 				constants.storage.recentFiles,
 			),
 		) as Uri[] | undefined) ?? [];
+
 	showJustMyCode = currentContext.globalState.get<boolean>(
 		constants.storage.showJustMyCode,
 		constants.kDefaultShowJustMyCode,
 	);
+
 	showNativeCodeProfileNodes = currentContext.globalState.get<boolean>(
 		constants.storage.showNativeCodeProfileNodes,
 		constants.kDefaultShowNativeCodeProfileNodes,
 	);
+
 	showNodeJsProfileNodes = currentContext.globalState.get<boolean>(
 		constants.storage.showNodeJsProfileNodes,
 		constants.kDefaultShowNodeJsProfileNodes,
 	);
+
 	showNodeModulesProfileNodes = currentContext.globalState.get<boolean>(
 		constants.storage.showNodeModulesProfileNodes,
 		constants.kDefaultShowNodeModulesProfileNodes,
 	);
+
 	sortICs = currentContext.globalState.get<constants.SortICs>(
 		constants.storage.sortICs,
 		constants.kDefaultSortICs,
 	);
+
 	showICStates = new ImmutableEnumSet(
 		currentContext.globalState.get<readonly constants.ShowICStates[]>(
 			constants.storage.showICStates,
 		) ?? constants.kDefaultShowICStates,
 	);
+
 	sortDeopts = currentContext.globalState.get<constants.SortDeopts>(
 		constants.storage.sortDeopts,
 		constants.kDefaultSortDeopts,
 	);
+
 	groupDeopts = new ImmutableEnumSet(
 		currentContext.globalState.get<readonly constants.GroupDeopts[]>(
 			constants.storage.groupDeopts,
 		) ?? constants.kDefaultGroupDeopts,
 	);
+
 	groupMaps = new ImmutableEnumSet(
 		currentContext.globalState.get<readonly constants.GroupMaps[]>(
 			constants.storage.groupMaps,
 		) ?? constants.kDefaultGroupMaps,
 	);
+
 	showMaps = new ImmutableEnumSet(
 		currentContext.globalState.get<readonly constants.ShowMaps[]>(
 			constants.storage.showMaps,
 		) ?? constants.kDefaultShowMaps,
 	);
+
 	sortMaps = currentContext.globalState.get<constants.MapSortMode>(
 		constants.storage.sortMaps,
 		constants.kDefaultMapSortMode,
@@ -245,19 +280,31 @@ export function activateStorageService(context: ExtensionContext) {
 
 	return new Disposable(() => {
 		currentContext = undefined;
+
 		recentFiles = undefined;
+
 		showJustMyCode = constants.kDefaultShowJustMyCode;
+
 		showNativeCodeProfileNodes =
 			constants.kDefaultShowNativeCodeProfileNodes;
+
 		showNodeJsProfileNodes = constants.kDefaultShowNodeJsProfileNodes;
+
 		showNodeModulesProfileNodes =
 			constants.kDefaultShowNodeModulesProfileNodes;
+
 		sortICs = constants.kDefaultSortICs;
+
 		showICStates = constants.kDefaultShowICStates;
+
 		groupDeopts = constants.kDefaultGroupDeopts;
+
 		sortDeopts = constants.kDefaultSortDeopts;
+
 		groupMaps = constants.kDefaultGroupMaps;
+
 		showMaps = constants.kDefaultShowMaps;
+
 		sortMaps = constants.kDefaultMapSortMode;
 	});
 }

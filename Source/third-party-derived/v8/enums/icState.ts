@@ -78,6 +78,7 @@ export function parseIcState(text: string) {
 				return IcState.NO_FEEDBACK;
 		}
 	}
+
 	assert(false, `Unrecognized IC state '${text}'.`);
 }
 

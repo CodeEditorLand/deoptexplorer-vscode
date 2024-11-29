@@ -11,6 +11,7 @@ const digitsRegExp = /^\d+$/;
  */
 export class VersionedEnum<E extends number> {
 	private _name: string;
+
 	private _evolutions: VersionedData<
 		readonly (E | readonly [E, string, ...string[]])[]
 	>;
@@ -32,6 +33,7 @@ export class VersionedEnum<E extends number> {
 		>,
 	) {
 		this._name = name;
+
 		this._evolutions = new VersionedData(evolutions);
 	}
 
@@ -49,6 +51,7 @@ export class VersionedEnum<E extends number> {
 
 			return typeof result === "number" ? result : result[0];
 		}
+
 		throw new TypeError(`Argument is not a valid ${this._name}: ${value}`);
 	}
 
@@ -83,6 +86,7 @@ export class VersionedEnum<E extends number> {
 				}
 			}
 		}
+
 		throw new TypeError(`Argument is not a valid ${this._name}: ${value}`);
 	}
 
@@ -108,6 +112,7 @@ export class VersionedEnum<E extends number> {
 				}
 			}
 		}
+
 		throw new TypeError(`Argument is not a valid ${this._name}: ${value}`);
 	}
 }

@@ -46,6 +46,7 @@ export class FilesTreeDataProvider extends BaseNodeProvider {
 	 */
 	openLog(uri: Uri, log: LogFile) {
 		const commonBase = log.commonBaseDirectory;
+
 		this.setRoots(
 			from(log.files)
 				.map(
@@ -85,9 +86,13 @@ export class FilesTreeDataProvider extends BaseNodeProvider {
 
 	protected invalidate() {
 		super.invalidate();
+
 		this.fileNodes.clear();
+
 		this.functionNodes.clear();
+
 		this.deoptNodes.clear();
+
 		this.icNodes.clear();
 	}
 }

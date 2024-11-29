@@ -64,6 +64,7 @@ export async function openLogFile(uri: Uri | undefined) {
 		});
 
 		if (files === undefined || files.length === 0) return;
+
 		uri = files[0];
 	}
 
@@ -84,6 +85,7 @@ async function openLogFileWorker(uri: Uri) {
 
 		// signal that a log file will be opened and wait a short delay for UI updates
 		emitters.willOpenLogFile({ uri });
+
 		await delay(100);
 
 		// read in the log file with progress reporting
@@ -151,6 +153,7 @@ async function openLogFileWorker(uri: Uri) {
 
 		if (openedLog) {
 			openedFile = uri;
+
 			emitters.didOpenLogFile({ uri, log: openedLog });
 
 			const recentFiles = storage.getRecentFiles();
@@ -164,6 +167,7 @@ async function openLogFileWorker(uri: Uri) {
 			if (index !== 0) {
 				if (index !== -1) {
 					recentFiles.splice(index, 1);
+
 					recentFiles.unshift(uri);
 				} else {
 					recentFiles.unshift(uri);
@@ -172,6 +176,7 @@ async function openLogFileWorker(uri: Uri) {
 						recentFiles.pop();
 					}
 				}
+
 				recentFilesPromise = storage.setRecentFiles(recentFiles);
 			}
 
@@ -180,14 +185,19 @@ async function openLogFileWorker(uri: Uri) {
 				setLogStatus(constants.LogStatus.Open),
 				setShowDecorations(constants.kDefaultShowDecorations),
 			]);
+
 			waitForLogResolved = true;
+
 			waitForLogDeferred.resolve(openedLog);
+
 			ok = true;
 		}
 	} finally {
 		if (!ok) {
 			emitters.didFailOpenLogFile();
+
 			closeLogFile();
+
 			await setLogStatus(constants.LogStatus.Closed);
 		}
 	}
@@ -208,6 +218,7 @@ export function waitForLog(token?: CancellationToken) {
 	return Promise.race([cancelPromise, waitForLogDeferred.promise]).finally(
 		() => {
 			subscription?.dispose();
+
 			subscription = undefined;
 		},
 	);
@@ -220,14 +231,20 @@ export function closeLogFile() {
 		// }
 
 		emitters.didCloseLogFile({ uri: openedFile });
+
 		cancelPendingOperations();
+
 		openedFile = undefined;
+
 		openedLog = undefined;
 	}
+
 	if (waitForLogResolved) {
 		waitForLogDeferred = new Deferred();
+
 		waitForLogResolved = false;
 	}
+
 	setLogStatus(constants.LogStatus.Closed);
 }
 
@@ -265,6 +282,7 @@ export function activateCurrentLogFileService(context: ExtensionContext) {
 	const stack = new VSDisposableStack();
 
 	currentContext = context;
+
 	stack.defer(() => {
 		currentContext = undefined;
 	});

@@ -76,6 +76,7 @@ export class DeoptEntryNode extends EntryNode<DeoptEntry> {
 				lastDeoptReason === undefined
 			) {
 				lastBailoutType = update.bailoutType;
+
 				lastDeoptReason = update.deoptReason;
 
 				continue;
@@ -86,7 +87,9 @@ export class DeoptEntryNode extends EntryNode<DeoptEntry> {
 				bailouts.push(
 					markdown`${formatDeoptimizeKind(lastBailoutType, openedLog?.version)} - ${lastDeoptReason || "(unknown)"}  \n`,
 				);
+
 				lastBailoutType = update.bailoutType;
+
 				lastDeoptReason = update.deoptReason;
 
 				break;
@@ -99,6 +102,7 @@ export class DeoptEntryNode extends EntryNode<DeoptEntry> {
 						markdown`${formatDeoptimizeKind(lastBailoutType, openedLog?.version)} - ${lastDeoptReason || "(unknown)"}  \n`,
 					);
 				}
+
 				lastDeoptReason = update.deoptReason;
 
 				break;
@@ -110,6 +114,7 @@ export class DeoptEntryNode extends EntryNode<DeoptEntry> {
 			bailouts.push(
 				markdown`${formatDeoptimizeKind(lastBailoutType, openedLog?.version)} - ${lastDeoptReason || "(unknown)"}`,
 			);
+
 			bailouts.unshift(
 				markdown`
 \n\n

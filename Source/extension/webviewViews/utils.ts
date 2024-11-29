@@ -10,7 +10,9 @@ import { CommandUri } from "../vscode/commandUri";
 
 export interface LinkToFileOptions {
 	title?: string;
+
 	viewColumn?: ViewColumn;
+
 	linkSources?: Sources;
 }
 

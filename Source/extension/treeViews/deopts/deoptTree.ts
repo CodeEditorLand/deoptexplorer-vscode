@@ -16,12 +16,16 @@ import { DeoptTreeDataProvider } from "./deoptTreeDataProvider";
  */
 export class DeoptsTree implements Disposable {
 	private provider: DeoptTreeDataProvider;
+
 	private treeView: TreeView<BaseNode>;
 
 	constructor() {
 		this.provider = new DeoptTreeDataProvider();
+
 		this.provider.groupBy = groupDeopts;
+
 		this.provider.sortBy = sortDeopts;
+
 		this.treeView = window.createTreeView(constants.treeviews.deopts, {
 			treeDataProvider: this.provider,
 			showCollapseAll: true,
@@ -30,25 +34,36 @@ export class DeoptsTree implements Disposable {
 
 	openLog(uri: Uri, log: LogFile) {
 		this.provider.suspendUpdates();
+
 		this.provider.groupBy = groupDeopts;
+
 		this.provider.sortBy = sortDeopts;
+
 		this.provider.log = log;
+
 		this.provider.resumeUpdates();
+
 		this.updateTreeViewHeader();
 	}
 
 	closeLog() {
 		this.provider.suspendUpdates();
+
 		this.provider.groupBy = groupDeopts;
+
 		this.provider.sortBy = sortDeopts;
+
 		this.provider.log = undefined;
+
 		this.provider.resumeUpdates();
+
 		this.updateTreeViewHeader();
 	}
 
 	setGroupBy(value: ImmutableEnumSet<constants.GroupDeopts>) {
 		if (!this.provider.groupBy.equals(value)) {
 			this.provider.groupBy = value;
+
 			this.updateTreeViewHeader();
 		}
 	}
@@ -56,6 +71,7 @@ export class DeoptsTree implements Disposable {
 	setSortBy(value: constants.SortDeopts) {
 		if (this.provider.sortBy !== value) {
 			this.provider.sortBy = value;
+
 			this.updateTreeViewHeader();
 		}
 	}

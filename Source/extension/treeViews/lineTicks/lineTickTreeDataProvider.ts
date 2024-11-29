@@ -17,9 +17,11 @@ export class LineTickTreeDataProvider extends BaseNodeProvider {
 	get node() {
 		return this._node;
 	}
+
 	set node(value) {
 		if (this._node !== value) {
 			this._node = value;
+
 			this.invalidate();
 		}
 	}
@@ -36,6 +38,7 @@ export class LineTickTreeDataProvider extends BaseNodeProvider {
 		if (lineTicks.length === 0) {
 			lineTicks = node.getFileLineTicks();
 		}
+
 		const log = node.log;
 
 		const commonBase = log?.commonBaseDirectory;

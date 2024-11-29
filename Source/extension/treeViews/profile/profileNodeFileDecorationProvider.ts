@@ -24,56 +24,67 @@ export class ProfileNodeFileDecorationProvider
 		/*tooltip*/ undefined,
 		new ThemeColor("list.deemphasizedForeground"),
 	);
+
 	private _gcNodeFileDecoration = new FileDecoration(
 		/*badge*/ undefined,
 		/*tooltip*/ undefined,
 		new ThemeColor("list.warningForeground"),
 	);
+
 	private _idleNodeFileDecoration = new FileDecoration(
 		/*badge*/ undefined,
 		/*tooltip*/ undefined,
 		new ThemeColor("list.deemphasizedForeground"),
 	);
+
 	private _programNodeFileDecoration = new FileDecoration(
 		/*badge*/ undefined,
 		/*tooltip*/ undefined,
 		new ThemeColor("list.deemphasizedForeground"),
 	);
+
 	private _hiddenNodeFileDecoration = new FileDecoration(
 		/*badge*/ undefined,
 		/*tooltip*/ undefined,
 		new ThemeColor("list.deemphasizedForeground"),
 	);
+
 	private _unresolvedNodeFileDecoration = new FileDecoration(
 		/*badge*/ undefined,
 		/*tooltip*/ undefined,
 		new ThemeColor("list.invalidItemForeground"),
 	);
+
 	private _sharedLibraryNodeFileDecoration = new FileDecoration(
 		/*badge*/ undefined,
 		/*tooltip*/ undefined,
 		new ThemeColor("list.deemphasizedForeground"),
 	);
+
 	private _nativeCodeNodeFileDecoration = new FileDecoration(
 		/*badge*/ undefined,
 		/*tooltip*/ undefined,
 		new ThemeColor("list.deemphasizedForeground"),
 	);
+
 	private _nodeJsCodeNodeFileDecoration = new FileDecoration(
 		/*badge*/ undefined,
 		/*tooltip*/ undefined,
 		new ThemeColor("list.deemphasizedForeground"),
 	);
+
 	private _nodeModulesCodeNodeFileDecoration = new FileDecoration(
 		/*badge*/ undefined,
 		/*tooltip*/ undefined,
 		new ThemeColor("list.deemphasizedForeground"),
 	);
+
 	private _generatedCodeNodeFileDecoration = new FileDecoration(
 		/*badge*/ undefined,
 		/*tooltip*/ undefined,
 		new ThemeColor("list.deemphasizedForeground"),
 	);
+
 	private _inlinedCodeNodeFileDecoration = new FileDecoration(
 		/*badge*/ "i",
 		/*tooltip*/ "inlined",

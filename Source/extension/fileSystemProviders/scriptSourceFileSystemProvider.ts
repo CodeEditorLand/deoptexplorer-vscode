@@ -81,6 +81,7 @@ export function wrapScriptSource(source: ScriptSource) {
 		let path = "";
 
 		const query = new URLSearchParams();
+
 		query.set("scriptId", `${source.scriptId}`);
 
 		if (source.uri) {
@@ -102,6 +103,7 @@ export function wrapScriptSource(source: ScriptSource) {
 					break;
 			}
 		}
+
 		return Uri.from({
 			scheme: constants.schemes.source,
 			path,
@@ -136,18 +138,21 @@ export function unwrapScriptSource(uri: Uri): ScriptSource {
 
 export class ScriptSourceFileSystemProvider implements FileSystemProvider {
 	private didChangeFile = new EventEmitter<FileChangeEvent[]>();
+
 	readonly onDidChangeFile = this.didChangeFile.event;
 
 	watch(
 		uri: Uri,
 		options: {
 			readonly recursive: boolean;
+
 			readonly excludes: readonly string[];
 		},
 	): Disposable {
 		if (options.recursive) return new Disposable(() => {});
 
 		const stack = new VSDisposableStack();
+
 		stack.use(
 			events.onDidCloseLogFile(() =>
 				this.didChangeFile.fire([
@@ -155,6 +160,7 @@ export class ScriptSourceFileSystemProvider implements FileSystemProvider {
 				]),
 			),
 		);
+
 		stack.use(
 			events.onDidOpenLogFile(() =>
 				this.didChangeFile.fire([

@@ -17,14 +17,21 @@ const PROFILE_PAGE_SIZE = 750;
 
 export class ProfileTreeDataProvider extends BaseNodeProvider {
 	private _sortBy = constants.kDefaultProfileSortMode;
+
 	private _showAs = constants.kDefaultProfileShowMode;
+
 	private _showJustMyCode = constants.kDefaultShowJustMyCode;
+
 	private _showNativeCodeProfileNodes =
 		constants.kDefaultShowNativeCodeProfileNodes;
+
 	private _showNodeJsProfileNodes = constants.kDefaultShowNodeJsProfileNodes;
+
 	private _showNodeModulesProfileNodes =
 		constants.kDefaultShowNodeModulesProfileNodes;
+
 	private _log?: LogFile;
+
 	private _head?: ProfileViewNode;
 
 	constructor() {
@@ -46,10 +53,13 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 									!this._showNodeModulesProfileNodes,
 							},
 						);
+
 						this._head = view.head;
 					}
+
 					return this.applySort(this._head.children);
 				}
+
 				return [];
 			},
 			{
@@ -61,9 +71,11 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 	get sortBy() {
 		return this._sortBy;
 	}
+
 	set sortBy(value) {
 		if (this._sortBy !== value) {
 			this._sortBy = value;
+
 			this.invalidate();
 		}
 	}
@@ -71,10 +83,13 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 	get showAs() {
 		return this._showAs;
 	}
+
 	set showAs(value) {
 		if (this._showAs !== value) {
 			this._showAs = value;
+
 			this._head = undefined;
+
 			this.invalidate();
 		}
 	}
@@ -82,10 +97,13 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 	get showJustMyCode() {
 		return this._showJustMyCode;
 	}
+
 	set showJustMyCode(value) {
 		if (this._showJustMyCode !== value) {
 			this._showJustMyCode = value;
+
 			this._head = undefined;
+
 			this.invalidate();
 		}
 	}
@@ -93,10 +111,13 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 	get showNativeCodeProfileNodes() {
 		return this._showNativeCodeProfileNodes;
 	}
+
 	set showNativeCodeProfileNodes(value) {
 		if (this._showNativeCodeProfileNodes !== value) {
 			this._showNativeCodeProfileNodes = value;
+
 			this._head = undefined;
+
 			this.invalidate();
 		}
 	}
@@ -104,10 +125,13 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 	get showNodeJsProfileNodes() {
 		return this._showNodeJsProfileNodes;
 	}
+
 	set showNodeJsProfileNodes(value) {
 		if (this._showNodeJsProfileNodes !== value) {
 			this._showNodeJsProfileNodes = value;
+
 			this._head = undefined;
+
 			this.invalidate();
 		}
 	}
@@ -115,10 +139,13 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 	get showNodeModulesProfileNodes() {
 		return this._showNodeModulesProfileNodes;
 	}
+
 	set showNodeModulesProfileNodes(value) {
 		if (this._showNodeModulesProfileNodes !== value) {
 			this._showNodeModulesProfileNodes = value;
+
 			this._head = undefined;
+
 			this.invalidate();
 		}
 	}
@@ -126,10 +153,13 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 	get log() {
 		return this._log;
 	}
+
 	set log(value) {
 		if (this._log !== value) {
 			this._log = value;
+
 			this._head = undefined;
+
 			this.invalidate();
 		}
 	}
@@ -200,6 +230,7 @@ export class ProfileTreeDataProvider extends BaseNodeProvider {
 
 class HiddenProfileNode extends ProfileViewNode {
 	private _visibleChildren: ProfileViewNode[];
+
 	readonly hiddenNodes: readonly ProfileViewNode[];
 
 	constructor(
@@ -215,6 +246,7 @@ class HiddenProfileNode extends ProfileViewNode {
 		const flatten = (node: ProfileViewNode) => {
 			if (node instanceof HiddenProfileNode || shouldHide(node)) {
 				selfTime += node.selfTime;
+
 				hidden.push(node);
 
 				for (const child of node.children) {
@@ -224,10 +256,13 @@ class HiddenProfileNode extends ProfileViewNode {
 				children.push(node);
 			}
 		};
+
 		flatten(node);
 
 		super(CodeEntry.hidden_entry(), node.totalTime, selfTime);
+
 		this._visibleChildren = children;
+
 		this.hiddenNodes = hidden;
 	}
 

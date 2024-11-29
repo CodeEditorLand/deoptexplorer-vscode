@@ -9,10 +9,12 @@ import { binarySearchKey } from "./utils";
 
 export class LineMap {
 	private _text: string;
+
 	private _lineStarts: readonly number[] | undefined;
 
 	constructor(text: string) {
 		this._text = text;
+
 		this._lineStarts = undefined;
 	}
 
@@ -56,6 +58,7 @@ export class LineMap {
 		if (lineNumber < 0) {
 			lineNumber = ~lineNumber - 1;
 		}
+
 		return new Position(lineNumber, offset - this.lineStarts[lineNumber]);
 	}
 
@@ -63,6 +66,7 @@ export class LineMap {
 		if (this._lineStarts) {
 			return this._lineStarts;
 		}
+
 		const lineStarts: number[] = [];
 
 		let lineStart = 0;
@@ -76,16 +80,19 @@ export class LineMap {
 						// LF
 						pos++;
 					}
+
 				case 10: // LF
 				case 8232: // LS
 				case 8233: // PS
 				case 133: // NL
 					lineStarts.push(lineStart);
+
 					lineStart = pos;
 
 					break;
 			}
 		}
+
 		lineStarts.push(lineStart);
 
 		return (this._lineStarts = lineStarts);

@@ -49,9 +49,13 @@ abstract class TextDocumentSourceBase {
 	constructor(protected readonly _sources?: Sources) {}
 
 	abstract get uri(): Uri;
+
 	abstract get text(): string;
+
 	abstract offsetAt(position: Position): number;
+
 	abstract positionAt(offset: number): Position;
+
 	abstract getLineStarts(): readonly number[];
 
 	getEndOfLine() {
@@ -71,15 +75,18 @@ abstract class TextDocumentSourceBase {
 
 				continue;
 			}
+
 			if (ch === LF) {
 				if (lineEnd > 1 && this.text.charCodeAt(lineEnd - 2) === CR) {
 					crlfCount++;
 
 					continue;
 				}
+
 				lfCount++;
 			}
 		}
+
 		return crlfCount > lfCount
 			? EndOfLine.CRLF
 			: lfCount > crlfCount
@@ -106,6 +113,7 @@ abstract class TextDocumentSourceBase {
 	getSourceFileTextDocumentSource() {
 		if (!this._sourceFileSource) {
 			const uri = this.uri;
+
 			this._sourceFileSource = new SourceFileTextDocumentSource(
 				this._sources?.getExistingSourceFile(uri) ||
 					ts.createSourceFile(
@@ -126,6 +134,7 @@ abstract class TextDocumentSourceBase {
 				uri,
 			);
 		}
+
 		return this._sourceFileSource;
 	}
 }
@@ -209,8 +218,11 @@ class StringTextDocumentSource extends TextDocumentSourceBase {
 
 export class TextDocumentLike implements TextDocument {
 	private _fileName: string | undefined;
+
 	private _languageId: string | undefined;
+
 	private _eol: EndOfLine | undefined;
+
 	private _lineCount: number | undefined;
 
 	private constructor(private _source: TextDocumentSourceBase) {}
@@ -283,7 +295,9 @@ export class TextDocumentLike implements TextDocument {
 	}
 
 	lineAt(line: number): TextLine;
+
 	lineAt(position: Position): TextLine;
+
 	lineAt(lineOrPosition: number | Position): TextLineLike {
 		const line =
 			lineOrPosition instanceof Position
@@ -300,6 +314,7 @@ export class TextDocumentLike implements TextDocument {
 		) {
 			throw new RangeError();
 		}
+
 		const lineStarts = this._source.getLineStarts();
 
 		return new TextLineLike(
@@ -315,6 +330,7 @@ export class TextDocumentLike implements TextDocument {
 
 	positionAt(offset: number) {
 		offset = Math.floor(offset);
+
 		offset = Math.max(0, offset);
 
 		return this._source.positionAt(offset);
@@ -322,6 +338,7 @@ export class TextDocumentLike implements TextDocument {
 
 	getText(range?: Range) {
 		if (!range) return this._source.text;
+
 		range = this.validateRange(range);
 
 		if (range.isEmpty) return "";
@@ -355,6 +372,7 @@ export class TextDocumentLike implements TextDocument {
 					"Ignoring custom regexp because it matches the empty string.",
 				);
 			}
+
 			if (!regex.global || regex.sticky) {
 				let flags = "g";
 
@@ -363,9 +381,11 @@ export class TextDocumentLike implements TextDocument {
 				if (regex.multiline) flags += "m";
 
 				if (regex.unicode) flags += "u";
+
 				regex = new RegExp(regex.source, flags);
 			}
 		}
+
 		regex.lastIndex = position.character;
 
 		const wordAtText = getWordAtText(position.character + 1, regex, line);
@@ -391,10 +411,12 @@ export class TextDocumentLike implements TextDocument {
 		if (this._source.text.length === 0) {
 			return position.with(0, 0);
 		}
+
 		let { line, character } = position;
 
 		if (line < 0) {
 			line = 0;
+
 			character = 0;
 		} else {
 			const lineStarts = this._source.getLineStarts();
@@ -403,6 +425,7 @@ export class TextDocumentLike implements TextDocument {
 
 			if (line >= lineCount) {
 				line = lineCount - 1;
+
 				character = this._getLineLength(line, lineStarts);
 			} else if (character < 0) {
 				character = 0;
@@ -414,6 +437,7 @@ export class TextDocumentLike implements TextDocument {
 				}
 			}
 		}
+
 		return position.with(line, character);
 	}
 
@@ -443,6 +467,7 @@ export class TextDocumentLike implements TextDocument {
 	 */
 	private _getLineEnd(line: number, lineStarts: readonly number[]) {
 		const lineCount = lineStarts.length;
+
 		assert(line >= 0 && line < lineCount);
 
 		const text = this._source.text;
@@ -461,8 +486,10 @@ export class TextDocumentLike implements TextDocument {
 
 				continue;
 			}
+
 			break;
 		}
+
 		return lineEnd;
 	}
 
@@ -488,7 +515,9 @@ export class TextDocumentLike implements TextDocument {
 
 class TextLineLike implements TextLine {
 	private _range: Range | undefined;
+
 	private _rangeIncludingLineBreak: Range | undefined;
+
 	private _firstNonWhitespaceCharacterIndex: number | undefined;
 
 	constructor(

@@ -17,6 +17,7 @@ type StartLineTree<T> = LineTree<EndLineTree<T>>;
 export class RangeMap<T> {
 	// startLine -> startCharacter -> endLine -> endCharacter -> T
 	private _ranges: StartLineTree<T> = new SplayTree();
+
 	private _size: number = 0;
 
 	get size() {
@@ -31,6 +32,7 @@ export class RangeMap<T> {
 		if (entry) {
 			return !!findPosition(entry, end);
 		}
+
 		return false;
 	}
 
@@ -60,6 +62,7 @@ export class RangeMap<T> {
 			if (lineIsAfter(startLine, start)) {
 				break;
 			}
+
 			for (const startCharacter of iterateAscending(
 				least(startLine.value),
 			)) {
@@ -142,6 +145,7 @@ export class RangeMap<T> {
 			if (lineIsAfter(startLine, end)) {
 				break;
 			}
+
 			for (const startCharacter of iterateAscending(
 				leastCharacterGreaterThan(startLine, start),
 			)) {
@@ -151,12 +155,14 @@ export class RangeMap<T> {
 				// Since all entries must be contained within the range, all entry ends must occur on or before the
 				// range end
 				const endLines = startCharacter.value;
+
 				endLoop: for (const endLine of iterateAscending(
 					least(endLines),
 				)) {
 					if (lineIsAfter(endLine, end)) {
 						break;
 					}
+
 					const endCharacters = endLine.value;
 
 					for (const endCharacter of iterateAscending(
@@ -165,6 +171,7 @@ export class RangeMap<T> {
 						if (characterIsAfter(endLine, endCharacter, end)) {
 							break endLoop;
 						}
+
 						const [key, value] = endCharacter.value;
 
 						if (range.contains(key)) {
@@ -201,6 +208,7 @@ export class RangeMap<T> {
 			if (lineIsAfter(startLine, end)) {
 				break;
 			}
+
 			const startCharacters = startLine.value;
 
 			for (const startCharacter of iterateAscending(
@@ -253,10 +261,12 @@ export class RangeMap<T> {
 
 		if (!entry) {
 			endCharacters.insert(end.character, [key, value]);
+
 			this._size++;
 		} else {
 			entry[1] = value;
 		}
+
 		return this;
 	}
 
@@ -277,6 +287,7 @@ export class RangeMap<T> {
 
 		if (endCharacters.find(end.character)) {
 			endCharacters.remove(end.character);
+
 			this._size--;
 
 			if (endCharacters.isEmpty()) {
@@ -290,13 +301,16 @@ export class RangeMap<T> {
 					}
 				}
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
 	clear() {
 		this._ranges = new SplayTree();
+
 		this._size = 0;
 	}
 

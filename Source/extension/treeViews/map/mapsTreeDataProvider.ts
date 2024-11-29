@@ -87,10 +87,12 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 					log: this.log,
 					ignoreIfBasename: true,
 				};
+
 				lines.push(
 					markdown`**file:** ${formatLocationMarkdown(key.constructorEntry?.filePosition, { as: "file", relativeTo: relativeTo, linkSources: this.log?.sources })}`,
 				);
 			}
+
 			return markdown`${key.name}\n\n${lines}`;
 		},
 
@@ -253,9 +255,13 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 	};
 
 	private _sortBy = constants.kDefaultMapSortMode;
+
 	private _groupBy = constants.kDefaultGroupMaps;
+
 	private _filter = constants.kDefaultShowMaps;
+
 	private _log?: LogFile;
+
 	private _maps?: MapNode[];
 
 	constructor() {
@@ -277,10 +283,12 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 							.through((q) => this._applyOrder(q))
 							.toArray();
 					}
+
 					return from(this._maps)
 						.through((q) => this._applyGroups(q))
 						.toArray();
 				}
+
 				return [];
 			},
 			{ pageSize: PAGE_SIZE },
@@ -290,9 +298,11 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 	get sortBy() {
 		return this._sortBy;
 	}
+
 	set sortBy(value) {
 		if (this._sortBy !== value) {
 			this._sortBy = value;
+
 			this.invalidate();
 		}
 	}
@@ -300,10 +310,13 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 	get filter() {
 		return this._filter;
 	}
+
 	set filter(value) {
 		if (this._filter !== value) {
 			this._filter = value;
+
 			this._maps = undefined;
+
 			this.invalidate();
 		}
 	}
@@ -311,9 +324,11 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 	get groupBy() {
 		return this._groupBy;
 	}
+
 	set groupBy(value) {
 		if (this._groupBy !== value) {
 			this._groupBy = value;
+
 			this.invalidate();
 		}
 	}
@@ -321,10 +336,13 @@ export class MapsTreeDataProvider extends BaseNodeProvider {
 	get log() {
 		return this._log;
 	}
+
 	set log(value) {
 		if (this._log !== value) {
 			this._log = value;
+
 			this._maps = undefined;
+
 			this.invalidate();
 		}
 	}
@@ -392,18 +410,22 @@ class MapConstructorKey {
 			left.disambiguator === right.disambiguator,
 		(value) => {
 			let hc = 0;
+
 			hc = Equaler.combineHashes(
 				hc,
 				Equaler.defaultEqualer.hash(value.constructorName),
 			);
+
 			hc = Equaler.combineHashes(
 				hc,
 				Equaler.defaultEqualer.hash(value.constructorEntry),
 			);
+
 			hc = Equaler.combineHashes(
 				hc,
 				Equaler.defaultEqualer.hash(value.mapType),
 			);
+
 			hc = Equaler.combineHashes(
 				hc,
 				Equaler.defaultEqualer.hash(value.disambiguator),
@@ -454,6 +476,7 @@ class MapConstructorKey {
 
 			return `${this.constructorName} @ ${disambiguator}`;
 		}
+
 		return this.name;
 	}
 
@@ -484,18 +507,22 @@ class MapFunctionKey implements Equatable {
 			left.symbolKind === right.symbolKind,
 		(value) => {
 			let hc = 0;
+
 			hc = Equaler.combineHashes(
 				hc,
 				Equaler.defaultEqualer.hash(value.functionName),
 			);
+
 			hc = Equaler.combineHashes(
 				hc,
 				hashNullable(value.file, UriEqualer),
 			);
+
 			hc = Equaler.combineHashes(
 				hc,
 				hashNullable(value.position, PositionEqualer),
 			);
+
 			hc = Equaler.combineHashes(
 				hc,
 				Equaler.defaultEqualer.hash(value.symbolKind),

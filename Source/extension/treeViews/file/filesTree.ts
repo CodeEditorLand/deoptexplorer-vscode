@@ -14,10 +14,12 @@ import { FilesTreeDataProvider } from "./filesTreeDataProvider";
  */
 export class FilesTree implements Disposable {
 	private provider: FilesTreeDataProvider;
+
 	private treeView: TreeView<BaseNode>;
 
 	constructor() {
 		this.provider = new FilesTreeDataProvider();
+
 		this.treeView = window.createTreeView(constants.treeviews.files, {
 			treeDataProvider: this.provider,
 			showCollapseAll: true,

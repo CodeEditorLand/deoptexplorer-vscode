@@ -9,6 +9,7 @@ const MIN_INT32 = -(2 ** 31);
 
 export interface MinMax {
 	min?: number;
+
 	max?: number;
 }
 
@@ -70,8 +71,11 @@ export function randomLocation({
 	collapseChance = 0,
 }: {
 	line?: MinMax;
+
 	character?: MinMax;
+
 	uris?: readonly Uri[];
+
 	collapseChance?: number;
 } = {}) {
 	const uri = uris?.length ? randomElement(uris) : randomUri();

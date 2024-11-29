@@ -10,10 +10,12 @@ import { LineTickTreeDataProvider } from "./lineTickTreeDataProvider";
 
 export class LineTickTree {
 	private provider: LineTickTreeDataProvider;
+
 	private treeView: TreeView<BaseNode>;
 
 	constructor() {
 		this.provider = new LineTickTreeDataProvider();
+
 		this.treeView = window.createTreeView(constants.treeviews.lineTicks, {
 			treeDataProvider: this.provider,
 			showCollapseAll: false,
@@ -22,8 +24,11 @@ export class LineTickTree {
 
 	setProfileViewNodeSnapshot(snapshot: ProfileViewNodeSnapshot | undefined) {
 		this.provider.suspendUpdates();
+
 		this.provider.node = snapshot;
+
 		this.provider.resumeUpdates();
+
 		this.updateTreeViewHeader();
 	}
 
