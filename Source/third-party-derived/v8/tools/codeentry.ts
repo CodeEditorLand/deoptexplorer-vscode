@@ -314,7 +314,7 @@ export class CodeEntry extends EntryBase {
 CodeEntry.prototype.kind = "code";
 
 export class DynamicCodeEntry extends CodeEntry {
-	private declare _dynamicCodeEntryBrand: never;
+	declare private _dynamicCodeEntryBrand: never;
 
 	/**
 	 * Creates a dynamic code entry.
@@ -441,7 +441,7 @@ export class DynamicFuncCodeEntry extends DynamicCodeEntry {
 export class SharedFunctionCodeEntry extends CodeEntry {
 	private static _sfiUnresolvedEntry: SharedFunctionCodeEntry | undefined;
 
-	private declare _sharedFunctionCodeEntryBrand: never;
+	declare private _sharedFunctionCodeEntryBrand: never;
 
 	/**
 	 * Creates a shared function object entry.

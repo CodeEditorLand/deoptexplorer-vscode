@@ -45,9 +45,7 @@ export class MruCache<T> {
 	private getNode(uri: string, update: boolean) {
 		for (
 			let node = this._head, prev: CacheNode<T> | undefined;
-
 			node;
-
 			prev = node, node = node.next
 		) {
 			if (node.uri === uri) {
@@ -91,9 +89,7 @@ export class MruCache<T> {
 
 		for (
 			let node = this._head, prev: CacheNode<T> | undefined;
-
 			node;
-
 			prev = node, node = node.next
 		) {
 			if (node.uri === uriString) {
@@ -153,9 +149,7 @@ export class MruCache<T> {
 		if (this._size >= this.maxSize) {
 			for (
 				let node = this._head, prev: CacheNode<T> | undefined;
-
 				node;
-
 				prev = node, node = node.next
 			) {
 				if (!node.next) {

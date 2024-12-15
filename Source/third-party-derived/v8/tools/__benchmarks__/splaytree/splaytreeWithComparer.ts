@@ -508,9 +508,7 @@ export class SplayTree<K, V> {
 
 			for (
 				let current = startNode;
-
 				current !== null;
-
 				current = current.prev
 			) {
 				yield current.key;
@@ -534,9 +532,7 @@ export class SplayTree<K, V> {
 
 			for (
 				let current = startNode;
-
 				current !== null;
-
 				current = current.prev
 			) {
 				yield current.value;
@@ -560,9 +556,7 @@ export class SplayTree<K, V> {
 
 			for (
 				let current = startNode;
-
 				current !== null;
-
 				current = current.prev
 			) {
 				yield [current.key, current.value] as [K, V];

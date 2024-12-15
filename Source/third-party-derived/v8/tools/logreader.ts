@@ -279,9 +279,7 @@ export class LogReader {
 
 		for (
 			let parserIndex = 0, fieldIndex = 0;
-
 			parserIndex < dispatch.parsers.length;
-
 			parserIndex++, fieldIndex++
 		) {
 			let parser = dispatch.parsers[parserIndex];

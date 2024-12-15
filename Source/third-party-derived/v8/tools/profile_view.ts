@@ -589,9 +589,9 @@ class BottomUpProfileViewNode extends ProfileViewNode {
 
 	private _isCycle: boolean | undefined;
 
-	public declare head: BottomUpProfileViewNode | null;
+	declare public head: BottomUpProfileViewNode | null;
 
-	public declare parent: BottomUpProfileViewNode | null;
+	declare public parent: BottomUpProfileViewNode | null;
 
 	constructor(
 		template: BottomUpProfileViewNodeTemplate,

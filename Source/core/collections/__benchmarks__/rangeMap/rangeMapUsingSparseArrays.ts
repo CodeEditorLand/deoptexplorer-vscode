@@ -123,9 +123,7 @@ export class RangeMap<T> {
 
 			for (
 				let startCharacter = 0;
-
 				startCharacter < startCharacters.length;
-
 				startCharacter++
 			) {
 				if (!(startCharacter in startCharacters)) {
@@ -136,9 +134,7 @@ export class RangeMap<T> {
 
 				for (
 					let endLine = startLine;
-
 					endLine < endLines.length;
-
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
@@ -150,9 +146,7 @@ export class RangeMap<T> {
 					for (
 						let endCharacter =
 							endLine === startLine ? startCharacter : 0;
-
 						endCharacter < endCharacters.length;
-
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
@@ -178,9 +172,7 @@ export class RangeMap<T> {
 
 			for (
 				let startCharacter = 0;
-
 				startCharacter < startCharacters.length;
-
 				startCharacter++
 			) {
 				if (!(startCharacter in startCharacters)) {
@@ -191,9 +183,7 @@ export class RangeMap<T> {
 
 				for (
 					let endLine = startLine;
-
 					endLine < endLines.length;
-
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
@@ -205,9 +195,7 @@ export class RangeMap<T> {
 					for (
 						let endCharacter =
 							endLine === startLine ? startCharacter : 0;
-
 						endCharacter < endCharacters.length;
-
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
@@ -233,9 +221,7 @@ export class RangeMap<T> {
 
 			for (
 				let startCharacter = 0;
-
 				startCharacter < startCharacters.length;
-
 				startCharacter++
 			) {
 				if (!(startCharacter in startCharacters)) {
@@ -246,9 +232,7 @@ export class RangeMap<T> {
 
 				for (
 					let endLine = startLine;
-
 					endLine < endLines.length;
-
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
@@ -260,9 +244,7 @@ export class RangeMap<T> {
 					for (
 						let endCharacter =
 							endLine === startLine ? startCharacter : 0;
-
 						endCharacter < endCharacters.length;
-
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
@@ -294,9 +276,7 @@ export class RangeMap<T> {
 		// Since all entries must contain the range, all entry starts must occur on or before the range start
 		startLoop: for (
 			let startLine = 0;
-
 			startLine < this._ranges.length;
-
 			startLine++
 		) {
 			if (lineIsAfter(startLine, start)) {
@@ -311,9 +291,7 @@ export class RangeMap<T> {
 
 			for (
 				let startCharacter = 0;
-
 				startCharacter < startCharacters.length;
-
 				startCharacter++
 			) {
 				if (characterIsAfter(startLine, startCharacter, start)) {
@@ -328,9 +306,7 @@ export class RangeMap<T> {
 				// Since all entries must contain the range, all entry ends must occur on or after the range end
 				for (
 					let endLine = end.line;
-
 					endLine < endLines.length;
-
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
@@ -342,9 +318,7 @@ export class RangeMap<T> {
 					for (
 						let endCharacter =
 							endLine === end.line ? end.character : 0;
-
 						endCharacter < endCharacters.length;
-
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
@@ -385,9 +359,7 @@ export class RangeMap<T> {
 		// Since all entries must contain the range, all entry starts must occur on or before the range start
 		for (
 			let startLine = Math.min(start.line, this._ranges.length - 1);
-
 			startLine >= 0;
-
 			startLine--
 		) {
 			if (!(startLine in this._ranges)) {
@@ -401,9 +373,7 @@ export class RangeMap<T> {
 					startLine === start.line
 						? start.character
 						: startCharacters.length - 1;
-
 				startCharacter >= 0;
-
 				startCharacter--
 			) {
 				if (!(startCharacter in startCharacters)) {
@@ -414,9 +384,7 @@ export class RangeMap<T> {
 				// Since all entries must contain the range, all entry ends must occur on or after the range end
 				for (
 					let endLine = end.line;
-
 					endLine <= endLines.length;
-
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
@@ -428,9 +396,7 @@ export class RangeMap<T> {
 					for (
 						let endCharacter =
 							endLine === end.line ? end.character : 0;
-
 						endCharacter < endCharacters.length;
-
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {
@@ -457,9 +423,7 @@ export class RangeMap<T> {
 		// Since all entries must be contained within the range, all entry starts must occur on or after the range start
 		for (
 			let startLine = start.line, l = this._ranges.length;
-
 			startLine < l;
-
 			startLine++
 		) {
 			if (lineIsAfter(startLine, end)) {
@@ -476,9 +440,7 @@ export class RangeMap<T> {
 				let startCharacter =
 						startLine === start.line ? start.character : 0,
 					l = startCharacters.length;
-
 				startCharacter < l;
-
 				startCharacter++
 			) {
 				if (characterIsAfter(startLine, startCharacter, end)) {
@@ -493,9 +455,7 @@ export class RangeMap<T> {
 
 				endLoop: for (
 					let endLine = startLine, l = endLines.length;
-
 					endLine < l;
-
 					endLine++
 				) {
 					if (lineIsAfter(endLine, end)) {
@@ -512,9 +472,7 @@ export class RangeMap<T> {
 						let endCharacter =
 								endLine === startLine ? startCharacter : 0,
 							l = endCharacters.length;
-
 						endCharacter < l;
-
 						endCharacter++
 					) {
 						if (characterIsAfter(endLine, endCharacter, end)) {
@@ -557,9 +515,7 @@ export class RangeMap<T> {
 		// Since all entries must intersect with the range, all entry starts must occur on or before the range end
 		startLoop: for (
 			let startLine = 0;
-
 			startLine < this._ranges.length;
-
 			startLine++
 		) {
 			if (lineIsAfter(startLine, end)) {
@@ -574,9 +530,7 @@ export class RangeMap<T> {
 
 			for (
 				let startCharacter = 0;
-
 				startCharacter < startCharacters.length;
-
 				startCharacter++
 			) {
 				if (characterIsAfter(startLine, startCharacter, end)) {
@@ -591,9 +545,7 @@ export class RangeMap<T> {
 				// Since all entries must intersect with the range, all entry ends must occur on or after the range start
 				for (
 					let endLine = Math.max(start.line, startLine);
-
 					endLine < endLines.length;
-
 					endLine++
 				) {
 					if (!(endLine in endLines)) {
@@ -605,9 +557,7 @@ export class RangeMap<T> {
 					for (
 						let endCharacter =
 							endLine === start.line ? start.character : 0;
-
 						endCharacter < endCharacters.length;
-
 						endCharacter++
 					) {
 						if (!(endCharacter in endCharacters)) {

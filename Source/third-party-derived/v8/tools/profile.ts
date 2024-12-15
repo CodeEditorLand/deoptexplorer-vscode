@@ -1112,9 +1112,7 @@ export class Profile {
 
 		for (
 			let sampleIndex = 1;
-
 			sampleIndex < samplesCount - 1;
-
 			sampleIndex++
 		) {
 			const nextNode = samples[sampleIndex + 1].node;

@@ -90,9 +90,7 @@ export class FunctionName {
 
 			for (
 				let i = nameAndLocation.lastIndexOf(" ");
-
 				i >= 0;
-
 				i = i === 0 ? -1 : nameAndLocation.lastIndexOf(" ", i - 1)
 			) {
 				cppFunctionNameRegExp.lastIndex = i + 1;

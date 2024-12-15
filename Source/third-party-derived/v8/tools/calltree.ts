@@ -366,9 +366,7 @@ export class CallTreeNode {
 	walkUpToRoot(f: (node: CallTreeNode) => void) {
 		for (
 			let curr: CallTreeNode | null = this;
-
 			curr !== null;
-
 			curr = curr.parent
 		) {
 			f(curr);

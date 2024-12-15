@@ -159,9 +159,7 @@ function validateConflicts(argv: Options) {
 			if (argv[option]) {
 				for (
 					let j = i + 1;
-
 					j < mutuallyExclusiveBooleanGroup.length;
-
 					j++
 				) {
 					const other = mutuallyExclusiveBooleanGroup[j];

@@ -163,9 +163,7 @@ export class CodeMap {
 	private markPages_(start: Address, end: Address) {
 		for (
 			let addr = start;
-
 			addr <= end;
-
 			addr += toAddress(CodeMap.PAGE_SIZE)
 		) {
 			this.pages_[Number(addr / toAddress(CodeMap.PAGE_SIZE)) | 0] = 1;

@@ -87,9 +87,7 @@ export class RangeMap<T> {
 
 		for (
 			let node = this._ranges.findMin();
-
 			node;
-
 			node = next ?? node.next, next = null
 		) {
 			const key = node.key;
